@@ -797,7 +797,7 @@
  * value set here, it may happen instantaneously.
  */
 // TODO rubienr: investigate result
-#define CLASSIC_JERK
+//#define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
   #define DEFAULT_XJERK 2.0
   #define DEFAULT_YJERK 2.0
@@ -822,7 +822,10 @@
  */
 // TODO rubienr: investigate junction deiation vs classic jerk
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.064 // (mm) Distance from real junction edge
+  // TODO rubienr: update printer -> replace pseudo PU wheels guide with real linear guide
+  // TBD  for Creality Ender-5 Plus with X/Y linear guide (PU wheel guide replacement)
+  // 0.15 for Creality Ender-5 Plus with Polyuretan wheels
+  #define JUNCTION_DEVIATION_MM 0.15 // (mm) Distance from real junction edge
 #endif
 
 /**
@@ -977,7 +980,7 @@
  *
  * Specify a Probe position as { X, Y, Z }
  */
-#define NOZZLE_TO_PROBE_OFFSET { -12, 22, -3.5 }
+#define NOZZLE_TO_PROBE_OFFSET { -12, 22, -3.55 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
