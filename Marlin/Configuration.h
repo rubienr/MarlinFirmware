@@ -799,8 +799,8 @@
 // TODO rubienr: investigate result
 #define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
-  #define DEFAULT_XJERK 4.0
-  #define DEFAULT_YJERK 4.0
+  #define DEFAULT_XJERK 2.0
+  #define DEFAULT_YJERK 2.0
   #define DEFAULT_ZJERK  0.3
 
   //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
@@ -811,7 +811,7 @@
   #endif
 #endif
 
-#define DEFAULT_EJERK    0.5  // May be used by Linear Advance
+#define DEFAULT_EJERK    0.25  // May be used by Linear Advance
 
 /**
  * Junction Deviation Factor
@@ -822,7 +822,7 @@
  */
 // TODO rubienr: investigate junction deiation vs classic jerk
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.013 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.064 // (mm) Distance from real junction edge
 #endif
 
 /**
@@ -977,7 +977,7 @@
  *
  * Specify a Probe position as { X, Y, Z }
  */
-#define NOZZLE_TO_PROBE_OFFSET { -12, 22, -3.6 }
+#define NOZZLE_TO_PROBE_OFFSET { -12, 22, -3.5 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
