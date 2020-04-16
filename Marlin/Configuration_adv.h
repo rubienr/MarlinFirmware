@@ -1564,13 +1564,12 @@
   //#define MIN_PROBE_EDGE_BACK MIN_PROBE_EDGE
 #endif
 
-// TODO rubienr: test, replace with bed dim. defines
 #if EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
   // Override the mesh area if the automatic (max) area is too large
-  #define MESH_MIN_X MESH_INSET // ~40
-  #define MESH_MIN_Y MESH_INSET // ~10
-  #define MESH_MAX_X X_BED_SIZE - (MESH_INSET) // ~310
-  #define MESH_MAX_Y Y_BED_SIZE - (MESH_INSET) // ~340
+  #define MESH_MIN_X MESH_INSET
+  #define MESH_MIN_Y MESH_INSET
+  #define MESH_MAX_X X_BED_SIZE - (MESH_INSET)
+  #define MESH_MAX_Y Y_BED_SIZE - (MESH_INSET)
 #endif
 
 /**
