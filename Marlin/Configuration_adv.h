@@ -622,7 +622,6 @@
 
   // Safety: The probe needs time to recognize the command.
   //         Minimum command delay (ms). Enable and increase if needed.
-  // TODO rubienr: try to make probing more performant
   //#define BLTOUCH_DELAY 500
 
   /**
@@ -665,7 +664,6 @@
    * This feature was designed for Delta's with very fast Z moves however higher speed cartesians may function
    * If the machine cannot raise the probe fast enough after a trigger, it may enter a fault state.
    */
-  // TODO rubienr: try to make probing more performant
   #define BLTOUCH_HS_MODE
 
   // Safety: Enable voltage mode settings in the LCD menu.
@@ -3142,8 +3140,7 @@
 //
 // M43 - display pin status, toggle pins, watch pins, watch endstops & toggle LED, test servo probe
 //
-// TODO rubienr: disable debugging
-#define PINS_DEBUGGING
+//#define PINS_DEBUGGING
 
 // Enable Marlin dev mode which adds some special commands
 //#define MARLIN_DEV_MODE

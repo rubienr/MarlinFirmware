@@ -38,11 +38,6 @@
  */
 #define CONFIGURATION_H_VERSION 020005
 
-// TODO RR: better where to place it
-#define X_MAX_PIN       3
-#define Y_MAX_PIN      14
-#define FIL_RUNOUT_PIN  2
-
 //===========================================================================
 //============================= Getting Started =============================
 //===========================================================================
@@ -133,7 +128,12 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  // TODO rubienr: seems to be the CR-10S board: https://www.amazon.com/CREALITY-3D-Motherboard-Replacment-Mainboard/dp/B079H3T983
+  // Creality Ender-5 Plus motherboard V2.1 (CR-10S) https://www.amazon.com/CREALITY-3D-Motherboard-Replacment-Mainboard/dp/B079H3T983
+  // pins that differ from RAMPS
+  #define X_MAX_PIN       3
+  #define Y_MAX_PIN      14
+  #define FIL_RUNOUT_PIN  2
+  
   // TODO rubienr: investigate which of the following borads is best to choose:
   //#define MOTHERBOARD BOARD_RAMPS_CREALITY
   #define MOTHERBOARD BOARD_RAMPS_14_EFB
@@ -985,7 +985,7 @@
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define MIN_PROBE_EDGE 4
+#define MIN_PROBE_EDGE 5
 
 // X and Y axis travel speed (mm/m) between probes
 #define XY_PROBE_SPEED 8000
@@ -1120,16 +1120,18 @@
 // @section machine
 
 // The size of the print bed
+// TODO rubienr: corresponds to max x/y axis travel, not to bed size
 #define X_BED_SIZE 358
-#define Y_BED_SIZE 366
+#define Y_BED_SIZE 370
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS 0
-#define Y_MIN_POS 0
-#define Z_MIN_POS 0
-#define X_MAX_POS X_BED_SIZE
-#define Y_MAX_POS Y_BED_SIZE
-#define Z_MAX_POS 405
+// TODO rubienr (x,y)=(0,0) corresponds to bed corner
+#define X_MIN_POS  8
+#define Y_MIN_POS -1
+#define Z_MIN_POS  0
+#define X_MAX_POS  X_BED_SIZE + X_MIN_POS
+#define Y_MAX_POS  Y_BED_SIZE + Y_MIN_POS
+#define Z_MAX_POS  405        + Z_MIN_POS
 
 /**
  * Software Endstops
@@ -1242,13 +1244,12 @@
  */
 #define RESTORE_LEVELING_AFTER_G28
 
-// TODO rubienr: disable debug
 /**
  * Enable detailed logging of G28, G29, M48, etc.
  * Turn on with the command 'M111 S32'.
  * NOTE: Requires a lot of PROGMEM!
  */
-#define DEBUG_LEVELING_FEATURE
+//#define DEBUG_LEVELING_FEATURE
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR, AUTO_BED_LEVELING_UBL)
   // Gradually reduce leveling correction until a set height is reached,
@@ -1265,7 +1266,7 @@
   /**
    * Enable the G26 Mesh Validation Pattern tool.
    */
-  #define G26_MESH_VALIDATION
+  //#define G26_MESH_VALIDATION
   #if ENABLED(G26_MESH_VALIDATION)
     #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
     #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for the G26 Mesh Validation Tool.
@@ -1312,7 +1313,7 @@
 
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
-  #define MESH_INSET 5              // Set Mesh bounds as an inset region of the bed
+  #define MESH_INSET       15       // Set Mesh bounds as an inset region of the bed
   #define GRID_MAX_POINTS_X 7       // Don't use more than 15 points per axis, implementation limited.
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
