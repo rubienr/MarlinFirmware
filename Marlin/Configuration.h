@@ -130,14 +130,14 @@
 #ifndef MOTHERBOARD
   // Creality Ender-5 Plus motherboard V2.1 (CR-10S) https://www.amazon.com/CREALITY-3D-Motherboard-Replacment-Mainboard/dp/B079H3T983
   // pins that differ from RAMPS
-  #define X_MAX_PIN       3
-  #define Y_MAX_PIN      14
-  #define FIL_RUNOUT_PIN  2
+  #define X_MAX_PIN       3 // OEM creality connects X_MAX switch to X_MIN(_PIN) motherbard connector
+  #define Y_MAX_PIN      14 // OEM creality connects Y_MAX switch to Y_MIN(_PIN) motherbard connector
+  #define FIL_RUNOUT_PIN  2 // OEM creality connects FLIL_RUNOUT switch to X_MAX(_PIN) motherbard connector
+  // TODO rubienr: use MOTHERBOARD BOARD_RAMPS_CREALITY rather than MOTHERBOARD BOARD_RAMPS_14_EFB and remove above (manual) configuratoin
   
   // TODO rubienr: investigate which of the following borads is best to choose:
   //#define MOTHERBOARD BOARD_RAMPS_CREALITY
   #define MOTHERBOARD BOARD_RAMPS_14_EFB
-  //#define MOTHERBOARD BOARD_RAMPS_13_EFB
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
