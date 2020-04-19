@@ -128,16 +128,9 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  // Creality Ender-5 Plus motherboard V2.1 (CR-10S) https://www.amazon.com/CREALITY-3D-Motherboard-Replacment-Mainboard/dp/B079H3T983
-  // pins that differ from RAMPS
-  #define X_MAX_PIN       3 // OEM creality connects X_MAX switch to X_MIN(_PIN) motherbard connector
-  #define Y_MAX_PIN      14 // OEM creality connects Y_MAX switch to Y_MIN(_PIN) motherbard connector
-  #define FIL_RUNOUT_PIN  2 // OEM creality connects FLIL_RUNOUT switch to X_MAX(_PIN) motherbard connector
-  // TODO rubienr: use MOTHERBOARD BOARD_RAMPS_CREALITY rather than MOTHERBOARD BOARD_RAMPS_14_EFB and remove above (manual) configuratoin
-  
-  // TODO rubienr: investigate which of the following borads is best to choose:
-  //#define MOTHERBOARD BOARD_RAMPS_CREALITY
-  #define MOTHERBOARD BOARD_RAMPS_14_EFB
+  #define X_MAX_PIN  3 // OEM creality connects X_MAX switch to X_MIN(_PIN) motherbard connector
+  #define Y_MAX_PIN 14 // OEM creality connects Y_MAX switch to Y_MIN(_PIN) motherbard connector
+  #define MOTHERBOARD BOARD_RAMPS_CREALITY
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -770,7 +763,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 5000, 5000, 100, 100 }
+#define DEFAULT_MAX_ACCELERATION      { 5000, 5000, 100, 10000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -786,7 +779,7 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           200    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION   100    // E acceleration for retracts
+#define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
@@ -1686,7 +1679,7 @@
  * you must uncomment the following option or it won't work.
  *
  */
-//#define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: SPI SPEED
@@ -2020,7 +2013,7 @@
 // TODO rubienr: investigate how to integrate the stock Ender-5 Plus DWIN display.
 // The CR10 is just a placeholder. OEM display/touch does not work:
 // use printserver or cable.
-#define CR10_STOCKDISPLAY
+//#define CR10_STOCKDISPLAY
 
 //
 // Ender-2 OEM display, a variant of the MKS_MINI_12864
@@ -2096,8 +2089,9 @@
 
 //
 // DGUS Touch Display with DWIN OS. (Choose one.)
-//
-//#define DGUS_LCD_UI_ORIGIN
+// Flash display with DGUS Displays for Marlin https://github.com/coldtobi/Marlin_DGUS_Resources
+// Copy DWIN_SET to SD card and boot the display with SD plugged into its SD reader (not motherboard's).
+#define DGUS_LCD_UI_ORIGIN
 //#define DGUS_LCD_UI_FYSETC
 //#define DGUS_LCD_UI_HIPRECY
 
@@ -2233,20 +2227,21 @@
 #endif
 
 // Support for Adafruit Neopixel LED driver
-//#define NEOPIXEL_LED
+// TODO rubienr: non OEM configuration
+#define NEOPIXEL_LED
 #if ENABLED(NEOPIXEL_LED)
-  #define NEOPIXEL_TYPE   NEO_GRBW // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
-  #define NEOPIXEL_PIN     4       // LED driving pin
+  #define NEOPIXEL_TYPE   NEO_GRB  // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
+  #define NEOPIXEL_PIN     65      // LED driving pin
   //#define NEOPIXEL2_TYPE NEOPIXEL_TYPE
   //#define NEOPIXEL2_PIN    5
-  #define NEOPIXEL_PIXELS 30       // Number of LEDs in the strip, larger of 2 strips if 2 neopixel strips are used
-  #define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
+  #define NEOPIXEL_PIXELS 27       // Number of LEDs in the strip, larger of 2 strips if 2 neopixel strips are used
+  //#define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
   #define NEOPIXEL_BRIGHTNESS 127  // Initial brightness (0-255)
-  //#define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
+  #define NEOPIXEL_STARTUP_TEST    // Cycle through colors at startup
 
   // Use a single Neopixel LED for static (background) lighting
-  //#define NEOPIXEL_BKGD_LED_INDEX  0               // Index of the LED to use
-  //#define NEOPIXEL_BKGD_COLOR { 255, 255, 255, 0 } // R, G, B, W
+  #define NEOPIXEL_BKGD_LED_INDEX  26              // Index of the LED to use
+  #define NEOPIXEL_BKGD_COLOR { 255, 255, 255, 0 } // R, G, B, W
 #endif
 
 /**
