@@ -43,7 +43,9 @@
   #define SD_DETECT_PIN                       49  // Always define onboard SD detect
 #endif
 
-#define PS_ON_PIN                             40  // Used by CR2020 Industrial series
+#ifndef PS_ON_PIN
+  #define PS_ON_PIN                           40  // Used by CR2020 Industrial series
+#endif
 
 #if ENABLED(CASE_LIGHT_ENABLE) && !defined(CASE_LIGHT_PIN)
   #define CASE_LIGHT_PIN                      65
