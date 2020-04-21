@@ -130,6 +130,7 @@
 #ifndef MOTHERBOARD
   #define X_MAX_PIN  3 // OEM creality connects X_MAX switch to X_MIN(_PIN) motherbard connector
   #define Y_MAX_PIN 14 // OEM creality connects Y_MAX switch to Y_MIN(_PIN) motherbard connector
+  #define PS_ON_PIN 12 // non OEM configuration (OEM has no PSU switch/relais)
   #define MOTHERBOARD BOARD_RAMPS_CREALITY
 #endif
 
@@ -321,11 +322,11 @@
  * Enable and connect the power supply to the PS_ON_PIN.
  * Specify whether the power supply is active HIGH or active LOW.
  */
-//#define PSU_CONTROL
-//#define PSU_NAME "Power Supply"
+#define PSU_CONTROL
+#define PSU_NAME "Power Supply"
 
 #if ENABLED(PSU_CONTROL)
-  #define PSU_ACTIVE_HIGH false     // Set 'false' for ATX, 'true' for X-Box
+  #define PSU_ACTIVE_HIGH true      // Set 'false' for ATX, 'true' for X-Box
 
   //#define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
   //#define PSU_POWERUP_DELAY 100   // (ms) Delay for the PSU to warm up to full power
@@ -2236,8 +2237,8 @@
   //#define NEOPIXEL2_PIN    5
   #define NEOPIXEL_PIXELS 27       // Number of LEDs in the strip, larger of 2 strips if 2 neopixel strips are used
   //#define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
-  #define NEOPIXEL_BRIGHTNESS 127  // Initial brightness (0-255)
-  #define NEOPIXEL_STARTUP_TEST    // Cycle through colors at startup
+  #define NEOPIXEL_BRIGHTNESS 100  // Initial brightness (0-255)
+  //#define NEOPIXEL_STARTUP_TEST    // Cycle through colors at startup
 
   // Use a single Neopixel LED for static (background) lighting
   #define NEOPIXEL_BKGD_LED_INDEX  26              // Index of the LED to use
