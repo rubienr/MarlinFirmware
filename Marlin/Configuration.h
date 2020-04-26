@@ -128,9 +128,10 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define X_MAX_PIN  3 // OEM creality connects X_MAX switch to X_MIN(_PIN) motherbard connector
-  #define Y_MAX_PIN 14 // OEM creality connects Y_MAX switch to Y_MIN(_PIN) motherbard connector
-  #define PS_ON_PIN 12 // non OEM configuration (OEM has no PSU switch/relais)
+  #define X_MAX_PIN  3                // creality connects X_MAX switch to X_MIN(_PIN) motherbard connector
+  #define Y_MAX_PIN 14                // creality connects Y_MAX switch to Y_MIN(_PIN) motherbard connector
+  #define PS_ON_PIN 12                // custom extension (Ender-5 Plus has no PSU switch)
+  #define SUICIDE_PIN_INVERTING false // custom extension (Ender-5 Plus has no PSU switch)
   #define MOTHERBOARD BOARD_RAMPS_CREALITY
 #endif
 
@@ -322,13 +323,14 @@
  * Enable and connect the power supply to the PS_ON_PIN.
  * Specify whether the power supply is active HIGH or active LOW.
  */
+// custom extension: PSU_CONTROL (Ender-5 Plus has no PSU control)
 #define PSU_CONTROL
 #define PSU_NAME "Power Supply"
 
 #if ENABLED(PSU_CONTROL)
   #define PSU_ACTIVE_HIGH true      // Set 'false' for ATX, 'true' for X-Box
 
-  //#define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
+  #define PSU_DEFAULT_OFF         // Keep power off until enabled directly with M80
   //#define PSU_POWERUP_DELAY 100   // (ms) Delay for the PSU to warm up to full power
 
   //#define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
@@ -743,7 +745,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-// TODO rubienr: find out the steps for the OEM gear, this 144.1 is for the hobbed gear
+// E steps example: steps per revolution s=200, microstepping m=16, effective gear diameter d=7.22: sm/(πd) = 144.1
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 800, 144.1 }
 
 /**
@@ -2228,17 +2230,17 @@
 #endif
 
 // Support for Adafruit Neopixel LED driver
-// TODO rubienr: non OEM configuration
+// custom extension: NEOPIXEL_LED (Ender-5 Plus has no LEDs)
 #define NEOPIXEL_LED
 #if ENABLED(NEOPIXEL_LED)
-  #define NEOPIXEL_TYPE   NEO_GRB  // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
-  #define NEOPIXEL_PIN     65      // LED driving pin
-  //#define NEOPIXEL2_TYPE NEOPIXEL_TYPE
-  //#define NEOPIXEL2_PIN    5
-  #define NEOPIXEL_PIXELS 27       // Number of LEDs in the strip, larger of 2 strips if 2 neopixel strips are used
-  //#define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
-  #define NEOPIXEL_BRIGHTNESS 100  // Initial brightness (0-255)
-  //#define NEOPIXEL_STARTUP_TEST    // Cycle through colors at startup
+  #define NEOPIXEL_TYPE    NEO_GRB  // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
+  #define NEOPIXEL_PIN          65  // LED driving pin
+  //#define NEOPIXEL2_TYPE NEO_GRB
+  //#define NEOPIXEL2_PIN        5
+  #define NEOPIXEL_PIXELS       27  // Number of LEDs in the strip, larger of 2 strips if 2 neopixel strips are used
+  //#define NEOPIXEL_IS_SEQUENTIAL  // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
+  #define NEOPIXEL_BRIGHTNESS  180  // Initial brightness (0-255)
+  #define NEOPIXEL_STARTUP_TEST     // Cycle through colors at startup
 
   // Use a single Neopixel LED for static (background) lighting
   #define NEOPIXEL_BKGD_LED_INDEX  26              // Index of the LED to use

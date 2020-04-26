@@ -749,7 +749,6 @@
 #define DEFAULT_STEPPER_DEACTIVE_TIME 120
 #define DISABLE_INACTIVE_X true
 #define DISABLE_INACTIVE_Y true
-// rubienr:
 #define DISABLE_INACTIVE_Z false  // Set to false if the nozzle will fall down on your printed part when print has finished.
 #define DISABLE_INACTIVE_E true
 
@@ -1304,7 +1303,6 @@
 // Additional options for DGUS / DWIN displays
 //
 #if HAS_DGUS_LCD
-  // TODO rubienr
   #define DGUS_SERIAL_PORT 2
   #define DGUS_BAUDRATE 115200
 
