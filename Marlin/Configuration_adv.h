@@ -1713,19 +1713,63 @@
 
 // @section hidden
 
+// Note: RUBIENR_UTILIZE_MORE_BUFFER is a non standard personalized define.
+#if DISABLED(SDSUPPORT) 
+  #define RUBIENR_UTILIZE_MORE_BUFFER
+#endif
+// No SDSUPPORT frees some RAM that can be used to increase 
+// high speed printing quality via print server (i.e. Octoprint). The 
+// following countermeasures may be obsolete if prints come only from 
+// SD card. Blobs and some ringing can be reduced at high speeds if
+// Marlin's planner does not starve until new G-code arrives via RS232.
+//
+// Countermeasures:
+// - Octoprint should run on a performant PC such as Intel i5 (or better)
+//   - i5 makes a huge difference compared to ARM or Intel Atom 
+//   - close web-UI after print started; reduce live data loaded by web-UI
+//
+// - increase baud rate to 250000 (or more if possible)
+// - increase Marlin's buffers
+//    - planner: size is limited to power of 2, if max size that 
+//      fits into RAM is reached increase RX line buffer
+//    - RX lines buffer (default 4 was too less)
+//    - RX ring buffer (TODO: have no evidence so far that it helped much)
+//    - TX ring buffer (TODO: have no evidence so far that it helped much)
+//  - disable SERIAL_OVERRUN_PROTECTION
+//
+//  - decrease slicer's resolution to obtain lesser (short) segments
+//
+// Tested results with
+// - speed=180mm/s, acc=1000mm/s^2, 
+// - Intel i5,
+// - and the countermeasures above 
+// revealed same print quality as with
+// - speed=100mm/s, acc=500mm/s^2,
+// - Intel Atom
+// - and default buffer size setup. 
+
 // The number of linear motions that can be in the plan at any give time.
 // THE BLOCK_BUFFER_SIZE NEEDS TO BE A POWER OF 2 (e.g. 8, 16, 32) because shifts and ors are used to do the ring-buffering.
 #if ENABLED(SDSUPPORT)
   #define BLOCK_BUFFER_SIZE 16 // SD,LCD,Buttons take more memory, block buffer needs to be smaller
-#else
-  #define BLOCK_BUFFER_SIZE 16 // maximize block buffer
+#else  
+  if DEFINED(RUBIENR_UTILIZE_MORE_BUFFER)
+    #define BLOCK_BUFFER_SIZE 32
+  #else
+    #define BLOCK_BUFFER_SIZE 16
+  #endif
 #endif
 
 // @section serial
 
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
-#define BUFSIZE 4
+
+if DEFINED(RUBIENR_UTILIZE_MORE_BUFFER)
+  #define BUFSIZE 16
+#else
+  #define BUFSIZE 4
+#endif
 
 // Transmission to Host Buffer Size
 // To save 386 bytes of PROGMEM (and TX_BUFFER_SIZE+3 bytes of RAM) set to 0.
@@ -1734,13 +1778,23 @@
 // For debug-echo: 128 bytes for the optimal speed.
 // Other output doesn't need to be that speedy.
 // :[0, 2, 4, 8, 16, 32, 64, 128, 256]
-#define TX_BUFFER_SIZE 0
+if DEFINED(RUBIENR_UTILIZE_MORE_BUFFER)
+// TODO rubienr: this could be probably decreased again
+  #define TX_BUFFER_SIZE 256
+#else
+  #define TX_BUFFER_SIZE 0
+#endif
 
 // Host Receive Buffer Size
 // Without XON/XOFF flow control (see SERIAL_XON_XOFF below) 32 bytes should be enough.
 // To use flow control, set this buffer size to at least 1024 bytes.
 // :[0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]
-//#define RX_BUFFER_SIZE 1024
+if DEFINED(RUBIENR_UTILIZE_MORE_BUFFER)
+// TODO rubienr: this could be probably decreased again
+  #define RX_BUFFER_SIZE 256
+#else
+  //#define RX_BUFFER_SIZE 1024
+#endif
 
 #if RX_BUFFER_SIZE >= 1024
   // Enable to have the controller send XON/XOFF control characters to
@@ -1774,11 +1828,11 @@
 //#define NO_TIMEOUTS 1000 // Milliseconds
 
 // Some clients will have this feature soon. This could make the NO_TIMEOUTS unnecessary.
-//#define ADVANCED_OK
+#define ADVANCED_OK
 
 // Printrun may have trouble receiving long strings all at once.
 // This option inserts short delays between lines of serial output.
-#define SERIAL_OVERRUN_PROTECTION
+//#define SERIAL_OVERRUN_PROTECTION
 
 // @section extras
 
