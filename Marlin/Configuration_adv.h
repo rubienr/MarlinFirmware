@@ -1722,6 +1722,8 @@
 // following countermeasures may be obsolete if prints come only from 
 // SD card. Blobs and some ringing can be reduced at high speeds if
 // Marlin's planner does not starve until new G-code arrives via RS232.
+// When adjusting buffer sizes do not go beyond 85% used RAM, it may not leave
+// enough space for the stack. Probably 85% is already too much :/
 //
 // Countermeasures:
 // - Octoprint should run on a performant PC such as Intel i5 (or better)
@@ -1753,7 +1755,7 @@
 #if ENABLED(SDSUPPORT)
   #define BLOCK_BUFFER_SIZE 16 // SD,LCD,Buttons take more memory, block buffer needs to be smaller
 #else  
-  #if DISABLED(RUBIENR_UTILIZE_MORE_BUFFER)
+  #if ENABLED(RUBIENR_UTILIZE_MORE_BUFFER)
     #define BLOCK_BUFFER_SIZE 32
   #else
     #define BLOCK_BUFFER_SIZE 16
@@ -1765,7 +1767,7 @@
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
 
-#if DISABLED(RUBIENR_UTILIZE_MORE_BUFFER)
+#if ENABLED(RUBIENR_UTILIZE_MORE_BUFFER)
   #define BUFSIZE 16
 #else
   #define BUFSIZE 4
@@ -1778,7 +1780,7 @@
 // For debug-echo: 128 bytes for the optimal speed.
 // Other output doesn't need to be that speedy.
 // :[0, 2, 4, 8, 16, 32, 64, 128, 256]
-#if DISABLED(RUBIENR_UTILIZE_MORE_BUFFER)
+#if ENABLED(RUBIENR_UTILIZE_MORE_BUFFER)
 // TODO rubienr: this could be probably decreased again
   #define TX_BUFFER_SIZE 256
 #else
@@ -1789,7 +1791,7 @@
 // Without XON/XOFF flow control (see SERIAL_XON_XOFF below) 32 bytes should be enough.
 // To use flow control, set this buffer size to at least 1024 bytes.
 // :[0, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048]
-#if DISABLED(RUBIENR_UTILIZE_MORE_BUFFER)
+#if ENABLED(RUBIENR_UTILIZE_MORE_BUFFER)
 // TODO rubienr: this could be probably decreased again
   #define RX_BUFFER_SIZE 256
 #else
