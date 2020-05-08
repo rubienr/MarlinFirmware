@@ -22,7 +22,7 @@
 
 /* DGUS implementation written by coldtobi in 2019 for Marlin */
 
-#include "../../../../../inc/MarlinConfigPre.h"
+#include "../../../../../inc/MarlinConfig.h"
 
 #if ENABLED(DGUS_LCD_UI_ORIGIN)
 
@@ -41,6 +41,7 @@
 
 const uint16_t VPList_Boot[] PROGMEM = {
   VP_MARLIN_VERSION,
+  VP_UI_VERSION,
   0x0000
 };
 
@@ -56,6 +57,18 @@ const uint16_t VPList_Temp[] PROGMEM = {
   #if HOTENDS >= 2
     VP_T_E1_Is, VP_T_E1_Set,
   #endif
+  #if HOTENDS >= 3
+    VP_T_E2_Is, VP_T_E2_Set,
+  #endif
+  #if HOTENDS >= 4
+    VP_T_E3_Is, VP_T_E3_Set,
+  #endif
+  #if HOTENDS >= 5
+    VP_T_E4_Is, VP_T_E4_Set,
+  #endif
+  #if HOTENDS >= 6
+    VP_T_E5_Is, VP_T_E5_Set,
+  #endif
   #if HAS_HEATED_BED
     VP_T_Bed_Is, VP_T_Bed_Set,
   #endif
@@ -70,14 +83,41 @@ const uint16_t VPList_Status[] PROGMEM = {
   #if HOTENDS >= 2
     VP_T_E1_Is, VP_T_E1_Set,
   #endif
+  #if HOTENDS >= 3
+    VP_T_E2_Is, VP_T_E2_Set,
+  #endif
+  #if HOTENDS >= 4
+    VP_T_E3_Is, VP_T_E3_Set,
+  #endif
+  #if HOTENDS >= 5
+    VP_T_E4_Is, VP_T_E4_Set,
+  #endif
+  #if HOTENDS >= 6
+      VP_T_E5_Is, VP_T_E5_Set,
+  #endif
   #if HAS_HEATED_BED
     VP_T_Bed_Is, VP_T_Bed_Set,
   #endif
-  #if FAN_COUNT > 0
+  #if HAS_FAN0
     VP_Fan0_Percentage,
   #endif
+  #if FAN_COUNT >= 2
+    VP_Fan1_Percentage,
+  #endif
+  #if FAN_COUNT >= 3
+    VP_Fan2_Percentage,
+  #endif
+  #if FAN_COUNT >= 4
+    VP_Fan3_Percentage,
+  #endif
+  #if FAN_COUNT >= 5
+    VP_Fan4_Percentage,
+  #endif
+  #if FAN_COUNT >= 6
+    VP_Fan5_Percentage,
+  #endif
   VP_XPos, VP_YPos, VP_ZPos,
-  VP_Fan0_Percentage,
+  //VP_Fan0_Percentage, // TODO rubienr: duplicate?
   VP_Feedrate_Percentage,
   VP_PrintProgress_Percentage,
   0x0000
@@ -85,11 +125,23 @@ const uint16_t VPList_Status[] PROGMEM = {
 
 const uint16_t VPList_Status2[] PROGMEM = {
   /* VP_M117, for completeness, but it cannot be auto-uploaded */
-  #if HOTENDS >= 1
+  #if EXTRUDERS >= 1
     VP_Flowrate_E0,
   #endif
-  #if HOTENDS >= 2
+  #if EXTRUDERS >= 2
     VP_Flowrate_E1,
+  #endif
+  #if EXTRUDERS >= 3
+    VP_Flowrate_E2,
+  #endif
+  #if EXTRUDERS >= 4
+    VP_Flowrate_E3,
+  #endif
+  #if EXTRUDERS >= 5
+    VP_Flowrate_E4,
+  #endif
+  #if EXTRUDERS >= 6
+    VP_Flowrate_E5,
   #endif
   VP_PrintProgress_Percentage,
   VP_PrintTime,
@@ -102,30 +154,95 @@ const uint16_t VPList_ManualMove[] PROGMEM = {
 };
 
 const uint16_t VPList_ManualExtrude[] PROGMEM = {
-  VP_EPos,
+  #if EXTRUDERS >= 1
+    VP_E0Pos,
+  #endif
+  #if EXTRUDERS >= 2
+    VP_E1Pos,
+  #endif
+  #if EXTRUDERS >= 3
+    VP_E2Pos,
+  #endif
+  #if EXTRUDERS >= 4
+    VP_E3Pos,
+  #endif
+  #if EXTRUDERS >= 5
+    VP_E4Pos,
+  #endif
+  #if EXTRUDERS >= 6
+    VP_E5Pos,
+  #endif
   0x0000
 };
 
 const uint16_t VPList_FanAndFeedrate[] PROGMEM = {
-  VP_Feedrate_Percentage, VP_Fan0_Percentage,
+  VP_Feedrate_Percentage,
+  #if HAS_FAN0
+    VP_Fan0_Percentage,
+  #endif
+  #if HAS_FAN1
+    VP_Fan1_Percentage,
+  #endif
+  #if HAS_FAN2
+    VP_Fan2_Percentage,
+  #endif
+  #if HAS_FAN3
+    VP_Fan3_Percentage,
+  #endif
+  #if HAS_FAN4
+    VP_Fan4_Percentage,
+  #endif
+  #if HAS_FAN5
+    VP_Fan5_Percentage,
+  #endif
   0x0000
 };
 
 const uint16_t VPList_SD_FlowRates[] PROGMEM = {
-  VP_Flowrate_E0, VP_Flowrate_E1,
+  #if EXTRUDERS >= 1
+    VP_Flowrate_E0,
+  #endif
+  #if EXTRUDERS >= 2
+    VP_Flowrate_E1,
+  #endif
+  #if EXTRUDERS >= 3
+    VP_Flowrate_E2,
+  #endif
+  #if EXTRUDERS >= 4
+    VP_Flowrate_E3,
+  #endif
+  #if EXTRUDERS >= 5
+    VP_Flowrate_E4,
+  #endif
+  #if EXTRUDERS >= 6
+    VP_Flowrate_E5,
+  #endif
   0x0000
 };
 
+#if ENABLED(SDSUPPORT)
 const uint16_t VPList_SDFileList[] PROGMEM = {
-  VP_SD_FileName0, VP_SD_FileName1, VP_SD_FileName2, VP_SD_FileName3, VP_SD_FileName4,
+  VP_SD_FileName0,
+  VP_SD_FileName1,
+  VP_SD_FileName2,
+  VP_SD_FileName3,
+  VP_SD_FileName4,
   0x0000
 };
+#endif
 
 const uint16_t VPList_SD_PrintManipulation[] PROGMEM = {
   VP_PrintProgress_Percentage, VP_PrintTime,
   0x0000
 };
 
+const uint16_t VPList_Info[] PROGMEM = {
+    VP_MARLIN_DETAILED_VERSION,
+    VP_MARLIN_DISTRIBUTION_DATE,
+    VP_MARLIN_CONFIG_AUTHOR,
+    VP_MARLIN_COMPILE_DATE,
+    0x0000
+};
 const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_BOOT, VPList_Boot },
   { DGUSLCD_SCREEN_MAIN, VPList_Main },
@@ -137,11 +254,18 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_FANANDFEEDRATE, VPList_FanAndFeedrate },
   { DGUSLCD_SCREEN_FLOWRATES, VPList_SD_FlowRates },
   { DGUSLCD_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation },
+  { DGUSLCD_SCREEN_INFO, VPList_Info },
+#if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
+#endif
   { 0 , nullptr } // List is terminated with an nullptr as table entry.
 };
 
 const char MarlinVersion[] PROGMEM = SHORT_BUILD_VERSION;
+const char MarlinDetailedVersion[] PROGMEM = DETAILED_BUILD_VERSION;
+const char MarlinDistributionDate[] PROGMEM = STRING_DISTRIBUTION_DATE;
+const char MarlinConfigurationAuthor[] PROGMEM = STRING_CONFIG_H_AUTHOR;
+const char MarlinCompileDate[] PROGMEM = __DATE__;
 
 // Helper to define a DGUS_VP_Variable for common use cases.
 #define VPHELPER(VPADR, VPADRVAR, RXFPTR, TXFPTR ) { .VP=VPADR, .memadr=VPADRVAR, .size=sizeof(VPADRVAR), \
@@ -183,7 +307,16 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #endif
   VPHELPER(VP_SETTINGS, nullptr, &DGUSScreenVariableHandler::HandleSettings, nullptr),
 
+  // Boot and info screen
   { .VP = VP_MARLIN_VERSION, .memadr = (void*)MarlinVersion, .size = VP_MARLIN_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+  // Boot screen
+  { .VP = VP_UI_VERSION, .memadr = (void*)UI_VERSION, .size = UI_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+  { .VP = VP_UI_FLAVOUR, .memadr = (void*)UI_FLAVOUR, .size = sizeof(UI_FLAVOUR), .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+  // Info screen
+  { .VP = VP_MARLIN_DETAILED_VERSION, .memadr = (void*)MarlinDetailedVersion, .size = VP_MARLIN_DETAILED_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+  { .VP = VP_MARLIN_DISTRIBUTION_DATE, .memadr = (void*)MarlinDistributionDate, .size = VP_MARLIN_DISTRIBUTION_DATE_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+  { .VP = VP_MARLIN_COMPILE_DATE, .memadr = (void*)MarlinCompileDate, .size = VP_MARLIN_COMPILE_DATE_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+  { .VP = VP_MARLIN_CONFIG_AUTHOR, .memadr = (void*)MarlinConfigurationAuthor, .size = VP_MARLIN_CONFIG_AUTHOR_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   // M117 LCD String (We don't need the string in memory but "just" push it to the display on demand, hence the nullptr
   { .VP = VP_M117, .memadr = nullptr, .size = VP_M117_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplay },
 
@@ -192,7 +325,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_T_E0_Is, &thermalManager.temp_hotend[0].celsius, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>),
     VPHELPER(VP_T_E0_Set, &thermalManager.temp_hotend[0].target, DGUSScreenVariableHandler::HandleTemperatureChanged, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
     VPHELPER(VP_Flowrate_E0, nullptr, DGUSScreenVariableHandler::HandleFlowRateChanged, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-    VPHELPER(VP_EPos, &destination.e, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
+    VPHELPER(VP_E0Pos, &destination.e, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
     VPHELPER(VP_MOVE_E0, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
     VPHELPER(VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, &DGUSScreenVariableHandler::HandleHeaterControl, nullptr),
     VPHELPER(VP_E0_STATUS, &thermalManager.temp_hotend[0].target, nullptr, &DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay),
