@@ -497,7 +497,6 @@ const DGUS_VP_Variable* DGUSLCD_FindVPVar(const uint16_t vp) {
 void DGUSScreenVariableHandler::ScreenChangeHookIfIdle(DGUS_VP_Variable &var, void *val_ptr) {
   if (!ExtUI::isPrinting()) {
     ScreenChangeHook(var, val_ptr);
-    dgusdisplay.RequestScreen(current_screen);
   }
 }
 
@@ -517,6 +516,7 @@ void DGUSScreenVariableHandler::ScreenChangeHook(DGUS_VP_Variable &var, void *va
   }
 
   UpdateNewScreen(target);
+  dgusdisplay.RequestScreen(current_screen);
 
   #ifdef DEBUG_DGUSLCD
     if (!DGUSLCD_FindScreenVPMapList(target)) DEBUG_ECHOLNPAIR("WARNING: No screen Mapping found for ", target);
@@ -1312,7 +1312,7 @@ void DGUSDisplay::ProcessRx() {
         |           Command          DataLen (in Words) */
         if (command == DGUS_CMD_READVAR) {
           const uint16_t vp = tmp[0] << 8 | tmp[1];
-          const uint8_t dlen = tmp[2] << 1;  // Convert to Bytes. (Display works with words)
+          //const uint8_t dlen = tmp[2] << 1;  // Convert to Bytes. (Display works with words)
           //DEBUG_ECHOPAIR(" vp=", vp, " dlen=", dlen);
           DGUS_VP_Variable ramcopy;
           if (populate_VPVar(vp, &ramcopy)) {
