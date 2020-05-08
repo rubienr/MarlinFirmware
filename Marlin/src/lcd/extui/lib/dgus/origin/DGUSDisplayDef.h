@@ -33,6 +33,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_FLOWRATES = 46,
   DGUSLCD_SCREEN_SDFILELIST = 50,
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
+  DGUSLCD_SCREEN_INFO = 54,
   DGUSLCD_SCREEN_POWER_LOSS = 100,
   DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_UTILITY=110,
@@ -60,10 +61,22 @@ enum DGUSLCD_Screens : uint8_t {
 // so that we can keep variables nicely together in the address space.
 
 // UI Version always on 0x1000...0x1002 so that the firmware can check this and bail out.
-constexpr uint16_t VP_UI_VERSION_MAJOR = 0x1000;  // Major -- incremented when incompatible
-constexpr uint16_t VP_UI_VERSION_MINOR = 0x1001;  // Minor -- incremented on new features, but compatible
-constexpr uint16_t VP_UI_VERSION_PATCH = 0x1002;  // Patch -- fixed which do not change functionality.
-constexpr uint16_t VP_UI_FLAVOUR       = 0x1010;  // lets reserve 16 bytes here to determine if UI is suitable for this Marlin. tbd.
+// TODO rubienr:
+//  find out what the intention is here. who decides the in-/compatibility:
+//    * marlin sends version to display: DGUS decides but that thing is very limited
+//    * display sends version to marlin: marlin decides and tries to send the information (M117) about that incident
+constexpr uint16_t VP_UI_VERSION = 0x1000;
+constexpr uint8_t UI_VERSION_LEN = 4;
+constexpr uint8_t UI_VERSION[UI_VERSION_LEN] PROGMEM = {
+  63, // 0x1000: // Major -- incremented when incompatible
+  62, // 0x1001: // Minor -- incremented on new features, but compatible
+  61, // 0x1002: // Patch -- fixed which do not change functionality.
+   0  // 0x1003: padding, unused
+};
+
+constexpr uint16_t VP_UI_FLAVOUR = 0x1010;  // lets reserve 16 bytes here to determine if UI is suitable for this Marlin. tbd.
+constexpr uint8_t UI_FLAVOUR_LEN=16;
+constexpr uint8_t UI_FLAVOUR[UI_FLAVOUR_LEN] PROGMEM = {0};
 
 // Storage space for the Killscreen messages. 0x1100 - 0x1200 . Reused for the popup.
 constexpr uint16_t VP_MSGSTR1 = 0x1100;
@@ -86,6 +99,7 @@ constexpr uint16_t VP_SCREENCHANGE_WHENSD = 0x2003; // "Print" Button touched --
 constexpr uint16_t VP_CONFIRMED = 0x2010; // OK on confirm screen.
 
 // Buttons on the SD-Card File listing.
+#if ENABLED(SDSUPPORT)
 constexpr uint16_t VP_SD_ScrollEvent = 0x2020; // Data: 0 for "up a directory", numbers are the amount to scroll, e.g -1 one up, 1 one down
 constexpr uint16_t VP_SD_FileSelected = 0x2022; // Number of file field selected.
 constexpr uint16_t VP_SD_FileSelectConfirm = 0x2024; // (This is a virtual VP and emulated by the Confirm Screen when a file has been confirmed)
@@ -94,6 +108,7 @@ constexpr uint16_t VP_SD_ResumePauseAbort = 0x2026; // Resume(Data=0), Pause(Dat
 constexpr uint16_t VP_SD_AbortPrintConfirmed = 0x2028; // Abort print confirmation (virtual, will be injected by the confirm dialog)
 constexpr uint16_t VP_SD_Print_Setting = 0x2040;
 constexpr uint16_t VP_SD_Print_LiveAdjustZ = 0x2050; // Data: 0 down, 1 up
+#endif
 
 // Controls for movement (we can't use the incremental / decremental feature of the display at this feature works only with 16 bit values
 // (which would limit us to 655.35mm, which is likely not a problem for common setups, but i don't want to rule out hangprinters support)
@@ -102,12 +117,26 @@ constexpr uint16_t VP_SD_Print_LiveAdjustZ = 0x2050; // Data: 0 down, 1 up
 constexpr uint16_t VP_MOVE_X = 0x2100;
 constexpr uint16_t VP_MOVE_Y = 0x2102;
 constexpr uint16_t VP_MOVE_Z = 0x2104;
+
+#if EXTRUDERS >= 1
 constexpr uint16_t VP_MOVE_E0 = 0x2110;
+#endif
+#if EXTRUDERS >= 2
 constexpr uint16_t VP_MOVE_E1 = 0x2112;
-//constexpr uint16_t VP_MOVE_E2 = 0x2114;
-//constexpr uint16_t VP_MOVE_E3 = 0x2116;
-//constexpr uint16_t VP_MOVE_E4 = 0x2118;
-//constexpr uint16_t VP_MOVE_E5 = 0x211A;
+#endif
+#if EXTRUDERS >= 3
+constexpr uint16_t VP_MOVE_E2 = 0x2114;
+#endif
+#if EXTRUDERS >= 4
+constexpr uint16_t VP_MOVE_E3 = 0x2116;
+#endif
+#if EXTRUDERS >= 5
+constexpr uint16_t VP_MOVE_E4 = 0x2118;
+#endif
+#if EXTRUDERS >= 6
+constexpr uint16_t VP_MOVE_E5 = 0x211A;
+#endif
+
 constexpr uint16_t VP_HOME_ALL = 0x2120;
 constexpr uint16_t VP_MOTOR_LOCK_UNLOK = 0x2130;
 
@@ -120,16 +149,31 @@ constexpr uint16_t VP_FAN1_CONTROL = 0x2202;
 //constexpr uint16_t VP_FAN2_CONTROL = 0x2204;
 //constexpr uint16_t VP_FAN3_CONTROL = 0x2206;
 
-// Heater Control Buttons , triged between "cool down" and "heat PLA" state
+// Heater Control Buttons, triggered between "cool down" and "heat PLA" state
+#if EXTRUDERS >= 1
 constexpr uint16_t VP_E0_CONTROL = 0x2210;
+#endif
+#if EXTRUDERS >= 2
 constexpr uint16_t VP_E1_CONTROL = 0x2212;
-//constexpr uint16_t VP_E2_CONTROL = 0x2214;
-//constexpr uint16_t VP_E3_CONTROL = 0x2216;
-//constexpr uint16_t VP_E4_CONTROL = 0x2218;
-//constexpr uint16_t VP_E5_CONTROL = 0x221A;
+#endif
+#if EXTRUDERS >= 3
+constexpr uint16_t VP_E2_CONTROL = 0x2214;
+#endif
+#if EXTRUDERS >= 4
+constexpr uint16_t VP_E3_CONTROL = 0x2216;
+#endif
+#if EXTRUDERS >= 5
+constexpr uint16_t VP_E4_CONTROL = 0x2218;
+#endif
+#if EXTRUDERS >= 6
+constexpr uint16_t VP_E5_CONTROL = 0x221A;
+#endif
+
 constexpr uint16_t VP_BED_CONTROL = 0x221C;
 
 // Preheat
+// TODO rubienr: preheat E0 vs control E1?
+// TODO rubienr: enable dead code depending on configuration
 constexpr uint16_t VP_E0_BED_PREHEAT = 0x2220;
 constexpr uint16_t VP_E1_BED_CONTROL = 0x2222;
 //constexpr uint16_t VP_E2_BED_CONTROL = 0x2224;
@@ -138,65 +182,142 @@ constexpr uint16_t VP_E1_BED_CONTROL = 0x2222;
 //constexpr uint16_t VP_E5_BED_CONTROL = 0x222A;
 
 // Filament load and unload
+// TODO rubienr: find free VP addresses for E1-E5 without breaking the current address layout (backward compatibility)
+#if EXTRUDERS >= 1
 constexpr uint16_t VP_E0_FILAMENT_LOAD_UNLOAD = 0x2300;
+#endif
+#if EXTRUDERS >= 2
 constexpr uint16_t VP_E1_FILAMENT_LOAD_UNLOAD = 0x2302;
+#endif
+#if EXTRUDERS >= 3
+constexpr uint16_t VP_E2_FILAMENT_LOAD_UNLOAD = 0x????;
+#endif
+#if EXTRUDERS >= 4
+constexpr uint16_t VP_E3_FILAMENT_LOAD_UNLOAD = 0x????;
+#endif
+#if EXTRUDERS >= 5
+constexpr uint16_t VP_E4_FILAMENT_LOAD_UNLOAD = 0x????;
+#endif
+#if EXTRUDERS >= 6
+constexpr uint16_t VP_E5_FILAMENT_LOAD_UNLOAD = 0x????;
+#endif
 
 // Settings store , reset
 constexpr uint16_t VP_SETTINGS = 0x2400;
 
-// PID autotune
+// PID auto tune
+#if HAS_HEATER_0
 constexpr uint16_t VP_PID_AUTOTUNE_E0 = 0x2410;
-//constexpr uint16_t VP_PID_AUTOTUNE_E1 = 0x2412;
-//constexpr uint16_t VP_PID_AUTOTUNE_E2 = 0x2414;
-//constexpr uint16_t VP_PID_AUTOTUNE_E3 = 0x2416;
-//constexpr uint16_t VP_PID_AUTOTUNE_E4 = 0x2418;
-//constexpr uint16_t VP_PID_AUTOTUNE_E5 = 0x241A;
+#endif
+#if HAS_HEATER_1
+constexpr uint16_t VP_PID_AUTOTUNE_E1 = 0x2412;
+#endif
+#if HAS_HEATER_2
+constexpr uint16_t VP_PID_AUTOTUNE_E2 = 0x2414;
+#endif
+#if HAS_HEATER_3
+constexpr uint16_t VP_PID_AUTOTUNE_E3 = 0x2416;
+#endif
+#if HAS_HEATER_4
+constexpr uint16_t VP_PID_AUTOTUNE_E4 = 0x2418;
+#endif
+#if HAS_HEATER_5
+constexpr uint16_t VP_PID_AUTOTUNE_E5 = 0x241A;
+#endif
+#if HAS_HEATER_BED
 constexpr uint16_t VP_PID_AUTOTUNE_BED = 0x2420;
+#endif
 
 // Firmware version on the boot screen.
 constexpr uint16_t VP_MARLIN_VERSION = 0x3000;
 constexpr uint8_t VP_MARLIN_VERSION_LEN = 16;   // there is more space on the display, if needed.
+
+constexpr uint16_t VP_MARLIN_DETAILED_VERSION = 0x3510;
+constexpr uint8_t VP_MARLIN_DETAILED_VERSION_LEN = 0x10;
+
+constexpr uint16_t VP_MARLIN_COMPILE_DATE = 0x3520;
+constexpr uint8_t VP_MARLIN_COMPILE_DATE_LEN = 0x10;
+
+constexpr uint16_t VP_MARLIN_DISTRIBUTION_DATE = 0x3530;
+constexpr uint8_t VP_MARLIN_DISTRIBUTION_DATE_LEN = 0x10;
+
+constexpr uint16_t VP_MARLIN_CONFIG_AUTHOR = 0x3540;
+constexpr uint8_t VP_MARLIN_CONFIG_AUTHOR_LEN = 0x24;
 
 // Place for status messages.
 constexpr uint16_t VP_M117 = 0x3020;
 constexpr uint8_t VP_M117_LEN = 0x20;
 
 // Temperatures.
+#if HAS_HEATER_0
 constexpr uint16_t VP_T_E0_Is = 0x3060;  // 4 Byte Integer
 constexpr uint16_t VP_T_E0_Set = 0x3062; // 2 Byte Integer
+#endif
+#if HAS_HEATER_1
 constexpr uint16_t VP_T_E1_Is = 0x3064;  // 4 Byte Integer
+constexpr uint16_t VP_T_E1_Set = 0x3066; // 2 Byte Integer
+#endif
+#if HAS_HEATER_2
+constexpr uint16_t VP_T_E2_Is = 0x3068;  // 4 Byte Integer
+constexpr uint16_t VP_T_E2_Set = 0x306A; // 2 Byte Integer
+#endif
+#if HAS_HEATER_3
+constexpr uint16_t VP_T_E3_Is = 0x306C;  // 4 Byte Integer
+constexpr uint16_t VP_T_E3_Set = 0x306E; // 2 Byte Integer
+#endif
+#if HAS_HEATER_4
+constexpr uint16_t VP_T_E4_Is = 0x3070;  // 4 Byte Integer
+constexpr uint16_t VP_T_E4_Set = 0x3072; // 2 Byte Integer
+#endif
+#if HAS_HEATER_5
+constexpr uint16_t VP_T_E5_Is = 0x3074;  // 4 Byte Integer
+constexpr uint16_t VP_T_E5_Set = 0x3076; // 2 Byte Integer
+#endif
 
-// reserved to support up to 6 Extruders:
-//constexpr uint16_t VP_T_E1_Set = 0x3066; // 2 Byte Integer
-//constexpr uint16_t VP_T_E2_Is = 0x3068;  // 4 Byte Integer
-//constexpr uint16_t VP_T_E2_Set = 0x306A; // 2 Byte Integer
-//constexpr uint16_t VP_T_E3_Is = 0x306C;  // 4 Byte Integer
-//constexpr uint16_t VP_T_E3_Set = 0x306E; // 2 Byte Integer
-//constexpr uint16_t VP_T_E4_Is = 0x3070;  // 4 Byte Integer
-//constexpr uint16_t VP_T_E4_Set = 0x3072; // 2 Byte Integer
-//constexpr uint16_t VP_T_E4_Is = 0x3074;  // 4 Byte Integer
-//constexpr uint16_t VP_T_E4_Set = 0x3076; // 2 Byte Integer
-//constexpr uint16_t VP_T_E5_Is = 0x3078;  // 4 Byte Integer
-//constexpr uint16_t VP_T_E5_Set = 0x307A; // 2 Byte Integer
-
+#if HAS_HEATER_BED
 constexpr uint16_t VP_T_Bed_Is = 0x3080;  // 4 Byte Integer
 constexpr uint16_t VP_T_Bed_Set = 0x3082; // 2 Byte Integer
+#endif
 
+#if EXTRUDERS >= 1
 constexpr uint16_t VP_Flowrate_E0 = 0x3090; // 2 Byte Integer
+#endif
+#if EXTRUDERS >= 2
 constexpr uint16_t VP_Flowrate_E1 = 0x3092; // 2 Byte Integer
+#endif
+#if EXTRUDERS >= 3
+constexpr uint16_t VP_Flowrate_E2 = 0x3094; // 2 Byte Integer
+#endif
+#if EXTRUDERS >= 4
+constexpr uint16_t VP_Flowrate_E3 = 0x3096; // 2 Byte Integer
+#endif
+#if EXTRUDERS >= 5
+constexpr uint16_t VP_Flowrate_E4 = 0x3098; // 2 Byte Integer
+#endif
+#if EXTRUDERS >= 6
+constexpr uint16_t VP_Flowrate_E5 = 0x309A; // 2 Byte Integer
+#endif
 
-// reserved for up to 6 Extruders:
-//constexpr uint16_t VP_Flowrate_E2 = 0x3094;
-//constexpr uint16_t VP_Flowrate_E3 = 0x3096;
-//constexpr uint16_t VP_Flowrate_E4 = 0x3098;
-//constexpr uint16_t VP_Flowrate_E5 = 0x309A;
-
+#if HAS_FAN0
 constexpr uint16_t VP_Fan0_Percentage = 0x3100;  // 2 Byte Integer (0..100)
+#endif
+#if HAS_FAN1
 constexpr uint16_t VP_Fan1_Percentage = 0x33A2;  // 2 Byte Integer (0..100)
-//constexpr uint16_t VP_Fan2_Percentage = 0x33A4;  // 2 Byte Integer (0..100)
-//constexpr uint16_t VP_Fan3_Percentage = 0x33A6;  // 2 Byte Integer (0..100)
+#endif
+#if HAS_FAN2
+constexpr uint16_t VP_Fan2_Percentage = 0x33A4;  // 2 Byte Integer (0..100)
+#endif
+#if HAS_FAN3
+constexpr uint16_t VP_Fan3_Percentage = 0x33A6;  // 2 Byte Integer (0..100)
+#endif
+#if HAS_FAN4
+constexpr uint16_t VP_Fan4_Percentage = 0x33A8;  // 2 Byte Integer (0..100)
+#endif
+#if HAS_FAN5
+constexpr uint16_t VP_Fan5_Percentage = 0x33AA;  // 2 Byte Integer (0..100)
+#endif
 
-constexpr uint16_t VP_Feedrate_Percentage = 0x3102; // 2 Byte Integer (0..100)
+constexpr uint16_t VP_Feedrate_Percentage = 0x3102;      // 2 Byte Integer (0..100)
 constexpr uint16_t VP_PrintProgress_Percentage = 0x3104; // 2 Byte Integer (0..100)
 
 constexpr uint16_t VP_PrintTime = 0x3106;
@@ -209,13 +330,33 @@ constexpr uint16_t VP_PrintsTotal = 0x3180;
 constexpr uint16_t VP_PrintsTotal_LEN = 16;
 
 // Actual Position
-constexpr uint16_t VP_XPos = 0x3110;  // 4 Byte Fixed point number; format xxx.yy
-constexpr uint16_t VP_YPos = 0x3112;  // 4 Byte Fixed point number; format xxx.yy
-constexpr uint16_t VP_ZPos = 0x3114;  // 4 Byte Fixed point number; format xxx.yy
+constexpr uint16_t VP_XPos = 0x3110; // 4 Byte Fixed point number; format xxx.yy
+constexpr uint16_t VP_YPos = 0x3112; // 4 Byte Fixed point number; format xxx.yy
+constexpr uint16_t VP_ZPos = 0x3114; // 4 Byte Fixed point number; format xxx.yy
 
-constexpr uint16_t VP_EPos = 0x3120;  // 4 Byte Fixed point number; format xxx.yy
+#if EXTRUDERS >= 1
+constexpr uint16_t VP_E0Pos = 0x3120; // 4 Byte Fixed point number; format xxx.yy
+#endif
+#if EXTRUDERS >= 2
+constexpr uint16_t VP_E1Pos = 0x3124; // 4 Byte Fixed point number; format xxx.yy
+#endif
+#if EXTRUDERS >= 3
+constexpr uint16_t VP_E2Pos = 0x3126; // 4 Byte Fixed point number; format xxx.yy
+#endif
+#if EXTRUDERS >= 4
+constexpr uint16_t VP_E3Pos = 0x3128; // 4 Byte Fixed point number; format xxx.yy
+#endif
+#if EXTRUDERS >= 5
+constexpr uint16_t VP_E4Pos = 0x312A; // 4 Byte Fixed point number; format xxx.yy
+#endif
+#if EXTRUDERS >= 6
+constexpr uint16_t VP_E5Pos = 0x312C; // 4 Byte Fixed point number; format xxx.yy
+#endif
+
 
 // SDCard File Listing
+
+#if ENABLED(SDSUPPORT)
 constexpr uint16_t VP_SD_FileName_LEN = 32; // LEN is shared for all entries.
 constexpr uint16_t DGUS_SD_FILESPERSCREEN = 5; // FIXME move that info to the display and read it from there.
 constexpr uint16_t VP_SD_FileName0 = 0x3200;
@@ -226,45 +367,97 @@ constexpr uint16_t VP_SD_FileName4 = 0x3280;
 
 constexpr uint16_t VP_SD_Print_ProbeOffsetZ = 0x32A0; //
 constexpr uint16_t VP_SD_Print_Filename = 0x32C0; //
+#endif
 
 // Fan status
+#if HAS_FAN0
 constexpr uint16_t VP_FAN0_STATUS = 0x3300;
+#endif
+#if HAS_FAN1
 constexpr uint16_t VP_FAN1_STATUS = 0x3302;
-//constexpr uint16_t VP_FAN2_STATUS = 0x3304;
-//constexpr uint16_t VP_FAN3_STATUS = 0x3306;
+#endif
+#if HAS_FAN2
+constexpr uint16_t VP_FAN2_STATUS = 0x3304;
+#endif
+#if HAS_FAN3
+constexpr uint16_t VP_FAN3_STATUS = 0x3306;
+#endif
+#if HAS_FAN4
+constexpr uint16_t VP_FAN3_STATUS = 0x3308;
+#endif
+#if HAS_FAN5
+constexpr uint16_t VP_FAN3_STATUS = 0x330A;
+#endif
 
 // Heater status
+#if EXTRUDERS >= 1
 constexpr uint16_t VP_E0_STATUS = 0x3310;
-//constexpr uint16_t VP_E1_STATUS = 0x3312;
-//constexpr uint16_t VP_E2_STATUS = 0x3314;
-//constexpr uint16_t VP_E3_STATUS = 0x3316;
-//constexpr uint16_t VP_E4_STATUS = 0x3318;
-//constexpr uint16_t VP_E5_STATUS = 0x331A;
+#endif
+#if EXTRUDERS >= 2
+constexpr uint16_t VP_E1_STATUS = 0x3312;
+#endif
+#if EXTRUDERS >= 3
+constexpr uint16_t VP_E2_STATUS = 0x3314;
+#endif
+#if EXTRUDERS >= 4
+constexpr uint16_t VP_E3_STATUS = 0x3316;
+#endif
+#if EXTRUDERS >= 5
+constexpr uint16_t VP_E4_STATUS = 0x3318;
+#endif
+#if EXTRUDERS >= 6
+constexpr uint16_t VP_E5_STATUS = 0x331A;
+#endif
+
 constexpr uint16_t VP_BED_STATUS = 0x331C;
 
 constexpr uint16_t VP_MOVE_OPTION = 0x3400;
 
-// Step per mm
+// Steps per mm
 constexpr uint16_t VP_X_STEP_PER_MM = 0x3600; // at the moment , 2 byte unsigned int , 0~1638.4
-//constexpr uint16_t VP_X2_STEP_PER_MM = 0x3602;
+#if ENABLED(X_DUAL_STEPPER_DRIVERS)
+constexpr uint16_t VP_X2_STEP_PER_MM = 0x3602;
+#endif
 constexpr uint16_t VP_Y_STEP_PER_MM = 0x3604;
-//constexpr uint16_t VP_Y2_STEP_PER_MM = 0x3606;
+#if ENABLED(Y_DUAL_STEPPER_DRIVERS)
+constexpr uint16_t VP_Y2_STEP_PER_MM = 0x3606;
+#endif
 constexpr uint16_t VP_Z_STEP_PER_MM = 0x3608;
-//constexpr uint16_t VP_Z2_STEP_PER_MM = 0x360A;
+#if NUM_Z_STEPPER_DRIVERS >= 2
+constexpr uint16_t VP_Z2_STEP_PER_MM = 0x360A;
+#endif
+
+#if EXTRUDERS >= 1
 constexpr uint16_t VP_E0_STEP_PER_MM = 0x3610;
-//constexpr uint16_t VP_E1_STEP_PER_MM = 0x3612;
-//constexpr uint16_t VP_E2_STEP_PER_MM = 0x3614;
-//constexpr uint16_t VP_E3_STEP_PER_MM = 0x3616;
-//constexpr uint16_t VP_E4_STEP_PER_MM = 0x3618;
-//constexpr uint16_t VP_E5_STEP_PER_MM = 0x361A;
+#endif
+#if EXTRUDERS >= 2
+constexpr uint16_t VP_E1_STEP_PER_MM = 0x3612;
+#endif
+#if EXTRUDERS >= 3
+constexpr uint16_t VP_E2_STEP_PER_MM = 0x3614;
+#endif
+#if EXTRUDERS >= 4
+constexpr uint16_t VP_E3_STEP_PER_MM = 0x3616;
+#endif
+#if EXTRUDERS >= 5
+constexpr uint16_t VP_E4_STEP_PER_MM = 0x3618;
+#endif
+#if HAS_EXTRUDERS >= 6
+constexpr uint16_t VP_E5_STEP_PER_MM = 0x361A;
+#endif
 
 // PIDs
+#if HAS_HEATER_0
 constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment , 2 byte unsigned int , 0~1638.4
 constexpr uint16_t VP_E0_PID_I = 0x3702;
 constexpr uint16_t VP_E0_PID_D = 0x3704;
+#endif
+
+#if HAS_HEATER_BED
 constexpr uint16_t VP_BED_PID_P = 0x3710;
 constexpr uint16_t VP_BED_PID_I = 0x3712;
 constexpr uint16_t VP_BED_PID_D = 0x3714;
+#endif
 
 // Wating screen status
 constexpr uint16_t VP_WAITING_STATUS = 0x3800;
@@ -273,8 +466,32 @@ constexpr uint16_t VP_WAITING_STATUS = 0x3800;
 // located at 0x5000 and up
 // Not used yet!
 // This can be used e.g to make controls / data display invisible
+
+#if HAS_HEATER_0
 constexpr uint16_t SP_T_E0_Is = 0x5000;
 constexpr uint16_t SP_T_E0_Set = 0x5010;
+#endif
+#if HAS_HEATER_1
 constexpr uint16_t SP_T_E1_Is = 0x5020;
+constexpr uint16_t SP_T_E1_Set = 0x5050;
+#endif
+#if HAS_HEATER_BED
 constexpr uint16_t SP_T_Bed_Is = 0x5030;
 constexpr uint16_t SP_T_Bed_Set = 0x5040;
+#endif
+#if HAS_HEATER_2
+constexpr uint16_t SP_T_E2_Is = 0x5060;
+constexpr uint16_t SP_T_E2_Set = 0x5070;
+#endif
+#if HAS_HEATER_3
+constexpr uint16_t SP_T_E3_Is = 0x5080;
+constexpr uint16_t SP_T_E3_Set = 0x5090;
+#endif
+#if HAS_HEATER_4
+constexpr uint16_t SP_T_E4_Is = 0x50A0;
+constexpr uint16_t SP_T_E4_Set = 0x50C0;
+#endif
+#if HAS_HEATER_5
+constexpr uint16_t SP_T_E5_Is = 0x50E0;
+constexpr uint16_t SP_T_E5_Set = 0x5100;
+#endif
