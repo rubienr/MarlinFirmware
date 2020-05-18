@@ -22,7 +22,7 @@
 #pragma once
 
 enum DGUSLCD_Screens : uint8_t {
-  DGUSLCD_SCREEN_BOOT = 0,
+  DGUSLCD_SCREEN_BOOT = 12, ///< TODO rubienr: sould not be at ID 0 (0-9 is reserved for the 0-font)
   DGUSLCD_SCREEN_MAIN = 10,
   DGUSLCD_SCREEN_TEMPERATURE = 20,
   DGUSLCD_SCREEN_STATUS = 30,
@@ -33,7 +33,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_FLOWRATES = 46,
   DGUSLCD_SCREEN_SDFILELIST = 50,
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
-  DGUSLCD_SCREEN_INFO = 54,
+  DGUSLCD_SCREEN_INFO = 54, ///< Info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
   DGUSLCD_SCREEN_POWER_LOSS = 100,
   DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_UTILITY=110,
@@ -68,10 +68,10 @@ enum DGUSLCD_Screens : uint8_t {
 constexpr uint16_t VP_UI_VERSION = 0x1000;
 constexpr uint8_t UI_VERSION_LEN = 4;
 constexpr uint8_t UI_VERSION[UI_VERSION_LEN] PROGMEM = {
-  63, // 0x1000: // Major -- incremented when incompatible
-  62, // 0x1001: // Minor -- incremented on new features, but compatible
-  61, // 0x1002: // Patch -- fixed which do not change functionality.
-   0  // 0x1003: padding, unused
+    0, // 0x1000 VP high byte: Major -- incremented when incompatible
+    1, // 0x1000 VP low  byte: Minor -- incremented on new features, but compatible
+    0, // 0x1001 VP high byte: Patch -- fixed which do not change functionality.
+    0  // 0x1001 VP low  byte: padding, unused
 };
 
 constexpr uint16_t VP_UI_FLAVOUR = 0x1010;  // lets reserve 16 bytes here to determine if UI is suitable for this Marlin. tbd.
@@ -172,8 +172,8 @@ constexpr uint16_t VP_E5_CONTROL = 0x221A;
 constexpr uint16_t VP_BED_CONTROL = 0x221C;
 
 // Preheat
-// TODO rubienr: preheat E0 vs control E1?
-// TODO rubienr: enable dead code depending on configuration
+// TODO rubienr: "preheat" E0 vs. "control" E1 - seems to be mixed up somehow (compare with hiprecyDGUSdisplayDef.h).
+// TODO rubienr: decorate commented code with define-guards to be fully dependent on Configuration*.h
 constexpr uint16_t VP_E0_BED_PREHEAT = 0x2220;
 constexpr uint16_t VP_E1_BED_CONTROL = 0x2222;
 //constexpr uint16_t VP_E2_BED_CONTROL = 0x2224;
@@ -182,7 +182,6 @@ constexpr uint16_t VP_E1_BED_CONTROL = 0x2222;
 //constexpr uint16_t VP_E5_BED_CONTROL = 0x222A;
 
 // Filament load and unload
-// TODO rubienr: find free VP addresses for E1-E5 without breaking the current address layout (backward compatibility)
 #if EXTRUDERS >= 1
 constexpr uint16_t VP_E0_FILAMENT_LOAD_UNLOAD = 0x2300;
 #endif
@@ -190,16 +189,16 @@ constexpr uint16_t VP_E0_FILAMENT_LOAD_UNLOAD = 0x2300;
 constexpr uint16_t VP_E1_FILAMENT_LOAD_UNLOAD = 0x2302;
 #endif
 #if EXTRUDERS >= 3
-constexpr uint16_t VP_E2_FILAMENT_LOAD_UNLOAD = 0x????;
+constexpr uint16_t VP_E2_FILAMENT_LOAD_UNLOAD = 0x2304;
 #endif
 #if EXTRUDERS >= 4
-constexpr uint16_t VP_E3_FILAMENT_LOAD_UNLOAD = 0x????;
+constexpr uint16_t VP_E3_FILAMENT_LOAD_UNLOAD = 0x2306;
 #endif
 #if EXTRUDERS >= 5
-constexpr uint16_t VP_E4_FILAMENT_LOAD_UNLOAD = 0x????;
+constexpr uint16_t VP_E4_FILAMENT_LOAD_UNLOAD = 0x2308;
 #endif
 #if EXTRUDERS >= 6
-constexpr uint16_t VP_E5_FILAMENT_LOAD_UNLOAD = 0x????;
+constexpr uint16_t VP_E5_FILAMENT_LOAD_UNLOAD = 0x2310;
 #endif
 
 // Settings store , reset
