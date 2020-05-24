@@ -36,6 +36,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_INFO = 54, ///< Info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
   DGUSLCD_SCREEN_PSU = 64, ///< Screen for showing/manipulating power supply status
   DGUSLCD_SCREEN_MOTORS = 66, ///< Screen for showing/manipulating motors status
+  DGUSLCD_SCREEN_LIGHTS = 70, ///< Screen for showing/manipulating case and RGB light
   DGUSLCD_SCREEN_POWER_LOSS = 100,
   DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_UTILITY=110,
@@ -99,10 +100,28 @@ constexpr uint16_t VP_TEMP_ALL_OFF = 0x2002;   // Turn all heaters off. Value ar
 constexpr uint16_t VP_SCREENCHANGE_WHENSD = 0x2003; // "Print" Button touched -- go only there if there is an SD Card.
 #if ENABLED(PSU_CONTROL)
 // Power Supply Unit:
-// High byte represents the current state: 0x0 value unset, 0x1 disabled, 0x2 enabled
+// High byte represents the current state: 0x0 value unset, 0x1 disabled, 0x2 enabled (TODO rubienr)
 // Low byte is the display request: 0x0 value unset, 0x1 request off, 0x2 request on
 constexpr uint16_t VP_PSU_CONTROL = 0x2004;
 #endif
+#if ENABLED(CASE_LIGHT_ENABLE)
+// Case light:
+// High byte represents the intensity
+// Low byte is the display request: 0x0 value unset, 0x1 light off, 0x2 light on
+constexpr uint16_t VP_CASE_LIGHT_CONTROL = 0x2005;
+#endif
+
+#if ENABLED(HAS_COLOR_LEDS)
+// Colour LEDs:
+// High byte represents the intensity
+// Low byte is the display request: 0x0 value unset, 0x1 light off, 0x2 light on
+constexpr uint16_t VP_CASE_COLOR_LED_CONTROL_0 = 0x2006;
+// High byte red component, low byte green component
+constexpr uint16_t VP_CASE_COLOR_LED_CONTROL_1 = 0x2007;
+// High byte blue component, low byte white component
+constexpr uint16_t VP_CASE_COLOR_LED_CONTROL_2 = 0x2008;
+#endif
+
 constexpr uint16_t VP_CONFIRMED = 0x2010; // OK on confirm screen.
 
 // Buttons on the SD-Card File listing.

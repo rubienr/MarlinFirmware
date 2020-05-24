@@ -467,31 +467,64 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
 
 #if ENABLED(PSU_CONTROL)
 
-void DGUSScreenVariableHandler::HandlePsuOnOff(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandlePsuOnOffState");
+  void DGUSScreenVariableHandler::HandlePsuOnOff(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("HandlePsuOnOffState");
 
-  uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
-  uint8_t psu_action = newvalue & 0x00ff;
+    uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
+    const uint8_t psu_action = newvalue & 0x00ff;
 
-  switch (psu_action) {
-    default: return;
-    case 0: return; // value unset
-    case 1: // disabe PSU
-      queue.enqueue_now_P(PSTR("M81"));
-        break;
-    case 2: // enable PSU
-      queue.enqueue_now_P(PSTR("M80"));
-    break;
+    switch (psu_action) {
+      default: return;
+      case 0: return; // value unset
+      case 1: // disabe PSU
+        queue.enqueue_now_P(PSTR("M81"));
+          break;
+      case 2: // enable PSU
+        queue.enqueue_now_P(PSTR("M80"));
+      break;
+    }
+
+    // TODO rubienr: save the current PSU state to high byte for visualization on screen
+    if (var.memadr)
+      *(uint16_t*)var.memadr = 0;
   }
-
-  // TODO rubienr: save the current PSU state to high byte for visualization on screen
-  if (var.memadr)
-    *(uint16_t*)var.memadr = 0;
-}
 
 #endif // PSU_CONTROL
 
-void HandlePsuState(DGUS_VP_Variable &var, void *val_ptr);
+#if ENABLED(CASE_LIGHT_ENABLE)
+
+  void DGUSScreenVariableHandler::HandleCaseLight(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("HandleCaseLight");
+
+    uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
+    const uint8_t on_off_state = newvalue & 0x00ff;
+
+    switch (on_off_state) {
+      default: return;
+      case 0: return; // value unset
+      case 1: // light off
+        ExtUI::setCaseLightState(false);
+        break;
+      case 2: // light on
+        ExtUI::setCaseLightState(true);
+        break;
+    }
+
+    const uint8_t brightness = (newvalue & 0xff00) >> 8;
+    #if DISABLED(CASE_LIGHT_NO_BRIGHTNESS)
+    const float float_brightness = map(brightness, 0, 255, 0, 100);
+      void setCaseLightBrightness_percent(float_brightness);
+    #else
+      char buf[16] = {0};
+      sprintf(buf, "M355 P%d S%d", brightness, on_off_state - 1);
+      queue.enqueue_one_now(buf);
+    #endif
+
+    if (var.memadr)
+      *(uint16_t*)var.memadr = newvalue;
+  }
+
+#endif // CASE_LIGHT_ENABLE
 
 void DGUSScreenVariableHandler::ScreenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr) {
   DGUS_VP_Variable ramcopy;
