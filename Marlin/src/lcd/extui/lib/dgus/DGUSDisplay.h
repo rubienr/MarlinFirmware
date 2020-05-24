@@ -194,7 +194,11 @@ public:
   #endif
 
 #if ENABLED(PSU_CONTROL)
-    static void HandlePsuOnOff(DGUS_VP_Variable &var, void *val_ptr);
+  static void HandlePsuOnOff(DGUS_VP_Variable &var, void *val_ptr);
+#endif
+
+#if ENABLED(CASE_LIGHT_ENABLE)
+  static void HandleCaseLight(DGUS_VP_Variable &var, void *val_ptr);
 #endif
 
   // OK Button the Confirm screen.

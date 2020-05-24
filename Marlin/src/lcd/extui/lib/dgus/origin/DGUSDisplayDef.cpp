@@ -254,6 +254,14 @@ const uint16_t VPList_Motors[] PROGMEM = {
     0x0000
 };
 
+const uint16_t VPList_Lights[] PROGMEM = {
+    VP_CASE_LIGHT_CONTROL,
+    VP_CASE_COLOR_LED_CONTROL_0,
+    VP_CASE_COLOR_LED_CONTROL_1,
+    VP_CASE_COLOR_LED_CONTROL_2,
+    0x0000
+};
+
 const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_BOOT, VPList_Boot },
   { DGUSLCD_SCREEN_MAIN, VPList_Main },
@@ -268,6 +276,7 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_INFO, VPList_Info },
   { DGUSLCD_SCREEN_PSU, VPList_Psu },
   { DGUSLCD_SCREEN_MOTORS, VPList_Motors },
+  { DGUSLCD_SCREEN_LIGHTS, VPList_Lights },
 #if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
 #endif
@@ -285,7 +294,50 @@ const char MarlinCompileDate[] PROGMEM = __DATE__;
 struct DgusOriginVariables {
     uint16_t psu_control {0};
     uint16_t motors_control {0};
+    uint16_t case_light_control {0};
+    uint16_t color_led_on_off_intensity_control {0};
+    uint16_t color_led_red_green_component {0};
+    uint16_t color_led_blue_white_component {0};
 } OriginVariables;
+
+#if ENABLED(HAS_COLOR_LEDS)
+
+void updateColorLeds() {
+  const uint8_t enabled {static_cast<uint8_t>((OriginVariables.color_led_on_off_intensity_control & 0x00ff) >> 0)};
+  switch (enabled) {
+    default: return;
+    case 0: return; // value unset
+    case 1: // disable color LEDs
+      queue.enqueue_now_P(PSTR("M150 P0 R0 U0 B0 W0"));
+      break;
+    case 2: // enable color LEDs
+    {
+      char buf[32]{0};
+      const uint8_t i{static_cast<uint8_t>((OriginVariables.color_led_on_off_intensity_control & 0xff00) >> 8)};
+      const uint8_t r{static_cast<uint8_t>((OriginVariables.color_led_red_green_component & 0x00ff) >> 0)};
+      const uint8_t g{static_cast<uint8_t>((OriginVariables.color_led_red_green_component & 0xff00) >> 8)};
+      const uint8_t b{static_cast<uint8_t>((OriginVariables.color_led_blue_white_component & 0x00ff) >> 0)};
+      const uint8_t w{static_cast<uint8_t>((OriginVariables.color_led_blue_white_component & 0xff00) >> 8)};
+      sprintf(buf, "M150 P%d R%d U%d B%d W%d", i, r, g, b, w);
+      queue.enqueue_one_now(buf);
+    }
+      break;
+  }
+}
+
+uint16_t swap16(const uint16_t value) { return (value & 0xffU) << 8U | (value >> 8U); }
+
+void HandleColorLedUpdate(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("HandleColorLedUpdate");
+  if (var.memadr)
+  {
+    *(uint16_t *) var.memadr = swap16(*(uint16_t *) val_ptr);
+    updateColorLeds();
+  }
+}
+
+#endif // HAS_COLOR_LEDS
+
 
 } // namespace
 
@@ -459,6 +511,12 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #if ENABLED(PSU_CONTROL)
     VPHELPER(VP_PSU_CONTROL, &OriginVariables.psu_control, &DGUSScreenVariableHandler::HandlePsuOnOff, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
   #endif
+
+  // Light
+  VPHELPER(VP_CASE_LIGHT_CONTROL, &OriginVariables.case_light_control, &DGUSScreenVariableHandler::HandleCaseLight, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_CASE_COLOR_LED_CONTROL_0, &OriginVariables.color_led_on_off_intensity_control, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_CASE_COLOR_LED_CONTROL_1, &OriginVariables.color_led_red_green_component, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_CASE_COLOR_LED_CONTROL_2, &OriginVariables.color_led_blue_white_component, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 
   VPHELPER(0, 0, 0, 0)  // must be last entry.
 };
