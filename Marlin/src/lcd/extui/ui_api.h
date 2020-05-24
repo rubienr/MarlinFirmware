@@ -343,6 +343,9 @@ namespace ExtUI {
   #if ENABLED(POWER_LOSS_RECOVERY)
     void onPowerLossResume();
   #endif
+  #if ENABLED(PSU_CONTROL)
+    void setPsuPowerState(bool new_power_state);
+  #endif
   #if HAS_PID_HEATING
     void onPidTuning(const result_t rst);
   #endif

@@ -193,6 +193,10 @@ public:
     static void SDCardError();
   #endif
 
+#if ENABLED(PSU_CONTROL)
+    static void HandlePsuOnOffState(DGUS_VP_Variable &var, void *val_ptr);
+#endif
+
   // OK Button the Confirm screen.
   static void ScreenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr);
 
