@@ -467,11 +467,11 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
 
 #if ENABLED(PSU_CONTROL)
 
-void DGUSScreenVariableHandler::HandlePsuOnOffState(DGUS_VP_Variable &var, void *val_ptr) {
+void DGUSScreenVariableHandler::HandlePsuOnOff(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandlePsuOnOffState");
 
   uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
-  uint8_t psu_action = newvalue & 0x0f;
+  uint8_t psu_action = newvalue & 0x00ff;
 
   switch (psu_action) {
     default: return;
@@ -484,7 +484,9 @@ void DGUSScreenVariableHandler::HandlePsuOnOffState(DGUS_VP_Variable &var, void 
     break;
   }
 
-  *(uint16_t*)var.memadr = 0;
+  // TODO rubienr: save the current PSU state to high byte for visualization on screen
+  if (var.memadr)
+    *(uint16_t*)var.memadr = 0;
 }
 
 #endif // PSU_CONTROL
@@ -728,12 +730,22 @@ void DGUSScreenVariableHandler::HandleManualMove(DGUS_VP_Variable &var, void *va
 void DGUSScreenVariableHandler::HandleMotorLockUnlock(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandleMotorLockUnlock");
 
-  char buf[4];
-  const int16_t lock = swap16(*(uint16_t*)val_ptr);
-  strcpy_P(buf, lock ? PSTR("M18") : PSTR("M17"));
+  const int16_t lock = swap16(*(uint16_t*)val_ptr) & 0x00ff;
 
-  //DEBUG_ECHOPAIR(" ", buf);
-  queue.enqueue_one_now(buf);
+  switch (lock) {
+    default: return;
+    case 0: return; // value unset
+    case 1: // disabe motors
+      queue.enqueue_now_P(PSTR("M18"));
+      break;
+    case 2: // enable motors
+      queue.enqueue_now_P(PSTR("M17"));
+      break;
+  }
+
+  // TODO rubienr: save the current motor state to high byte for visualization on screen
+  if (var.memadr)
+    *(uint16_t*)var.memadr = 0;
 }
 
 #if ENABLED(POWER_LOSS_RECOVERY)

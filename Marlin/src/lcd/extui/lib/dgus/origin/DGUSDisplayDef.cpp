@@ -245,7 +245,12 @@ const uint16_t VPList_Info[] PROGMEM = {
 };
 
 const uint16_t VPList_Psu[] PROGMEM = {
-    VP_CONTROL_PSU,
+    VP_PSU_CONTROL,
+    0x0000
+};
+
+const uint16_t VPList_Motors[] PROGMEM = {
+    VP_MOTOR_LOCK_UNLOK,
     0x0000
 };
 
@@ -262,6 +267,7 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation },
   { DGUSLCD_SCREEN_INFO, VPList_Info },
   { DGUSLCD_SCREEN_PSU, VPList_Psu },
+  { DGUSLCD_SCREEN_MOTORS, VPList_Motors },
 #if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
 #endif
@@ -277,8 +283,9 @@ const char MarlinConfigurationAuthor[] PROGMEM = STRING_CONFIG_H_AUTHOR;
 const char MarlinCompileDate[] PROGMEM = __DATE__;
 
 struct DgusOriginVariables {
-  uint16_t psu_control;
-} OriginVariables{0};
+    uint16_t psu_control {0};
+    uint16_t motors_control {0};
+} OriginVariables;
 
 } // namespace
 
@@ -316,7 +323,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_HOME_ALL, nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
   #endif
 
-  VPHELPER(VP_MOTOR_LOCK_UNLOK, nullptr, &DGUSScreenVariableHandler::HandleMotorLockUnlock, nullptr),
+  VPHELPER(VP_MOTOR_LOCK_UNLOK, &OriginVariables.motors_control, &DGUSScreenVariableHandler::HandleMotorLockUnlock, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
   #if ENABLED(POWER_LOSS_RECOVERY)
     VPHELPER(VP_POWER_LOSS_RECOVERY, nullptr, &DGUSScreenVariableHandler::HandlePowerLossRecovery, nullptr),
   #endif
@@ -450,7 +457,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
   // Power
   #if ENABLED(PSU_CONTROL)
-    VPHELPER(VP_CONTROL_PSU, &OriginVariables.psu_control, &DGUSScreenVariableHandler::HandlePsuOnOffState,  &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_PSU_CONTROL, &OriginVariables.psu_control, &DGUSScreenVariableHandler::HandlePsuOnOff, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
   #endif
 
   VPHELPER(0, 0, 0, 0)  // must be last entry.

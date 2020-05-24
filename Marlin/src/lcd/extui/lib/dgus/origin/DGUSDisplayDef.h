@@ -35,6 +35,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
   DGUSLCD_SCREEN_INFO = 54, ///< Info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
   DGUSLCD_SCREEN_PSU = 64, ///< Screen for showing/manipulating power supply status
+  DGUSLCD_SCREEN_MOTORS = 66, ///< Screen for showing/manipulating motors status
   DGUSLCD_SCREEN_POWER_LOSS = 100,
   DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_UTILITY=110,
@@ -100,7 +101,7 @@ constexpr uint16_t VP_SCREENCHANGE_WHENSD = 0x2003; // "Print" Button touched --
 // Power Supply Unit:
 // High byte represents the current state: 0x0 value unset, 0x1 disabled, 0x2 enabled
 // Low byte is the display request: 0x0 value unset, 0x1 request off, 0x2 request on
-constexpr uint16_t VP_CONTROL_PSU = 0x2004;
+constexpr uint16_t VP_PSU_CONTROL = 0x2004;
 #endif
 constexpr uint16_t VP_CONFIRMED = 0x2010; // OK on confirm screen.
 
