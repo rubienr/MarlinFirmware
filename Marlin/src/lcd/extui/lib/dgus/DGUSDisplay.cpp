@@ -465,6 +465,32 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
 
 #endif // SDSUPPORT
 
+#if ENABLED(PSU_CONTROL)
+
+void DGUSScreenVariableHandler::HandlePsuOnOffState(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("HandlePsuOnOffState");
+
+  uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
+  uint8_t psu_action = newvalue & 0x0f;
+
+  switch (psu_action) {
+    default: return;
+    case 0: return; // value unset
+    case 1: // disabe PSU
+      ExtUI::setPsuPowerState(false);
+        break;
+    case 2: // enable PSU
+      ExtUI::setPsuPowerState(true);
+    break;
+  }
+
+  *(uint16_t*)var.memadr = 0;
+}
+
+#endif // PSU_CONTROL
+
+void HandlePsuState(DGUS_VP_Variable &var, void *val_ptr);
+
 void DGUSScreenVariableHandler::ScreenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr) {
   DGUS_VP_Variable ramcopy;
   if (!populate_VPVar(ConfirmVP, &ramcopy)) return;
@@ -1135,14 +1161,17 @@ void DGUSScreenVariableHandler::UpdateScreenVPData() {
       // Send the VP to the display, but try to avoid overrunning the Tx Buffer.
       // But send at least one VP, to avoid getting stalled.
       if (rcpy.send_to_display_handler && (!sent_one || expected_tx <= dgusdisplay.GetFreeTxBuffer())) {
-        //DEBUG_ECHOPAIR(" calling handler for ", rcpy.VP);
+        DEBUG_ECHOPAIR(" calling handler for ", rcpy.VP);
         sent_one = true;
         rcpy.send_to_display_handler(rcpy);
       }
       else {
-        //auto x=dgusdisplay.GetFreeTxBuffer();
-        //DEBUG_ECHOLNPAIR(" tx almost full: ", x);
-        //DEBUG_ECHOPAIR(" update_ptr ", update_ptr);
+
+#ifdef DEBUG_DGUSLCD
+        size_t free_tx=dgusdisplay.GetFreeTxBuffer();
+        DEBUG_ECHOLNPAIR(" tx almost full: ", free_tx);
+        DEBUG_ECHOPAIR(" update_ptr ", update_ptr);
+#endif
         ScreenComplete = false;
         return;  // please call again!
       }

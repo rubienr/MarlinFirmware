@@ -243,6 +243,12 @@ const uint16_t VPList_Info[] PROGMEM = {
     VP_MARLIN_COMPILE_DATE,
     0x0000
 };
+
+const uint16_t VPList_Psu[] PROGMEM = {
+    VP_CONTROL_PSU,
+    0x0000
+};
+
 const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_BOOT, VPList_Boot },
   { DGUSLCD_SCREEN_MAIN, VPList_Main },
@@ -255,17 +261,26 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_FLOWRATES, VPList_SD_FlowRates },
   { DGUSLCD_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation },
   { DGUSLCD_SCREEN_INFO, VPList_Info },
+  { DGUSLCD_SCREEN_PSU, VPList_Psu },
 #if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
 #endif
   { 0 , nullptr } // List is terminated with an nullptr as table entry.
 };
 
+namespace {
+
 const char MarlinVersion[] PROGMEM = SHORT_BUILD_VERSION;
 const char MarlinDetailedVersion[] PROGMEM = DETAILED_BUILD_VERSION;
 const char MarlinDistributionDate[] PROGMEM = STRING_DISTRIBUTION_DATE;
 const char MarlinConfigurationAuthor[] PROGMEM = STRING_CONFIG_H_AUTHOR;
 const char MarlinCompileDate[] PROGMEM = __DATE__;
+
+struct DgusOriginVariables {
+  uint16_t psu_control;
+} OriginVariables{0};
+
+} // namespace
 
 // Helper to define a DGUS_VP_Variable for common use cases.
 #define VPHELPER(VPADR, VPADRVAR, RXFPTR, TXFPTR ) { .VP=VPADR, .memadr=VPADRVAR, .size=sizeof(VPADRVAR), \
@@ -432,6 +447,11 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   { .VP = VP_MSGSTR2, .memadr = nullptr, .size = VP_MSGSTR2_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MSGSTR3, .memadr = nullptr, .size = VP_MSGSTR3_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MSGSTR4, .memadr = nullptr, .size = VP_MSGSTR4_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+
+  // Power
+  #if ENABLED(PSU_CONTROL)
+    VPHELPER(VP_CONTROL_PSU, &OriginVariables.psu_control, &DGUSScreenVariableHandler::HandlePsuOnOffState,  &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  #endif
 
   VPHELPER(0, 0, 0, 0)  // must be last entry.
 };

@@ -34,6 +34,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_SDFILELIST = 50,
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
   DGUSLCD_SCREEN_INFO = 54, ///< Info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
+  DGUSLCD_SCREEN_PSU = 64, ///< Screen for showing/manipulating power supply status
   DGUSLCD_SCREEN_POWER_LOSS = 100,
   DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_UTILITY=110,
@@ -95,7 +96,12 @@ constexpr uint16_t VP_SCREENCHANGE_ASK = 0x2000;
 constexpr uint16_t VP_SCREENCHANGE = 0x2001;   // Key-Return button to new menu pressed. Data contains target screen in low byte and info in high byte.
 constexpr uint16_t VP_TEMP_ALL_OFF = 0x2002;   // Turn all heaters off. Value arbitrary ;)=
 constexpr uint16_t VP_SCREENCHANGE_WHENSD = 0x2003; // "Print" Button touched -- go only there if there is an SD Card.
-
+#if ENABLED(PSU_CONTROL)
+// Power Supply Unit:
+// High byte represents the current state: 0x0 value unset, 0x1 disabled, 0x2 enabled
+// Low byte is the display request: 0x0 value unset, 0x1 request off, 0x2 request on
+constexpr uint16_t VP_CONTROL_PSU = 0x2004;
+#endif
 constexpr uint16_t VP_CONFIRMED = 0x2010; // OK on confirm screen.
 
 // Buttons on the SD-Card File listing.
