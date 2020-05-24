@@ -477,10 +477,10 @@ void DGUSScreenVariableHandler::HandlePsuOnOffState(DGUS_VP_Variable &var, void 
     default: return;
     case 0: return; // value unset
     case 1: // disabe PSU
-      ExtUI::setPsuPowerState(false);
+      queue.enqueue_now_P(PSTR("M81"));
         break;
     case 2: // enable PSU
-      ExtUI::setPsuPowerState(true);
+      queue.enqueue_now_P(PSTR("M80"));
     break;
   }
 

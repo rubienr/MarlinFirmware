@@ -129,15 +129,6 @@ namespace ExtUI {
     }
   #endif
 
-  #if ENABLED(PSU_CONTROL)
-    void setPsuPowerState(bool new_power_state) {
-      if (new_power_state)
-        PSU_ON();
-      else
-        PSU_OFF();
-    }
-  #endif
-
   #if HAS_PID_HEATING
     void onPidTuning(const result_t rst) {
       // Called for temperature PID tuning result
