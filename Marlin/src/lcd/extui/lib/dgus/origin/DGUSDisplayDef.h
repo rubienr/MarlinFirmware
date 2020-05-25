@@ -34,6 +34,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_SDFILELIST = 50,
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
   DGUSLCD_SCREEN_INFO = 54, ///< Info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
+  DGUSLCD_SCREEN_BED_LEVELING = 62, ///< Screen for showing/manipulating bed leveling
   DGUSLCD_SCREEN_PSU = 64, ///< Screen for showing/manipulating power supply status
   DGUSLCD_SCREEN_MOTORS = 66, ///< Screen for showing/manipulating motors status
   DGUSLCD_SCREEN_LIGHTS = 70, ///< Screen for showing/manipulating case and RGB light
@@ -164,6 +165,10 @@ constexpr uint16_t VP_MOVE_E5 = 0x211A;
 #endif
 
 constexpr uint16_t VP_HOME_ALL = 0x2120;
+constexpr uint16_t VP_BED_LEVELING_PARAMETER__ON_OFF__DO_PROBE = 0x2121;
+constexpr uint16_t VP_BED_LEVELING_PARAMETER__FADE_HEIGHT__SLOT_NUMBER = 0x2122;
+constexpr uint16_t VP_BED_LEVELING_PARAMETER__LOAD_SAVE_SLOT = 0x2123;
+
 constexpr uint16_t VP_MOTOR_LOCK_UNLOK = 0x2130;
 
 // Power loss recovery

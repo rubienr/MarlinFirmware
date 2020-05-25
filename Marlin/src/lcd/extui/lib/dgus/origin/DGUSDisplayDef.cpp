@@ -262,6 +262,13 @@ const uint16_t VPList_Lights[] PROGMEM = {
     0x0000
 };
 
+const uint16_t VPList_BedLevelingUbl[] PROGMEM = {
+    VP_BED_LEVELING_PARAMETER__ON_OFF__DO_PROBE,
+    VP_BED_LEVELING_PARAMETER__FADE_HEIGHT__SLOT_NUMBER,
+    VP_BED_LEVELING_PARAMETER__LOAD_SAVE_SLOT,
+    0x0000
+};
+
 const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_BOOT, VPList_Boot },
   { DGUSLCD_SCREEN_MAIN, VPList_Main },
@@ -277,6 +284,8 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_PSU, VPList_Psu },
   { DGUSLCD_SCREEN_MOTORS, VPList_Motors },
   { DGUSLCD_SCREEN_LIGHTS, VPList_Lights },
+  { DGUSLCD_SCREEN_BED_LEVELING, VPList_BedLevelingUbl },
+
 #if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
 #endif
@@ -295,29 +304,34 @@ struct DgusOriginVariables {
     uint16_t psu_control {0};
     uint16_t motors_control {0};
     uint16_t case_light_control {0};
-    uint16_t color_led_on_off_intensity_control {0};
-    uint16_t color_led_red_green_component {0};
-    uint16_t color_led_blue_white_component {0};
+
+    uint16_t color_led_control__on_off__intensity {0};
+    uint16_t color_led_component__red__green {0};
+    uint16_t color_led_component__blue__white {0};
+
+    uint16_t bed_leveling__fade_height__slot_number {0};
+    uint16_t bed_leveling__on_off__do_probe {0};
+    uint16_t bed_leveling__load_save_slot {0};
 } OriginVariables;
 
 #if ENABLED(HAS_COLOR_LEDS)
 
 void updateColorLeds() {
-  const uint8_t enabled {static_cast<uint8_t>((OriginVariables.color_led_on_off_intensity_control & 0x00ff) >> 0)};
+  const uint8_t enabled {static_cast<uint8_t>((OriginVariables.color_led_control__on_off__intensity & 0x00ff) >> 0)};
   switch (enabled) {
     default: return;
-    case 0: return; // value unset
+    case 0: return; // value unset, assume lights on request
     case 1: // disable color LEDs
       queue.enqueue_now_P(PSTR("M150 P0 R0 U0 B0 W0"));
       break;
     case 2: // enable color LEDs
     {
       char buf[32]{0};
-      const uint8_t i{static_cast<uint8_t>((OriginVariables.color_led_on_off_intensity_control & 0xff00) >> 8)};
-      const uint8_t r{static_cast<uint8_t>((OriginVariables.color_led_red_green_component & 0x00ff) >> 0)};
-      const uint8_t g{static_cast<uint8_t>((OriginVariables.color_led_red_green_component & 0xff00) >> 8)};
-      const uint8_t b{static_cast<uint8_t>((OriginVariables.color_led_blue_white_component & 0x00ff) >> 0)};
-      const uint8_t w{static_cast<uint8_t>((OriginVariables.color_led_blue_white_component & 0xff00) >> 8)};
+      const uint8_t i{static_cast<uint8_t>((OriginVariables.color_led_control__on_off__intensity & 0xff00) >> 8)};
+      const uint8_t r{static_cast<uint8_t>((OriginVariables.color_led_component__red__green & 0x00ff) >> 0)};
+      const uint8_t g{static_cast<uint8_t>((OriginVariables.color_led_component__red__green & 0xff00) >> 8)};
+      const uint8_t b{static_cast<uint8_t>((OriginVariables.color_led_component__blue__white & 0x00ff) >> 0)};
+      const uint8_t w{static_cast<uint8_t>((OriginVariables.color_led_component__blue__white & 0xff00) >> 8)};
       sprintf(buf, "M150 P%d R%d U%d B%d W%d", i, r, g, b, w);
       queue.enqueue_one_now(buf);
     }
@@ -338,6 +352,99 @@ void HandleColorLedUpdate(DGUS_VP_Variable &var, void *val_ptr) {
 
 #endif // HAS_COLOR_LEDS
 
+#if ENABLED(AUTO_BED_LEVELING_UBL)
+void HandleBedLevelingUbl() {
+  DEBUG_ECHOLNPGM("HandleBedLevelingUbl");
+
+  const uint8_t do_start_ubl = static_cast<uint8_t>((OriginVariables.bed_leveling__on_off__do_probe >> 8) & 0xff);
+  const uint8_t on_off_state = static_cast<uint8_t>((OriginVariables.bed_leveling__on_off__do_probe >> 0) & 0xff);
+
+  const uint8_t fade_height_mm_percent = static_cast<uint8_t>((OriginVariables.bed_leveling__fade_height__slot_number >> 0) & 0xff);
+  const uint8_t slot_number = static_cast<uint8_t>((OriginVariables.bed_leveling__fade_height__slot_number >> 8) & 0xff);
+  const uint8_t load_save_state = static_cast<uint8_t>((OriginVariables.bed_leveling__load_save_slot >> 0) & 0xff);
+
+  // --- do UBL probing ---
+
+  switch(do_start_ubl) {
+    default:
+      OriginVariables.bed_leveling__on_off__do_probe &= ~0xff00;
+      break;
+    case 0: break; // do nothing
+    case 1: // do start
+    {
+      queue.enqueue_now_P(PSTR("G28 R X Y")); // home
+      queue.enqueue_now_P(PSTR("G28 Z"));     // home
+      queue.enqueue_now_P(PSTR("G29 P1"));    // probe mesh
+      queue.enqueue_now_P(PSTR("G29 P3"));    // interpolate missing points
+
+      OriginVariables.bed_leveling__on_off__do_probe &= ~0xff00; // clear request
+    }
+      break;
+  }
+
+  // --- enable/disable UBL ---
+
+  switch(on_off_state) {
+    default:
+      OriginVariables.bed_leveling__on_off__do_probe &= ~0x00ff;
+      break;
+    case 0: break; // value unset
+    case 1: // disable
+      queue.enqueue_now_P(PSTR("M420 S0"));
+      OriginVariables.bed_leveling__on_off__do_probe &= ~0x00ff;
+      return;
+    case 2: // enable
+    {
+      const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_percent / 10U);
+      const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_percent % 10U);
+
+      char buf[24]{0};
+      sprintf_P(buf, PSTR("M420 S1 L%d Z%d.%d"), slot_number, fade_height_mm, fade_height_mm_fraction);
+      queue.enqueue_one_now(buf);
+
+      OriginVariables.bed_leveling__on_off__do_probe &= ~0x00ff;
+    }
+      break;
+  }
+
+  // --- load mesh from slot ---
+
+  switch(load_save_state) {
+    default:
+      OriginVariables.bed_leveling__load_save_slot &= ~0x00ff;
+      break;
+    case 0: break; // value unset
+    case 1: // load
+    {
+      char buf[12]{0};
+      sprintf_P(buf, PSTR("M420 L%d"), slot_number);
+      queue.enqueue_one_now(buf);
+
+      OriginVariables.bed_leveling__load_save_slot &= ~0x00ff;
+    }
+      break;
+    case 2: // save
+    {
+      char buf[12]{0};
+      sprintf(buf, "G29 S%d", slot_number);
+      queue.enqueue_one_now(buf);
+    }
+      OriginVariables.bed_leveling__load_save_slot &= ~0x00ff;
+      break;
+  }
+
+}
+
+void HandleBedLevelingUblParameter(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("HandleBedLevelingUblParameter");
+  if (var.memadr)
+  {
+    *(uint16_t *) var.memadr = swap16(*(uint16_t *) val_ptr);
+    HandleBedLevelingUbl();
+  }
+}
+
+#endif // AUTO_BED_LEVELING_UBL
 
 } // namespace
 
@@ -514,9 +621,14 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
   // Light
   VPHELPER(VP_CASE_LIGHT_CONTROL, &OriginVariables.case_light_control, &DGUSScreenVariableHandler::HandleCaseLight, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_CASE_COLOR_LED_CONTROL_0, &OriginVariables.color_led_on_off_intensity_control, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_CASE_COLOR_LED_CONTROL_1, &OriginVariables.color_led_red_green_component, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_CASE_COLOR_LED_CONTROL_2, &OriginVariables.color_led_blue_white_component, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_CASE_COLOR_LED_CONTROL_0, &OriginVariables.color_led_control__on_off__intensity, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_CASE_COLOR_LED_CONTROL_1, &OriginVariables.color_led_component__red__green, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_CASE_COLOR_LED_CONTROL_2, &OriginVariables.color_led_component__blue__white, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+
+  // Bed leveling
+  VPHELPER(VP_BED_LEVELING_PARAMETER__FADE_HEIGHT__SLOT_NUMBER, &OriginVariables.bed_leveling__fade_height__slot_number, &HandleBedLevelingUblParameter, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_BED_LEVELING_PARAMETER__ON_OFF__DO_PROBE, &OriginVariables.bed_leveling__on_off__do_probe, &HandleBedLevelingUblParameter, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(VP_BED_LEVELING_PARAMETER__LOAD_SAVE_SLOT, &OriginVariables.bed_leveling__load_save_slot, &HandleBedLevelingUblParameter, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 
   VPHELPER(0, 0, 0, 0)  // must be last entry.
 };
