@@ -467,6 +467,11 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
 
 #if ENABLED(PSU_CONTROL)
 
+  /**
+   * Enable or disable power supply unit.
+   * @param var
+   * @param val_ptr low byte: 0 - undefined, 1 - disable PSU, 2 - enable PSU; high byte: unused
+   */
   void DGUSScreenVariableHandler::HandlePsuOnOff(DGUS_VP_Variable &var, void *val_ptr) {
     DEBUG_ECHOLNPGM("HandlePsuOnOffState");
 
@@ -492,12 +497,16 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
 #endif // PSU_CONTROL
 
 #if ENABLED(CASE_LIGHT_ENABLE)
-
+  /**
+   * Enable, disable or change case light intensity.
+   * @param var
+   * @param val_ptr low byte on/off, high byte brightness
+   */
   void DGUSScreenVariableHandler::HandleCaseLight(DGUS_VP_Variable &var, void *val_ptr) {
     DEBUG_ECHOLNPGM("HandleCaseLight");
 
     uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
-    const uint8_t on_off_state = newvalue & 0x00ff;
+    const uint8_t on_off_state = static_cast<uint8_t>(newvalue & 0x00ff);
 
     switch (on_off_state) {
       default: return;
@@ -507,12 +516,14 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
         break;
       case 2: // light on
         ExtUI::setCaseLightState(true);
+        // TODO rubienr: turn colour leds almost off, not full otherwise case light is also off
+        queue.enqueue_now_P(PSTR("M150 P1 R0 U0 B1 W0"));
         break;
     }
 
-    const uint8_t brightness = (newvalue & 0xff00) >> 8;
+    const uint8_t brightness = static_cast<uint8_t>((newvalue & 0xff00) >> 8);
     #if DISABLED(CASE_LIGHT_NO_BRIGHTNESS)
-    const float float_brightness = map(brightness, 0, 255, 0, 100);
+      const float float_brightness = map(brightness, 0, 255, 0, 100);
       void setCaseLightBrightness_percent(float_brightness);
     #else
       char buf[16] = {0};
@@ -760,10 +771,15 @@ void DGUSScreenVariableHandler::HandleManualMove(DGUS_VP_Variable &var, void *va
   return;
 }
 
+/**
+ * Enable or disable motors' driver.
+ * @param var
+ * @param val_ptr low byte: 0 - undefined, 1 - disable motors, 2 - enable motors; high byte: unused
+ */
 void DGUSScreenVariableHandler::HandleMotorLockUnlock(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandleMotorLockUnlock");
 
-  const int16_t lock = swap16(*(uint16_t*)val_ptr) & 0x00ff;
+  const uint16_t lock = swap16(*(uint16_t*)val_ptr) & 0x00ff;
 
   switch (lock) {
     default: return;

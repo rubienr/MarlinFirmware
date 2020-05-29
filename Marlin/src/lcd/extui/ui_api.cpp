@@ -873,6 +873,7 @@ namespace ExtUI {
           #endif
         }
       }
+      float getMeshFadeHeight() { return planner.z_fade_height; };
     #endif
   #endif
 
