@@ -1303,6 +1303,7 @@
 // Additional options for DGUS / DWIN displays
 //
 #if HAS_DGUS_LCD
+  //#define DEBUG_DGUSLCD                 // Enable DGUS display messages
   #define DGUS_SERIAL_PORT 3
   #define DGUS_BAUDRATE 115200
 
