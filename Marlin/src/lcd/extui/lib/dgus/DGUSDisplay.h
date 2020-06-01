@@ -133,8 +133,10 @@ public:
     // Hook for power loss recovery.
     static void HandlePowerLossRecovery(DGUS_VP_Variable &var, void *val_ptr);
   #endif
+  #if ENABLED(EEPROM_SETTINGS)
   // Hook for settings
   static void HandleSettings(DGUS_VP_Variable &var, void *val_ptr);
+  #endif
   static void HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr);
   static void HandleStepPerMMExtruderChanged(DGUS_VP_Variable &var, void *val_ptr);
   #if HAS_PID_HEATING

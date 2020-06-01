@@ -812,22 +812,23 @@ void DGUSScreenVariableHandler::HandleMotorLockUnlock(DGUS_VP_Variable &var, voi
   }
 
 #endif
-
-void DGUSScreenVariableHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleSettings");
-  uint16_t value = swap16(*(uint16_t*)val_ptr);
-  switch (value) {
-    default: break;
-    case 1:
-      #if ENABLED(PRINTCOUNTER)
-        print_job_timer.initStats();
-      #endif
-      queue.enqueue_now_P(PSTR("M502\nM500"));
-      break;
-    case 2: queue.enqueue_now_P(PSTR("M501")); break;
-    case 3: queue.enqueue_now_P(PSTR("M500")); break;
+#if ENABLED(EEPROM_SETTINGS)
+  void DGUSScreenVariableHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("HandleSettings");
+    uint16_t value = swap16(*(uint16_t*)val_ptr);
+    switch (value) {
+      default: break;
+      case 1:
+        #if ENABLED(PRINTCOUNTER)
+          print_job_timer.initStats();
+        #endif
+        queue.enqueue_now_P(PSTR("M502\nM500"));
+        break;
+      case 2: queue.enqueue_now_P(PSTR("M501")); break;
+      case 3: queue.enqueue_now_P(PSTR("M500")); break;
+    }
   }
-}
+#endif // EEPROM_SETTINGS
 
 void DGUSScreenVariableHandler::HandleStepPerMMChanged(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandleStepPerMMChanged");

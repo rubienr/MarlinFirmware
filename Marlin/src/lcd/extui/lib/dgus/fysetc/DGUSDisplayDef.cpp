@@ -349,7 +349,9 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #if ENABLED(POWER_LOSS_RECOVERY)
     VPHELPER(VP_POWER_LOSS_RECOVERY, nullptr, &DGUSScreenVariableHandler::HandlePowerLossRecovery, nullptr),
   #endif
-  VPHELPER(VP_SETTINGS, nullptr, &DGUSScreenVariableHandler::HandleSettings, nullptr),
+  #if ENABLED(EEPROM_SETTINGS)
+    VPHELPER(VP_SETTINGS, nullptr, &DGUSScreenVariableHandler::HandleSettings, nullptr),
+  #endif
   #if ENABLED(SINGLE_Z_CALIBRATION)
     VPHELPER(VP_Z_CALIBRATE, nullptr, &DGUSScreenVariableHandler::HandleZCalibration, nullptr),
   #endif
