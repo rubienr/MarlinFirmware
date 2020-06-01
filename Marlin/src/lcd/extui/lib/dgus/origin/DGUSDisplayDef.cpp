@@ -325,7 +325,6 @@ struct DgusOriginVariables {
         DisableUbl = 0x04,
         LoadMesh = 0x08,
         SaveMesh = 0x10,
-
         // flags set internally
         SlotChanged = 0x0400,
         FadeHeightChanged = 0x0800,
@@ -576,17 +575,17 @@ void HandleBedLevelingUblParameter_Fade_Slot(DGUS_VP_Variable &var, void *val_pt
   if (var.memadr)
   {
     uint16_t *buffered_arguments = static_cast<uint16_t *>(var.memadr);
-    const uint8_t fade_height_old = static_cast<uint8_t>(*buffered_arguments);
+    //const uint8_t fade_height_old = static_cast<uint8_t>(*buffered_arguments);
     const uint8_t slot_old = static_cast<uint8_t>((*buffered_arguments) >> 8);
 
     const uint16_t new_arguments = swap16(*static_cast<uint16_t *>(val_ptr));
-    const uint8_t fade_height_new = static_cast<uint8_t>(new_arguments);
+    //const uint8_t fade_height_new = static_cast<uint8_t>(new_arguments);
     const uint8_t slot_new = static_cast<uint8_t>(new_arguments >> 8);
 
     *buffered_arguments = new_arguments;
 
-    if (fade_height_old != fade_height_new)
-      OriginVariables.bed_leveling__request_flags |= DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::FadeHeightChanged);
+    //if (fade_height_old != fade_height_new)
+    //  OriginVariables.bed_leveling__request_flags |= DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::FadeHeightChanged);
     if (slot_old != slot_new)
       OriginVariables.bed_leveling__request_flags |= DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::SlotChanged);
   }
