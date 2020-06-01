@@ -38,6 +38,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_PSU = 64, ///< Screen for showing/manipulating power supply status
   DGUSLCD_SCREEN_MOTORS = 66, ///< Screen for showing/manipulating motors status
   DGUSLCD_SCREEN_LIGHTS = 70, ///< Screen for showing/manipulating case and RGB light
+  DGUSLCD_SCREEN_EEPROM = 72, ///< Screen for manipulating EEPROM: load, save, restore to factory
   DGUSLCD_SCREEN_POWER_LOSS = 100,
   DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_UTILITY=110,

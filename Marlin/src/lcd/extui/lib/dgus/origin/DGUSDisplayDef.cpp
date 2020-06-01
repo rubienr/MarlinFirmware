@@ -286,6 +286,7 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_MOTORS, VPList_Motors },
   { DGUSLCD_SCREEN_LIGHTS, VPList_Lights },
   { DGUSLCD_SCREEN_BED_LEVELING, VPList_BedLevelingUbl },
+  { DGUSLCD_SCREEN_EEPROM, nullptr },
 
 #if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
@@ -305,37 +306,38 @@ const char MarlinCompileDate[] PROGMEM = __DATE__;
  * Bufferd DGUS origin variables for handler that operate on more than one uint16_t viariable.
  */
 struct DgusOriginVariables {
-    static const uint8_t TRUE = 2;
-    static const uint8_t FALSE = 1;
-    static const uint8_t UNDEFINED = 0;
+  static const uint8_t TRUE = 2;
+  static const uint8_t FALSE = 1;
+  static const uint8_t UNDEFINED = 0;
 
-    uint16_t psu_control {0};/// low byte: 0 - undefined, 1 - disable PSU, 2 - enable PSU; high byte: unused
-    uint16_t motors_control {0}; /// low byte: 0 - undefined, 1 - disable motors, 2 - enable motors; high byte: unused
-    uint16_t case_light_control {0}; /// low byte on/off, high byte brightness
+  uint16_t psu_control {0};/// low byte: 0 - undefined, 1 - disable PSU, 2 - enable PSU; high byte: unused
+  uint16_t motors_control {0}; /// low byte: 0 - undefined, 1 - disable motors, 2 - enable motors; high byte: unused
+  uint16_t case_light_control {0}; /// low byte on/off, high byte brightness
 
-    uint16_t color_led_control__on_off__intensity {0}; /// brightness control: low byte on/off, high byte intensity
-    uint16_t color_led_component__red__green {0}; /// color parameter: low byte red, high byte green
-    uint16_t color_led_component__blue__white {0}; /// color parameter: low byte blue, high byte white
+  uint16_t color_led_control__on_off__intensity {0}; /// brightness control: low byte on/off, high byte intensity
+  uint16_t color_led_component__red__green {0}; /// color parameter: low byte red, high byte green
+  uint16_t color_led_component__blue__white {0}; /// color parameter: low byte blue, high byte white
 
-    /// flags defining UBL operations to process
-    enum class BedLevelingRequestFlagsLowByte : uint16_t {
-        // falgs set by display
-        StartUbl = 0x01,
-        EnableUbl = 0x02,
-        DisableUbl = 0x04,
-        LoadMesh = 0x08,
-        SaveMesh = 0x10,
-        // flags set internally
-        SlotChanged = 0x0400,
-        FadeHeightChanged = 0x0800,
-    };
+  /// flags defining UBL operations to process
+  enum class BedLevelingRequestFlagsLowByte : uint16_t {
+    // falgs set by display
+    StartUbl = 0x01,
+    EnableUbl = 0x02,
+    DisableUbl = 0x04,
+    LoadMesh = 0x08,
+    SaveMesh = 0x10,
+    // flags set internally
+    SlotChanged = 0x0400,
+    FadeHeightChanged = 0x0800,
+  };
 
-    static uint16_t toUint16(BedLevelingRequestFlagsLowByte v) { return static_cast<uint16_t>(v); }
+  static uint16_t toUint16(BedLevelingRequestFlagsLowByte v) { return static_cast<uint16_t>(v); }
 
-    uint16_t bed_leveling__request_flags {0}; /// flags for requests set by display or internally
-    /// fade (low byte) and slot number (hight byte) arguments set by display or internally
-    uint16_t bed_leveling__fade_height__slot_number {0};
-    uint16_t bed_leveling__on_off__unused {0}; /// enable/disable (low byte) state set internally
+  uint16_t bed_leveling__request_flags {0}; /// flags for requests set by display or internally
+  /// fade (low byte) and slot number (hight byte) arguments set by display or internally
+  uint16_t bed_leveling__fade_height__slot_number {0};
+  uint16_t bed_leveling__on_off__unused {0}; /// enable/disable (low byte) state set internally
+
 } OriginVariables;
 
 #if ENABLED(HAS_COLOR_LEDS)
@@ -635,13 +637,17 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   #if ENABLED(POWER_LOSS_RECOVERY)
     VPHELPER(VP_POWER_LOSS_RECOVERY, nullptr, &DGUSScreenVariableHandler::HandlePowerLossRecovery, nullptr),
   #endif
-  VPHELPER(VP_SETTINGS, nullptr, &DGUSScreenVariableHandler::HandleSettings, nullptr),
+
+  #if ENABLED(EEPROM_SETTINGS)
+    VPHELPER(VP_SETTINGS, nullptr, &DGUSScreenVariableHandler::HandleSettings, nullptr),
+  #endif
 
   // Boot and info screen
   { .VP = VP_MARLIN_VERSION, .memadr = (void*)MarlinVersion, .size = VP_MARLIN_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   // Boot screen
   { .VP = VP_UI_VERSION, .memadr = (void*)UI_VERSION, .size = UI_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_UI_FLAVOUR, .memadr = (void*)UI_FLAVOUR, .size = sizeof(UI_FLAVOUR), .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+
   // Info screen
   { .VP = VP_MARLIN_DETAILED_VERSION, .memadr = (void*)MarlinDetailedVersion, .size = VP_MARLIN_DETAILED_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MARLIN_DISTRIBUTION_DATE, .memadr = (void*)MarlinDistributionDate, .size = VP_MARLIN_DISTRIBUTION_DATE_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
