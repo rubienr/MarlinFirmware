@@ -22,9 +22,16 @@
 #pragma once
 
 enum DGUSLCD_Screens : uint8_t {
-  DGUSLCD_SCREEN_BOOT = 12, ///< TODO rubienr: sould not be at ID 0 (0-9 is reserved for the 0-font)
-  DGUSLCD_SCREEN_MAIN = 10,
-  DGUSLCD_SCREEN_TEMPERATURE = 20,
+  // 00-09   reserved for the default font
+  // 10-12   unused
+  // 013     13TouchFile.bin
+  // 014     14ShowFile.bin
+  // 015     button click audio effect
+  // 016-022 unused
+  // 022     for 22_Config.bin
+  DGUSLCD_SCREEN_BOOT = 24,
+  DGUSLCD_SCREEN_MAIN = 26,
+  DGUSLCD_SCREEN_TEMPERATURE = 28,
   DGUSLCD_SCREEN_STATUS = 30,
   DGUSLCD_SCREEN_STATUS2 = 32,
   DGUSLCD_SCREEN_MANUALMOVE = 40,
@@ -33,12 +40,13 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_FLOWRATES = 46,
   DGUSLCD_SCREEN_SDFILELIST = 50,
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
-  DGUSLCD_SCREEN_INFO = 54, ///< Info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
-  DGUSLCD_SCREEN_BED_LEVELING = 62, ///< Screen for showing/manipulating bed leveling
-  DGUSLCD_SCREEN_PSU = 64, ///< Screen for showing/manipulating power supply status
-  DGUSLCD_SCREEN_MOTORS = 66, ///< Screen for showing/manipulating motors status
-  DGUSLCD_SCREEN_LIGHTS = 70, ///< Screen for showing/manipulating case and RGB light
-  DGUSLCD_SCREEN_EEPROM = 72, ///< Screen for manipulating EEPROM: load, save, restore to factory
+  DGUSLCD_SCREEN_INFO = 54, ///< info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
+  DGUSLCD_SCREEN_BED_LEVELING = 62, ///< screen for showing/manipulating bed leveling
+  DGUSLCD_SCREEN_PSU = 64, ///< screen for showing/manipulating power supply status
+  DGUSLCD_SCREEN_MOTORS = 66, ///< screen for showing/manipulating motors status
+  DGUSLCD_SCREEN_LIGHTS = 70, ///< screen for showing/manipulating case and RGB light
+  DGUSLCD_SCREEN_EEPROM = 72, ///< screen for manipulating EEPROM: load, save, restore to factory
+  // 090-105 reserved for .ico icon sets
   DGUSLCD_SCREEN_POWER_LOSS = 100,
   DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_UTILITY=110,
