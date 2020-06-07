@@ -29,6 +29,7 @@
 #if HAS_BED_PROBE
   #include "../../../../module/probe.h"
 #endif
+#include "../../ui_api.h"
 #include "DGUSVPVariable.h"
 
 enum DGUSLCD_Screens : uint8_t;
@@ -43,6 +44,11 @@ typedef enum : uint8_t {
   DGUS_WAIT_TELEGRAM,  //< LEN received, Waiting for to receive all bytes.
 } rx_datagram_state_t;
 
+namespace Dgus{
+
+uint16_t swap16(const uint16_t value);
+
+}
 // Low-Level access to the display.
 class DGUSDisplay {
 public:
@@ -148,6 +154,28 @@ public:
   #if HAS_BED_PROBE
     // Hook for "Change probe offset z"
     static void HandleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr);
+
+    /**
+     * Handle and clear probe offset request flags.
+     * @param var buffered flags that are back propagated to display
+     * @param val_ptr display request flags
+     */
+    static void HandleProbeOffset(DGUS_VP_Variable &var, void *val_ptr) ;
+
+    /**
+     * Take probe offset and write to axis withtout boundary check.
+     * @tparam axis axis idendifier
+     * @param var local axis offset value; probe.offset.x or .y, \sa #HandleProbeOffsetZAxis(DGUS_VP_Variable &, void *)
+     * @param val_ptr display axis offset request
+     */
+    template<ExtUI::axis_t axis>
+    static void HandleProbeOffsetAxis(DGUS_VP_Variable &var, void *val_ptr);
+    /**
+     * Take probe offset and write to Z-axis with boundary check.
+     * @param var local axis offset value; probe.offset.z
+     * @param val_ptr display axis offset request
+     */
+    static void HandleProbeOffsetZAxis(DGUS_VP_Variable &var, void *val_ptr);
   #endif
   #if ENABLED(BABYSTEPPING)
     // Hook for live z adjust action
@@ -243,52 +271,19 @@ public:
   static void DGUSLCD_PercentageToUint8(DGUS_VP_Variable &var, void *val_ptr);
 
   template<typename T>
-  static void DGUSLCD_SetValueDirectly(DGUS_VP_Variable &var, void *val_ptr) {
-    if (!var.memadr) return;
-    union { unsigned char tmp[sizeof(T)]; T t; } x;
-    unsigned char *ptr = (unsigned char*)val_ptr;
-    LOOP_L_N(i, sizeof(T)) x.tmp[i] = ptr[sizeof(T) - i - 1];
-    *(T*)var.memadr = x.t;
-  }
+  static void DGUSLCD_SetValueDirectly(DGUS_VP_Variable &var, void *val_ptr);
 
   /// Send a float value to the display.
   /// Display will get a 4-byte integer scaled to the number of digits:
   /// Tell the display the number of digits and it cheats by displaying a dot between...
   template<unsigned int decimals>
-  static void DGUSLCD_SendFloatAsLongValueToDisplay(DGUS_VP_Variable &var) {
-    if (var.memadr) {
-      float f = *(float *)var.memadr;
-      f *= cpow(10, decimals);
-      union { long l; char lb[4]; } endian;
-
-      char tmp[4];
-      endian.l = f;
-      tmp[0] = endian.lb[3];
-      tmp[1] = endian.lb[2];
-      tmp[2] = endian.lb[1];
-      tmp[3] = endian.lb[0];
-      dgusdisplay.WriteVariable(var.VP, tmp, 4);
-    }
-  }
+  static void DGUSLCD_SendFloatAsLongValueToDisplay(DGUS_VP_Variable &var);
 
   /// Send a float value to the display.
   /// Display will get a 2-byte integer scaled to the number of digits:
   /// Tell the display the number of digits and it cheats by displaying a dot between...
   template<unsigned int decimals>
-  static void DGUSLCD_SendFloatAsIntValueToDisplay(DGUS_VP_Variable &var) {
-    if (var.memadr) {
-      float f = *(float *)var.memadr;
-      DEBUG_ECHOLNPAIR_F(" >> ", f, 6);
-      f *= cpow(10, decimals);
-      union { int16_t i; char lb[2]; } endian;
-
-      char tmp[2];
-      endian.i = f;
-      tmp[0] = endian.lb[1];
-      tmp[1] = endian.lb[0];
-      dgusdisplay.WriteVariable(var.VP, tmp, 2);
-    }
-  }
+  static void DGUSLCD_SendFloatAsIntValueToDisplay(DGUS_VP_Variable &var);
 
   /// Force an update of all VP on the current screen.
   static inline void ForceCompleteUpdate() { update_ptr = 0; ScreenComplete = false; }
@@ -325,3 +320,51 @@ extern const DGUS_VP_Variable* DGUSLCD_FindVPVar(const uint16_t vp);
 
 /// Helper to populate a DGUS_VP_Variable for a given VP. Return false if not found.
 extern bool populate_VPVar(const uint16_t VP, DGUS_VP_Variable * const ramcopy);
+
+template<typename T>
+void DGUSScreenVariableHandler::DGUSLCD_SetValueDirectly(DGUS_VP_Variable &var, void *val_ptr) {
+  if (!var.memadr) return;
+  union { unsigned char tmp[sizeof(T)]; T t; } x;
+  unsigned char *ptr = (unsigned char*)val_ptr;
+  LOOP_L_N(i, sizeof(T)) x.tmp[i] = ptr[sizeof(T) - i - 1];
+  *(T*)var.memadr = x.t;
+}
+
+template<unsigned int decimals>
+void DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay(DGUS_VP_Variable &var) {
+  if (var.memadr) {
+    float f = *(float *)var.memadr;
+    f *= cpow(10, decimals);
+    union { long l; char lb[4]; } endian;
+
+    char tmp[4];
+    endian.l = f;
+    tmp[0] = endian.lb[3];
+    tmp[1] = endian.lb[2];
+    tmp[2] = endian.lb[1];
+    tmp[3] = endian.lb[0];
+    dgusdisplay.WriteVariable(var.VP, tmp, 4);
+  }
+}
+
+template<unsigned int decimals>
+void DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay(DGUS_VP_Variable &var) {
+  if (var.memadr == nullptr) return;
+  union { float as_float; uint16_t as_uint; int16_t as_int; } data {.as_float = *static_cast<float *>(var.memadr)};
+  data.as_float *= cpow(10, decimals);
+  data.as_int = static_cast<int16_t>(roundf(data.as_float));
+  data.as_uint = Dgus::swap16(data.as_uint);
+  dgusdisplay.WriteVariable(var.VP, &data.as_uint, 2);
+}
+
+#if HAS_BED_PROBE
+  template<ExtUI::axis_t axis>
+  void DGUSScreenVariableHandler::HandleProbeOffsetAxis(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("HandleProbeOffsetAxis");
+    UNUSED(var);
+    if (val_ptr == nullptr) return;
+    union { float as_float; uint16_t as_uint; int16_t as_int; } offset_mm {.as_uint = Dgus::swap16(*static_cast<uint16_t*>(val_ptr))};
+    offset_mm.as_float = static_cast<float>(offset_mm.as_int) / 100U;
+    ExtUI::setProbeOffset_mm(offset_mm.as_float, axis);
+  }
+#endif

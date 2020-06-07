@@ -95,9 +95,14 @@ bool DGUSDisplay::Initialized = false;
 bool DGUSDisplay::no_reentrance = false;
 
 #define dgusserial DGUS_SERIAL
+namespace Dgus{
 
 // endianness swap
 uint16_t swap16(const uint16_t value) { return (value & 0xffU) << 8U | (value >> 8U); }
+
+}
+
+using Dgus::swap16;
 
 bool populate_VPVar(const uint16_t VP, DGUS_VP_Variable * const ramcopy) {
   // DEBUG_ECHOPAIR("populate_VPVar ", VP);
@@ -499,40 +504,60 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
 #if ENABLED(CASE_LIGHT_ENABLE)
   /**
    * Enable, disable or change case light intensity.
+   * - clears on/off request flags
+   * - updates the on/off state flags for back propagation to display
    * @param var
    * @param val_ptr low byte on/off, high byte brightness
    */
   void DGUSScreenVariableHandler::HandleCaseLight(DGUS_VP_Variable &var, void *val_ptr) {
     DEBUG_ECHOLNPGM("HandleCaseLight");
 
-    uint16_t newvalue = swap16(*(uint16_t*)val_ptr);
-    const uint8_t on_off_state = static_cast<uint8_t>(newvalue & 0x00ff);
+    union { uint16_t data; struct{ uint8_t on_off_request; uint8_t brightness;} __attribute__ ((packed));}
+    case_light {.data = swap16(*static_cast<uint16_t *>(val_ptr))};
 
-    switch (on_off_state) {
-      default: return;
-      case 0: return; // value unset
-      case 1: // light off
-        ExtUI::setCaseLightState(false);
-        break;
-      case 2: // light on
-        ExtUI::setCaseLightState(true);
-        // TODO rubienr: turn colour leds almost off, not full otherwise case light is also off
-        queue.enqueue_now_P(PSTR("M150 P1 R0 U0 B1 W0"));
-        break;
+
+    constexpr uint8_t disable_case_light_flag{0x01};
+    constexpr uint8_t enable_case_light_flag {0x02};
+    constexpr uint8_t disabled_case_light_flag{0x04};
+    constexpr uint8_t enabled_case_light_flag {0x08};
+
+    const bool do_enable_caselight {
+      // enable
+        ((case_light.on_off_request & enable_case_light_flag) != 0) ||
+      // intensity changed
+      ((case_light.on_off_request & enabled_case_light_flag) != 0)
+    };
+    if (do_enable_caselight) {
+      //ExtUI::setCaseLightState(false);
+      case_light.on_off_request &= ~enable_case_light_flag;
     }
 
-    const uint8_t brightness = static_cast<uint8_t>((newvalue & 0xff00) >> 8);
+    const bool do_disable_caselight {(case_light.on_off_request & disable_case_light_flag) != 0};
+    if (do_disable_caselight) {
+      //ExtUI::setCaseLightState(true);
+      // TODO rubienr: turn colour leds almost off, not full otherwise case light is also off
+      queue.enqueue_now_P(PSTR("M150 P1 R0 U0 B1 W0"));
+      case_light.on_off_request &= ~disable_case_light_flag;
+    }
+
     #if DISABLED(CASE_LIGHT_NO_BRIGHTNESS)
-      const float float_brightness = map(brightness, 0, 255, 0, 100);
+      const float float_brightness = map(case_light.brightness, 0, 255, 0, 100);
       void setCaseLightBrightness_percent(float_brightness);
     #else
       char buf[16] = {0};
-      sprintf(buf, "M355 P%d S%d", brightness, on_off_state - 1);
+      sprintf(buf, "M355 P%d S%d", case_light.brightness, ((do_enable_caselight) ? 1 : 0 ));
       queue.enqueue_one_now(buf);
     #endif
 
-    if (var.memadr)
-      *(uint16_t*)var.memadr = newvalue;
+    if (ExtUI::getCaseLightState()) {
+      case_light.on_off_request |= enabled_case_light_flag;
+      case_light.on_off_request &= ~disabled_case_light_flag;
+    } else {
+      case_light.on_off_request |= disabled_case_light_flag;
+      case_light.on_off_request &= ~enabled_case_light_flag;
+    }
+
+    if (var.memadr) *static_cast<uint16_t *>(var.memadr) = case_light.data;
   }
 
 #endif // CASE_LIGHT_ENABLE
@@ -940,14 +965,55 @@ void DGUSScreenVariableHandler::HandleStepPerMMExtruderChanged(DGUS_VP_Variable 
   }
 #endif
 
+#if ENABLED(HAS_BED_PROBE)
 void DGUSScreenVariableHandler::HandleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandleProbeOffsetZChanged");
-
-  const float offset = float(int16_t(swap16(*(uint16_t*)val_ptr))) / 100.0f;
-  ExtUI::setZOffset_mm(offset);
+  union { float as_float; uint16_t as_uint; } z_offset_mm {.as_uint = swap16(*static_cast<uint16_t*>(val_ptr))};
+  z_offset_mm.as_float = z_offset_mm.as_float / 100U;
+  ExtUI::setZOffset_mm(z_offset_mm.as_float);
   ScreenHandler.skipVP = var.VP; // don't overwrite value the next update time as the display might autoincrement in parallel
-  return;
 }
+
+void DGUSScreenVariableHandler::HandleProbeOffset(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("HandleProbeOffset");
+  if (val_ptr == nullptr) return;
+  if (var.memadr == nullptr) return;
+
+  const uint16_t request_flags{swap16(*static_cast<uint16_t *>(val_ptr))};
+  uint16_t *buffered_flags{static_cast<uint16_t *>(var.memadr)};
+  *buffered_flags |= request_flags;
+
+  constexpr const uint8_t reset_x_flag = 0x01;
+  constexpr const uint8_t reset_y_flag = 0x02;
+  constexpr const uint8_t reset_z_flag = 0x04;
+  constexpr float default_offset[] = NOZZLE_TO_PROBE_OFFSET; // todo rubienr - how to get valies from MarlinSettings
+
+  if ((*buffered_flags & reset_x_flag) != 0) {
+    ExtUI::setProbeOffset_mm(default_offset[X_AXIS], ExtUI::X);
+    *buffered_flags &= ~reset_x_flag;
+  }
+
+  if ((*buffered_flags & reset_y_flag) != 0) {
+    ExtUI::setProbeOffset_mm(default_offset[Y_AXIS], ExtUI::Y);
+    *buffered_flags &= ~reset_y_flag;
+  }
+
+  if ((*buffered_flags & reset_z_flag) != 0) {
+    ExtUI::setZOffset_mm(default_offset[Z_AXIS]);
+    *buffered_flags &= ~reset_z_flag;
+  }
+}
+
+void DGUSScreenVariableHandler::HandleProbeOffsetZAxis(DGUS_VP_Variable &var, void *val_ptr) {
+  DEBUG_ECHOLNPGM("HandleProbeOffsetZAxis");
+  UNUSED(var);
+  if (val_ptr) {
+    union { float as_float; uint16_t as_uint; int16_t as_int;} z_offset_mm {.as_uint = swap16(*static_cast<int16_t*>(val_ptr))};
+    z_offset_mm.as_float = static_cast<float>(z_offset_mm.as_int) / 100U;
+    ExtUI::setZOffset_mm(z_offset_mm.as_float);
+  }
+}
+#endif // HAS_BED_PROBE
 
 #if ENABLED(BABYSTEPPING)
   void DGUSScreenVariableHandler::HandleLiveAdjustZ(DGUS_VP_Variable &var, void *val_ptr) {
@@ -1192,7 +1258,7 @@ void DGUSScreenVariableHandler::PopToOldScreen() {
 }
 
 void DGUSScreenVariableHandler::UpdateScreenVPData() {
-  DEBUG_ECHOPAIR(" UpdateScreenVPData Screen: ", current_screen);
+  DEBUG_ECHOLNPAIR(" UpdateScreenVPData Screen: ", current_screen);
 
   const uint16_t *VPList = DGUSLCD_FindScreenVPMapList(current_screen);
   if (!VPList) {
