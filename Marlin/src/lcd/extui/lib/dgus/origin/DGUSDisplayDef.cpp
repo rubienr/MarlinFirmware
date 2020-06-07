@@ -35,6 +35,9 @@
 
 #include "../../../../ultralcd.h"
 #include "../../../ui_api.h"
+#include "DGUSDisplayDef.h"
+
+using Dgus::swap16;
 
 #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
   uint16_t distanceToMove = 0.1;
@@ -43,6 +46,7 @@
 const uint16_t VPList_Boot[] PROGMEM = {
   VP_MARLIN_VERSION,
   VP_UI_VERSION,
+  VP_UI_VERSION_PATCH,
   0x0000
 };
 
@@ -199,7 +203,7 @@ const uint16_t VPList_FanAndFeedrate[] PROGMEM = {
   0x0000
 };
 
-const uint16_t VPList_SD_FlowRates[] PROGMEM = {
+const uint16_t VPList_SD_FlowRates1[] PROGMEM = {
   #if EXTRUDERS >= 1
     VP_Flowrate_E0,
   #endif
@@ -209,16 +213,20 @@ const uint16_t VPList_SD_FlowRates[] PROGMEM = {
   #if EXTRUDERS >= 3
     VP_Flowrate_E2,
   #endif
-  #if EXTRUDERS >= 4
-    VP_Flowrate_E3,
-  #endif
-  #if EXTRUDERS >= 5
-    VP_Flowrate_E4,
-  #endif
-  #if EXTRUDERS >= 6
-    VP_Flowrate_E5,
-  #endif
   0x0000
+};
+
+const uint16_t VPList_SD_FlowRates2[] PROGMEM = {
+#if EXTRUDERS >= 4
+    VP_Flowrate_E3,
+#endif
+#if EXTRUDERS >= 5
+    VP_Flowrate_E4,
+#endif
+#if EXTRUDERS >= 6
+    VP_Flowrate_E5,
+#endif
+    0x0000
 };
 
 #if ENABLED(SDSUPPORT)
@@ -245,30 +253,60 @@ const uint16_t VPList_Info[] PROGMEM = {
     0x0000
 };
 
+const uint16_t VPList_Tools[] PROGMEM = {
+    0x0000
+};
+
+#if ENABLED(PSU_CONTROL)
 const uint16_t VPList_Psu[] PROGMEM = {
     VP_PSU_CONTROL,
     0x0000
 };
+#endif
 
 const uint16_t VPList_Motors[] PROGMEM = {
     VP_MOTOR_LOCK_UNLOK,
     0x0000
 };
 
+#if ANY(CASE_LIGHT_ENABLE, HAS_COLOR_LEDS)
 const uint16_t VPList_Lights[] PROGMEM = {
+#if ENABLED(CASE_LIGHT_ENABLE)
     VP_CASE_LIGHT_CONTROL,
+#endif
+#if ENABLED(HAS_COLOR_LEDS)
     VP_CASE_COLOR_LED_CONTROL_0,
     VP_CASE_COLOR_LED_CONTROL_1,
     VP_CASE_COLOR_LED_CONTROL_2,
+#endif
     0x0000
 };
+#endif
 
+#if ENABLED(AUTO_BED_LEVELING_UBL)
 const uint16_t VPList_BedLevelingUbl[] PROGMEM = {
     VP_BED_LEVELING_PARAMETER__REQEUST_FLAGS,
     VP_BED_LEVELING_PARAMETER__FADE_HEIGHT__SLOT_NUMBER,
     VP_BED_LEVELING_PARAMETER__ON_OFF__UNUSED,
     0x0000
 };
+#endif
+
+#if ENABLED(HAS_BED_PROBE)
+const uint16_t VPList_ProbeOffset[] PROGMEM = {
+    VP_PROBE_OFFSET_CONTROL,
+    VP_PROBE_OFFSET_X,
+    VP_PROBE_OFFSET_Y,
+    VP_PROBE_OFFSET_Z,
+    0x0000
+};
+#endif
+
+#if ENABLED(EEPROM_SETTINGS)
+const uint16_t VPList_Eeprom[] PROGMEM = {
+    0x0000
+};
+#endif
 
 const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_BOOT, VPList_Boot },
@@ -279,15 +317,27 @@ const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_MANUALMOVE, VPList_ManualMove },
   { DGUSLCD_SCREEN_MANUALEXTRUDE, VPList_ManualExtrude },
   { DGUSLCD_SCREEN_FANANDFEEDRATE, VPList_FanAndFeedrate },
-  { DGUSLCD_SCREEN_FLOWRATES, VPList_SD_FlowRates },
+  { DGUSLCD_SCREEN_FLOWRATES_1, VPList_SD_FlowRates1 },
+  { DGUSLCD_SCREEN_FLOWRATES_2, VPList_SD_FlowRates2 },
   { DGUSLCD_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation },
   { DGUSLCD_SCREEN_INFO, VPList_Info },
+  { DGUSLCD_SCREEN_TOOLS, VPList_Tools },
+#if ENABLED(PSU_CONTROL)
   { DGUSLCD_SCREEN_PSU, VPList_Psu },
-  { DGUSLCD_SCREEN_MOTORS, VPList_Motors },
-  { DGUSLCD_SCREEN_LIGHTS, VPList_Lights },
+#endif
+#if ENABLED(AUTO_BED_LEVELING_UBL)
   { DGUSLCD_SCREEN_BED_LEVELING, VPList_BedLevelingUbl },
-  { DGUSLCD_SCREEN_EEPROM, nullptr },
-
+#endif
+  { DGUSLCD_SCREEN_MOTORS, VPList_Motors },
+#if ANY(CASE_LIGHT_ENABLE, HAS_COLOR_LEDS)
+  { DGUSLCD_SCREEN_LIGHTS, VPList_Lights },
+#endif
+#if ENABLED(HAS_BED_PROBE)
+  { DGUSLCD_SCREEN_PROBE_OFFSET, VPList_ProbeOffset },
+#endif
+#if ENABLED(EEPROM_SETTINGS)
+  { DGUSLCD_SCREEN_EEPROM, VPList_Eeprom },
+#endif
 #if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
 #endif
@@ -303,7 +353,7 @@ const char MarlinConfigurationAuthor[] PROGMEM = STRING_CONFIG_H_AUTHOR;
 const char MarlinCompileDate[] PROGMEM = __DATE__;
 
 /**
- * Bufferd DGUS origin variables for handler that operate on more than one uint16_t viariable.
+ * Bufferd DGUS origin variables for handler that operate on more than one word (uint16_t viariable).
  */
 struct DgusOriginVariables {
   static const uint8_t TRUE = 2;
@@ -312,31 +362,47 @@ struct DgusOriginVariables {
 
   uint16_t psu_control {0};/// low byte: 0 - undefined, 1 - disable PSU, 2 - enable PSU; high byte: unused
   uint16_t motors_control {0}; /// low byte: 0 - undefined, 1 - disable motors, 2 - enable motors; high byte: unused
-  uint16_t case_light_control {0}; /// low byte on/off, high byte brightness
 
-  uint16_t color_led_control__on_off__intensity {0}; /// brightness control: low byte on/off, high byte intensity
-  uint16_t color_led_component__red__green {0}; /// color parameter: low byte red, high byte green
-  uint16_t color_led_component__blue__white {0}; /// color parameter: low byte blue, high byte white
+  #if ENABLED(CASE_LIGHT_ENABLE)
+    uint16_t case_light_control {0}; /// low byte on/off, high byte brightness
+  #endif
+  #if ENABLED(HAS_COLOR_LEDS)
+    /// brightness control: low byte on/off, high byte intensity
+    union { uint16_t data; struct{ uint8_t on_off; uint8_t intensity;} __attribute__ ((packed));}
+    color_led_control_on_off_intensity {.data = 0 };
+    /// color parameter: low byte red, high byte green
+    union { uint16_t data; struct{ uint8_t blue; uint8_t white;} __attribute__ ((packed));}
+    color_led_component_blue_white  {.data = 0 };;
+    /// color parameter: low byte blue, high byte white
+    union { uint16_t data; struct{ uint8_t red; uint8_t green;} __attribute__ ((packed));}
+    color_led_component_red_green  {.data = 0 };
+  #endif
 
-  /// flags defining UBL operations to process
-  enum class BedLevelingRequestFlagsLowByte : uint16_t {
-    // falgs set by display
-    StartUbl = 0x01,
-    EnableUbl = 0x02,
-    DisableUbl = 0x04,
-    LoadMesh = 0x08,
-    SaveMesh = 0x10,
-    // flags set internally
-    SlotChanged = 0x0400,
-    FadeHeightChanged = 0x0800,
-  };
+  #if ENABLED(AUTO_BED_LEVELING_UBL)
+    /// flags defining UBL operations to process
+    enum class BedLevelingRequestFlags : uint16_t {
+      // falgs set by display
+      StartUbl = 0x01,
+      EnableUbl = 0x02,
+      DisableUbl = 0x04,
+      LoadMesh = 0x08,
+      SaveMesh = 0x10,
+      // flags set internally
+      SlotChanged = 0x0400,
+      FadeHeightChanged = 0x0800,
+    };
 
-  static uint16_t toUint16(BedLevelingRequestFlagsLowByte v) { return static_cast<uint16_t>(v); }
+    static uint16_t toUint16(BedLevelingRequestFlags v) { return static_cast<uint16_t>(v); }
 
-  uint16_t bed_leveling__request_flags {0}; /// flags for requests set by display or internally
-  /// fade (low byte) and slot number (hight byte) arguments set by display or internally
-  uint16_t bed_leveling__fade_height__slot_number {0};
-  uint16_t bed_leveling__on_off__unused {0}; /// enable/disable (low byte) state set internally
+    uint16_t bed_leveling__request_flags {0}; /// flags for requests set by display or internally
+    /// fade (low byte) and slot number (hight byte) arguments set by display or internally
+    uint16_t bed_leveling__fade_height__slot_number {0};
+    uint16_t bed_leveling__on_off__unused {0}; /// enable/disable (low byte) state set internally
+  #endif
+
+  #if HAS_BED_PROBE
+    uint16_t probe_offset_request_flags {0}; /// flags for requests set by display
+  #endif
 
 } OriginVariables;
 
@@ -344,32 +410,40 @@ struct DgusOriginVariables {
 
 /**
  * Update LED color according to the bufferd arguments: OriginVariables.color_led_*
+ * - clears on/off request flags
+ * - updates the on/off state flags for back propagation to display
  */
 void updateColorLeds() {
-  const uint8_t enabled {static_cast<uint8_t>((OriginVariables.color_led_control__on_off__intensity & 0x00ff) >> 0)};
-  switch (enabled) {
-    default: return;
-    case DgusOriginVariables::UNDEFINED: return; // value unset, assume lights on request
-    case DgusOriginVariables::FALSE: // disable color LEDs
-      queue.enqueue_now_P(PSTR("M150 P0 R0 U0 B0 W0"));
-      break;
-    case DgusOriginVariables::TRUE: // enable color LEDs
-    {
+
+  constexpr  uint8_t disabled_flag = 0x04;
+  constexpr  uint8_t enabled_flag = 0x08;
+
+  // disable
+  if ((OriginVariables.color_led_control_on_off_intensity.on_off & DgusOriginVariables::FALSE) != 0) {
+    queue.enqueue_now_P(PSTR("M150 P0 R0 U0 B0 W0"));
+    OriginVariables.color_led_control_on_off_intensity.on_off &= ~DgusOriginVariables::FALSE;
+    OriginVariables.color_led_control_on_off_intensity.on_off |= disabled_flag;
+    OriginVariables.color_led_control_on_off_intensity.on_off &= ~enabled_flag;
+  }
+
+  if (
+    // enable
+    ((OriginVariables.color_led_control_on_off_intensity.on_off & DgusOriginVariables::TRUE) != 0) ||
+    // on color changed
+    ((OriginVariables.color_led_control_on_off_intensity.on_off & enabled_flag) != 0)) {
       char buf[32]{0};
-      const uint8_t i{static_cast<uint8_t>((OriginVariables.color_led_control__on_off__intensity & 0xff00) >> 8)};
-      const uint8_t r{static_cast<uint8_t>((OriginVariables.color_led_component__red__green & 0x00ff) >> 0)};
-      const uint8_t g{static_cast<uint8_t>((OriginVariables.color_led_component__red__green & 0xff00) >> 8)};
-      const uint8_t b{static_cast<uint8_t>((OriginVariables.color_led_component__blue__white & 0x00ff) >> 0)};
-      const uint8_t w{static_cast<uint8_t>((OriginVariables.color_led_component__blue__white & 0xff00) >> 8)};
-      sprintf(buf, "M150 P%d R%d U%d B%d W%d", i, r, g, b, w);
+      sprintf(buf, "M150 P%d R%d U%d B%d W%d",
+        OriginVariables.color_led_control_on_off_intensity.intensity,
+        OriginVariables.color_led_component_red_green.red,
+        OriginVariables.color_led_component_red_green.green,
+        OriginVariables.color_led_component_blue_white.blue,
+        OriginVariables.color_led_component_blue_white.white);
       queue.enqueue_one_now(buf);
-    }
-      break;
+      OriginVariables.color_led_control_on_off_intensity.on_off &= ~DgusOriginVariables::TRUE;
+      OriginVariables.color_led_control_on_off_intensity.on_off |=enabled_flag;
+      OriginVariables.color_led_control_on_off_intensity.on_off &= ~disabled_flag;
   }
 }
-
-// TODO rubienr: deduplicate code, see ../DGUSDisplay.cpp
-uint16_t swap16(const uint16_t value) { return (value & 0xffU) << 8U | (value >> 8U); }
 
 /**
  * Buffers the given LED argument and updates the LED color.
@@ -402,7 +476,7 @@ void HandleBedLevelingUblRequestFlags() {
 
   // --- do UBL probing ---
   {
-    const uint16_t flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::StartUbl);
+    const uint16_t flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::StartUbl);
     const bool do_start_ubl = (OriginVariables.bed_leveling__request_flags & flag) != 0;
 
     if (do_start_ubl) {
@@ -420,8 +494,8 @@ void HandleBedLevelingUblRequestFlags() {
   // --- enable/disable UBL ---
 
   {
-    const uint16_t enable_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::EnableUbl);
-    const uint16_t disable_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::DisableUbl);
+    const uint16_t enable_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::EnableUbl);
+    const uint16_t disable_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::DisableUbl);
     const bool enable_ubl = (OriginVariables.bed_leveling__request_flags & enable_flag) != 0;
     const bool disable_ubl = (OriginVariables.bed_leveling__request_flags & disable_flag) != 0;
 
@@ -450,10 +524,8 @@ void HandleBedLevelingUblRequestFlags() {
   // --- load mesh from slot ---
 
   {
-    const uint16_t
-        load_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::LoadMesh);
-    const uint16_t
-        save_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::SaveMesh);
+    const uint16_t load_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::LoadMesh);
+    const uint16_t save_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::SaveMesh);
     const bool load_mesh = (OriginVariables.bed_leveling__request_flags & load_flag) != 0;
     const bool save_mesh = (OriginVariables.bed_leveling__request_flags & save_flag) != 0;
     const uint8_t slot_number = static_cast<uint8_t>(OriginVariables.bed_leveling__fade_height__slot_number >> 8);
@@ -472,17 +544,10 @@ void HandleBedLevelingUblRequestFlags() {
       #if ENABLED(HAS_LEVELING)
         #if ENABLED(HAS_MESH)
           const uint16_t z_fade_height_percent_uint16_t = constrain(static_cast<uint16_t>(roundf(ExtUI::getMeshFadeHeight() * 10)), 0, 255);
-          const uint8_t z_fade_height_percent = static_cast<uint8_t>(z_fade_height_percent_uint16_t);
-
-          sprintf_P(buf, PSTR("zf_f %f\n"), ExtUI::getMeshFadeHeight());
-          DEBUG_ECHOPAIR_P(buf);
-          sprintf_P(buf, PSTR("zf16 %d\n"), z_fade_height_percent_uint16_t);
-          DEBUG_ECHOPAIR_P(buf);
-          sprintf_P(buf, PSTR("zf08 %d\n"), z_fade_height_percent);
-          DEBUG_ECHOPAIR_P(buf);
+          const uint8_t z_fade_height_mm_percent = static_cast<uint8_t>(z_fade_height_percent_uint16_t);
 
           OriginVariables.bed_leveling__fade_height__slot_number &= 0xff00;
-          OriginVariables.bed_leveling__fade_height__slot_number |= z_fade_height_percent;
+          OriginVariables.bed_leveling__fade_height__slot_number |= z_fade_height_mm_percent;
         #endif // HAS_MESH
         OriginVariables.bed_leveling__on_off__unused &= 0xff00;
         OriginVariables.bed_leveling__on_off__unused |= (ExtUI::getLevelingActive()) ? DgusOriginVariables::TRUE : DgusOriginVariables::FALSE;
@@ -498,9 +563,9 @@ void HandleBedLevelingUblRequestFlags() {
       #endif
 
       const uint8_t
-          fade_height_mm_percent = static_cast<uint8_t>(OriginVariables.bed_leveling__fade_height__slot_number);
-      const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_percent / 10U);
-      const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_percent % 10U);
+          fade_height_mm_tenth = static_cast<uint8_t>(OriginVariables.bed_leveling__fade_height__slot_number);
+      const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_tenth / 10U);
+      const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_tenth % 10U);
       char buf[20]{0};
 
       sprintf_P(buf, PSTR("M420 Z%d.%d"), fade_height_mm, fade_height_mm_fraction);
@@ -516,7 +581,7 @@ void HandleBedLevelingUblRequestFlags() {
   // --- z fade-height changed ---
 
   {
-    const uint16_t flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::FadeHeightChanged);
+    const uint16_t flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::FadeHeightChanged);
     const bool update_z_fade = (OriginVariables.bed_leveling__request_flags & flag) != 0;
 
     if (update_z_fade)
@@ -525,9 +590,9 @@ void HandleBedLevelingUblRequestFlags() {
         DEBUG_ECHOLNPGM("HandleBedLevelingUblRequestFlags: update Z fade-heidht");
       #endif
       const uint8_t
-          fade_height_mm_percent = static_cast<uint8_t>(OriginVariables.bed_leveling__fade_height__slot_number);
-      const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_percent / 10U);
-      const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_percent % 10U);
+          fade_height_mm_tenth = static_cast<uint8_t>(OriginVariables.bed_leveling__fade_height__slot_number);
+      const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_tenth / 10U);
+      const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_tenth % 10U);
       char buf[16]{0};
 
       sprintf_P(buf, PSTR("M420 Z%d.%d"), fade_height_mm, fade_height_mm_fraction);
@@ -539,7 +604,7 @@ void HandleBedLevelingUblRequestFlags() {
   // --- slot selection changed ---
 
   {
-    const uint16_t flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::SlotChanged);
+    const uint16_t flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::SlotChanged);
     const bool update_z_fade = (OriginVariables.bed_leveling__request_flags & flag) != 0;
 
     if (update_z_fade)
@@ -548,7 +613,7 @@ void HandleBedLevelingUblRequestFlags() {
         DEBUG_ECHOLNPGM("HandleBedLevelingUblRequestFlags: slot selection changed");
       #endif
       OriginVariables.bed_leveling__request_flags &= ~flag;
-      const uint16_t new_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::LoadMesh);
+      const uint16_t new_flag = DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::LoadMesh);
       OriginVariables.bed_leveling__request_flags |= new_flag;
       HandleBedLevelingUblRequestFlags();
     }
@@ -589,7 +654,7 @@ void HandleBedLevelingUblParameter_Fade_Slot(DGUS_VP_Variable &var, void *val_pt
     //if (fade_height_old != fade_height_new)
     //  OriginVariables.bed_leveling__request_flags |= DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::FadeHeightChanged);
     if (slot_old != slot_new)
-      OriginVariables.bed_leveling__request_flags |= DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlagsLowByte::SlotChanged);
+      OriginVariables.bed_leveling__request_flags |= DgusOriginVariables::toUint16(DgusOriginVariables::BedLevelingRequestFlags::SlotChanged);
   }
 
   HandleBedLevelingUblRequestFlags();
@@ -645,7 +710,8 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   // Boot and info screen
   { .VP = VP_MARLIN_VERSION, .memadr = (void*)MarlinVersion, .size = VP_MARLIN_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   // Boot screen
-  { .VP = VP_UI_VERSION, .memadr = (void*)UI_VERSION, .size = UI_VERSION_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+  { .VP = VP_UI_VERSION, .memadr = (void*)&UI_VERSION.as_words.low_word, .size = 2, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay },
+  { .VP = VP_UI_VERSION_PATCH, .memadr = (void*)&UI_VERSION.as_words.high_word, .size = 2, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay },
   { .VP = VP_UI_FLAVOUR, .memadr = (void*)UI_FLAVOUR, .size = sizeof(UI_FLAVOUR), .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
 
   // Info screen
@@ -728,6 +794,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER_STR(VP_PrintsTotal, nullptr, VP_PrintsTotal_LEN, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendPrintsTotalToDisplay ),
   #endif
 
+  // todo rubienr: on which screen is VP_N_STEP_PER_MM used?
   VPHELPER(VP_X_STEP_PER_MM, &planner.settings.axis_steps_per_mm[X_AXIS], DGUSScreenVariableHandler::HandleStepPerMMChanged, DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
   VPHELPER(VP_Y_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Y_AXIS], DGUSScreenVariableHandler::HandleStepPerMMChanged, DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
   VPHELPER(VP_Z_STEP_PER_MM, &planner.settings.axis_steps_per_mm[Z_AXIS], DGUSScreenVariableHandler::HandleStepPerMMChanged, DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
@@ -752,7 +819,6 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_SD_AbortPrintConfirmed, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_ReallyAbort, nullptr),
     VPHELPER(VP_SD_Print_Setting, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_PrintTune, nullptr),
     #if HAS_BED_PROBE
-      VPHELPER(VP_SD_Print_ProbeOffsetZ, &probe.offset.z, DGUSScreenVariableHandler::HandleProbeOffsetZChanged, &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
       #if ENABLED(BABYSTEPPING)
         VPHELPER(VP_SD_Print_LiveAdjustZ, nullptr, DGUSScreenVariableHandler::HandleLiveAdjustZ, nullptr),
       #endif
@@ -769,25 +835,37 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   { .VP = VP_MSGSTR3, .memadr = nullptr, .size = VP_MSGSTR3_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MSGSTR4, .memadr = nullptr, .size = VP_MSGSTR4_LEN, .set_by_display_handler = nullptr, .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
 
-  // Power
+  // power supply
   #if ENABLED(PSU_CONTROL)
     VPHELPER(VP_PSU_CONTROL, &OriginVariables.psu_control, &DGUSScreenVariableHandler::HandlePsuOnOff, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
   #endif
 
-  // Light
-  // TODO rubienr - wrap with deine guards (if endbaled case light/color led)
-  VPHELPER(VP_CASE_LIGHT_CONTROL, &OriginVariables.case_light_control, &DGUSScreenVariableHandler::HandleCaseLight, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_CASE_COLOR_LED_CONTROL_0, &OriginVariables.color_led_control__on_off__intensity, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_CASE_COLOR_LED_CONTROL_1, &OriginVariables.color_led_component__red__green, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_CASE_COLOR_LED_CONTROL_2, &OriginVariables.color_led_component__blue__white, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  // light
+  #if ENABLED(CASE_LIGHT_ENABLE)
+    VPHELPER(VP_CASE_LIGHT_CONTROL, &OriginVariables.case_light_control, &DGUSScreenVariableHandler::HandleCaseLight, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  #endif
+  #if ENABLED(HAS_COLOR_LEDS)
+    VPHELPER(VP_CASE_COLOR_LED_CONTROL_0, &OriginVariables.color_led_control_on_off_intensity, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_CASE_COLOR_LED_CONTROL_1, &OriginVariables.color_led_component_red_green, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_CASE_COLOR_LED_CONTROL_2, &OriginVariables.color_led_component_blue_white, &HandleColorLedUpdate, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  #endif
 
-  // Bed leveling
-  // TODO rubienr - wrap with deine guards (if endbaled UBL)
-  VPHELPER(VP_BED_LEVELING_PARAMETER__REQEUST_FLAGS, &OriginVariables.bed_leveling__request_flags, &HandleBedLevelingUblParameterStore, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_BED_LEVELING_PARAMETER__FADE_HEIGHT__SLOT_NUMBER, &OriginVariables.bed_leveling__fade_height__slot_number, &HandleBedLevelingUblParameter_Fade_Slot, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(VP_BED_LEVELING_PARAMETER__ON_OFF__UNUSED, &OriginVariables.bed_leveling__on_off__unused, &HandleBedLevelingUblParameterStore, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  // bed leveling
+  #if ENABLED(AUTO_BED_LEVELING_UBL)
+    VPHELPER(VP_BED_LEVELING_PARAMETER__REQEUST_FLAGS, &OriginVariables.bed_leveling__request_flags, &HandleBedLevelingUblParameterStore, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_BED_LEVELING_PARAMETER__FADE_HEIGHT__SLOT_NUMBER, &OriginVariables.bed_leveling__fade_height__slot_number, &HandleBedLevelingUblParameter_Fade_Slot, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_BED_LEVELING_PARAMETER__ON_OFF__UNUSED, &OriginVariables.bed_leveling__on_off__unused, &HandleBedLevelingUblParameterStore, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  #endif
 
-  VPHELPER(0, 0, 0, 0)  // must be last entry.
+  // nozzle to probe offset
+  #if ENABLED(HAS_BED_PROBE)
+    VPHELPER(VP_PROBE_OFFSET_CONTROL, &OriginVariables.probe_offset_request_flags, &DGUSScreenVariableHandler::HandleProbeOffset, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+    VPHELPER(VP_PROBE_OFFSET_X, &probe.offset.x, &DGUSScreenVariableHandler::HandleProbeOffsetAxis<ExtUI::X>, &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
+    VPHELPER(VP_PROBE_OFFSET_Y, &probe.offset.y, &DGUSScreenVariableHandler::HandleProbeOffsetAxis<ExtUI::Y>, &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
+    VPHELPER(VP_PROBE_OFFSET_Z, &probe.offset.z, &DGUSScreenVariableHandler::HandleProbeOffsetZAxis, &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
+  #endif
+
+  VPHELPER(0, 0, 0, 0)  // must be last entry
 };
 
 #endif // DGUS_LCD_UI_ORIGIN

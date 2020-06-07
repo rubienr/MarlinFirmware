@@ -37,19 +37,34 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_MANUALMOVE = 40,
   DGUSLCD_SCREEN_MANUALEXTRUDE=42,
   DGUSLCD_SCREEN_FANANDFEEDRATE = 44,
-  DGUSLCD_SCREEN_FLOWRATES = 46,
+  DGUSLCD_SCREEN_FLOWRATES_1 = 46,
+  DGUSLCD_SCREEN_FLOWRATES_2 = 48,
+#if ENABLED(SDSUPPORT)
   DGUSLCD_SCREEN_SDFILELIST = 50,
+#endif
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
   DGUSLCD_SCREEN_INFO = 54, ///< info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
+  DGUSLCD_SCREEN_TOOLS = 60, ///< screen for showing tools sub menu entries
+#if ENABLED(AUTO_BED_LEVELING_UBL)
   DGUSLCD_SCREEN_BED_LEVELING = 62, ///< screen for showing/manipulating bed leveling
+#endif
+#if ENABLED(PSU_CONTROL)
   DGUSLCD_SCREEN_PSU = 64, ///< screen for showing/manipulating power supply status
+#endif
   DGUSLCD_SCREEN_MOTORS = 66, ///< screen for showing/manipulating motors status
+#if ENABLED(HAS_BED_PROBE)
+  DGUSLCD_SCREEN_PROBE_OFFSET = 68, ///< screen for showing/manipulating nozzle to probe offset
+#endif
+#if ANY(CASE_LIGHT_ENABLE, HAS_COLOR_LEDS)
   DGUSLCD_SCREEN_LIGHTS = 70, ///< screen for showing/manipulating case and RGB light
+#endif
+#if ENABLED(EEPROM_SETTINGS)
   DGUSLCD_SCREEN_EEPROM = 72, ///< screen for manipulating EEPROM: load, save, restore to factory
+#endif
   // 090-105 reserved for .ico icon sets
-  DGUSLCD_SCREEN_POWER_LOSS = 100,
-  DGUSLCD_SCREEN_PREHEAT=120,
+  DGUSLCD_SCREEN_POWER_LOSS = 106,
   DGUSLCD_SCREEN_UTILITY=110,
+  DGUSLCD_SCREEN_PREHEAT=120,
   DGUSLCD_SCREEN_FILAMENT_HEATING=146,
   DGUSLCD_SCREEN_FILAMENT_LOADING=148,
   DGUSLCD_SCREEN_FILAMENT_UNLOADING=158,
@@ -79,13 +94,19 @@ enum DGUSLCD_Screens : uint8_t {
 //    * marlin sends version to display: DGUS decides but that thing is very limited
 //    * display sends version to marlin: marlin decides and tries to send the information (M117) about that incident
 constexpr uint16_t VP_UI_VERSION = 0x1000;
-constexpr uint8_t UI_VERSION_LEN = 4;
-constexpr uint8_t UI_VERSION[UI_VERSION_LEN] PROGMEM = {
-    0, // 0x1000 VP high byte: Major -- incremented when incompatible
-    1, // 0x1000 VP low  byte: Minor -- incremented on new features, but compatible
-    0, // 0x1001 VP high byte: Patch -- fixed which do not change functionality.
-    0  // 0x1001 VP low  byte: padding, unused
-};
+constexpr uint16_t VP_UI_VERSION_PATCH = 0x1001;
+const union /* todo rubienr - PROGMEM */ {
+  struct {
+    uint8_t major;   // 0x1000 VP high byte: Major -- incremented when incompatible
+    uint8_t minor;   // 0x1000 VP low  byte: Minor -- incremented on new features, but compatible
+    uint8_t patch;   // 0x1001 VP high byte: Patch -- fixed which do not change functionality.
+    uint8_t _unused; // 0x1001 VP low  byte: padding, unused
+  } __attribute__ ((packed)) version;
+  struct {
+    uint16_t low_word;
+    uint8_t high_word;
+  } __attribute__ ((packed)) as_words;
+} UI_VERSION {.version = {.major = 0, .minor = 1, .patch = 0, ._unused = 0}};
 
 constexpr uint16_t VP_UI_FLAVOUR = 0x1010;  // lets reserve 16 bytes here to determine if UI is suitable for this Marlin. tbd.
 constexpr uint8_t UI_FLAVOUR_LEN=16;
@@ -175,9 +196,19 @@ constexpr uint16_t VP_MOVE_E5 = 0x211A;
 
 constexpr uint16_t VP_HOME_ALL = 0x2120;
 
+#if ENABLED(AUTO_BED_LEVELING_UBL)
 constexpr uint16_t VP_BED_LEVELING_PARAMETER__REQEUST_FLAGS = 0x2121;
 constexpr uint16_t VP_BED_LEVELING_PARAMETER__FADE_HEIGHT__SLOT_NUMBER = 0x2122;
 constexpr uint16_t VP_BED_LEVELING_PARAMETER__ON_OFF__UNUSED = 0x2123;
+#endif
+
+#if ENABLED(HAS_BED_PROBE)
+// relative nozzle to probe offset as seen from the nozzle in 1/100[mm]
+constexpr uint16_t VP_PROBE_OFFSET_CONTROL= 0x2124;
+constexpr uint16_t VP_PROBE_OFFSET_X= 0x2125;
+constexpr uint16_t VP_PROBE_OFFSET_Y = 0x2126;
+constexpr uint16_t VP_PROBE_OFFSET_Z = 0x2127;
+#endif
 
 constexpr uint16_t VP_MOTOR_LOCK_UNLOK = 0x2130;
 
@@ -405,7 +436,7 @@ constexpr uint16_t VP_SD_FileName2 = 0x3240;
 constexpr uint16_t VP_SD_FileName3 = 0x3260;
 constexpr uint16_t VP_SD_FileName4 = 0x3280;
 
-constexpr uint16_t VP_SD_Print_ProbeOffsetZ = 0x32A0; //
+// TODO rubienr: cleanup
 constexpr uint16_t VP_SD_Print_Filename = 0x32C0; //
 #endif
 
