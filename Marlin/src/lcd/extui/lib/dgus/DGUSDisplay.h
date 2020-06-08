@@ -333,12 +333,12 @@ void DGUSScreenVariableHandler::DGUSLCD_SetValueDirectly(DGUS_VP_Variable &var, 
 template<unsigned int decimals>
 void DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay(DGUS_VP_Variable &var) {
   if (var.memadr) {
-    float f = *(float *)var.memadr;
+    float f = *static_cast<float *>(var.memadr);
     f *= cpow(10, decimals);
     union { long l; char lb[4]; } endian;
 
     char tmp[4];
-    endian.l = f;
+    endian.l = static_cast<long>(f);
     tmp[0] = endian.lb[3];
     tmp[1] = endian.lb[2];
     tmp[2] = endian.lb[1];

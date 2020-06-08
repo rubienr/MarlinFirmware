@@ -30,12 +30,12 @@
 #include "../DGUSDisplay.h"
 
 #include "../../../../../module/temperature.h"
-#include "../../../../../module/motion.h"
+//#include "../../../../../module/motion.h"
 #include "../../../../../module/planner.h"
 
-#include "../../../../ultralcd.h"
-#include "../../../ui_api.h"
-#include "DGUSDisplayDef.h"
+//#include "../../../../ultralcd.h"
+//#include "../../../ui_api.h"
+//#include "DGUSDisplayDef.h"
 
 using Dgus::swap16;
 

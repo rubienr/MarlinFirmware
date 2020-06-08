@@ -236,13 +236,12 @@ namespace ExtUI {
   #endif
 
   bool isHeaterIdle(const extruder_t extruder) {
-    return false
       #if HOTENDS && HEATER_IDLE_HANDLER
-        || thermalManager.hotend_idle[extruder - E0].timed_out
+        return thermalManager.hotend_idle[extruder - E0].timed_out;
       #else
-        ; UNUSED(extruder)
+        UNUSED(extruder);
+        return false;
       #endif
-    ;
   }
 
   bool isHeaterIdle(const heater_t heater) {
@@ -979,14 +978,14 @@ namespace ExtUI {
     #endif
     #if HAS_HEATED_BED
       if (heater == BED)
-        thermalManager.setTargetBed(LROUND(constrain(value, 0, BED_MAXTEMP - 10)));
+        thermalManager.setTargetBed(static_cast<int16_t>(roundf(constrain(value, 0, BED_MAXTEMP - 10))));
       else
     #endif
       {
         #if HOTENDS
           static constexpr int16_t heater_maxtemp[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_MAXTEMP, HEATER_1_MAXTEMP, HEATER_2_MAXTEMP, HEATER_3_MAXTEMP, HEATER_4_MAXTEMP, HEATER_5_MAXTEMP, HEATER_6_MAXTEMP, HEATER_7_MAXTEMP);
-          const int16_t e = heater - H0;
-          thermalManager.setTargetHotend(LROUND(constrain(value, 0, heater_maxtemp[e] - 15)), e);
+          const uint8_t e = heater - H0;
+          thermalManager.setTargetHotend(static_cast<int16_t>(roundf(constrain(value, 0, heater_maxtemp[e] - 15))), e);
         #endif
       }
   }
@@ -997,16 +996,16 @@ namespace ExtUI {
     #endif
     #if HOTENDS
       constexpr int16_t heater_maxtemp[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_MAXTEMP, HEATER_1_MAXTEMP, HEATER_2_MAXTEMP, HEATER_3_MAXTEMP, HEATER_4_MAXTEMP, HEATER_5_MAXTEMP, HEATER_6_MAXTEMP, HEATER_7_MAXTEMP);
-      const int16_t e = extruder - E0;
+      const uint8_t e = extruder - E0;
       enableHeater(extruder);
-      thermalManager.setTargetHotend(LROUND(constrain(value, 0, heater_maxtemp[e] - 15)), e);
+      thermalManager.setTargetHotend(static_cast<int16_t>(roundf(constrain(value, 0, heater_maxtemp[e] - 15))), e);
     #endif
   }
 
   void setTargetFan_percent(const float value, const fan_t fan) {
     #if FAN_COUNT > 0
       if (fan < FAN_COUNT)
-        thermalManager.set_fan_speed(fan - FAN0, map(constrain(value, 0, 100), 0, 100, 0, 255));
+        thermalManager.set_fan_speed(fan - FAN0, static_cast<uint16_t>(map(constrain(static_cast<uint16_t>(roundf(value)), 0, 100), 0, 100, 0, 255)));
     #else
       UNUSED(value);
       UNUSED(fan);
@@ -1014,7 +1013,7 @@ namespace ExtUI {
   }
 
   void setFeedrate_percent(const float value) {
-    feedrate_percentage = constrain(value, 10, 500);
+    feedrate_percentage = static_cast<int16_t>(constrain(roundf(value), 10, 500));
   }
 
   void setUserConfirmed() {
