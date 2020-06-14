@@ -136,7 +136,7 @@
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
-#define CUSTOM_MACHINE_NAME "Ender-5 Pro"
+#define CUSTOM_MACHINE_NAME "Ender-5 Plus"
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like http://www.uuidgenerator.net/version4
@@ -325,7 +325,7 @@
  */
 // custom extension: PSU_CONTROL (Ender-5 Plus has no PSU control)
 #define PSU_CONTROL
-#define PSU_NAME "Power Supply"
+#define PSU_NAME "Power Supply 24V"
 
 #if ENABLED(PSU_CONTROL)
   #define PSU_ACTIVE_HIGH true      // Set 'false' for ATX, 'true' for X-Box
@@ -1770,7 +1770,7 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-//#define SPEAKER
+#define SPEAKER
 
 //
 // The duration and frequency for the UI feedback sound.
@@ -2240,7 +2240,7 @@
   #define NEOPIXEL_PIXELS       27  // Number of LEDs in the strip, larger of 2 strips if 2 neopixel strips are used
   //#define NEOPIXEL_IS_SEQUENTIAL  // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
   #define NEOPIXEL_BRIGHTNESS  180  // Initial brightness (0-255)
-  #define NEOPIXEL_STARTUP_TEST     // Cycle through colors at startup
+  //#define NEOPIXEL_STARTUP_TEST   // Cycle through colors at startup
 
   // Use a single Neopixel LED for static (background) lighting
   #define NEOPIXEL_BKGD_LED_INDEX  26              // Index of the LED to use
