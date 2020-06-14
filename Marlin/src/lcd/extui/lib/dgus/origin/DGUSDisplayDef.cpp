@@ -47,6 +47,7 @@ const uint16_t VPList_Boot[] PROGMEM = {
   VP_MARLIN_VERSION,
   VP_UI_VERSION,
   VP_UI_VERSION_PATCH,
+  VP_UI_FLAVOUR,
   0x0000
 };
 
@@ -308,6 +309,13 @@ const uint16_t VPList_Eeprom[] PROGMEM = {
 };
 #endif
 
+#if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
+const uint16_t VPList_FilamentLoadUnload[] PROGMEM = {
+    VP_FILAMENT_LOAD_UNLOAD,
+    0x0000
+};
+#endif
+
 const struct VPMapping VPMap[] PROGMEM = {
   { DGUSLCD_SCREEN_BOOT, VPList_Boot },
   { DGUSLCD_SCREEN_MAIN, VPList_Main },
@@ -337,6 +345,9 @@ const struct VPMapping VPMap[] PROGMEM = {
 #endif
 #if ENABLED(EEPROM_SETTINGS)
   { DGUSLCD_SCREEN_EEPROM, VPList_Eeprom },
+#endif
+#if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
+  { DGUSLCD_SCREEN_FILAMENT_LOAD_UNLOAD, VPList_FilamentLoadUnload },
 #endif
 #if ENABLED(SDSUPPORT)
   { DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList },
@@ -402,6 +413,17 @@ struct DgusOriginVariables {
 
   #if HAS_BED_PROBE
     uint16_t probe_offset_request_flags {0}; /// flags for requests set by display
+  #endif
+
+  #if ENABLED(ADVANCED_PAUSE_FEATURE)
+    union { uint16_t data;
+        struct {
+            uint8_t unload_flag : 1;
+            uint8_t load_flag : 1;
+            uint8_t _pad : 6;
+            uint8_t extruder_id;
+        } __attribute__ ((packed));
+    } filament_load_unload_request_data {.data = 0}; /// flags for requests set by display, cleared internally
   #endif
 
 } OriginVariables;
@@ -719,6 +741,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   { .VP = VP_MARLIN_DISTRIBUTION_DATE, .memadr = (void*)MarlinDistributionDate, .size = VP_MARLIN_DISTRIBUTION_DATE_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MARLIN_COMPILE_DATE, .memadr = (void*)MarlinCompileDate, .size = VP_MARLIN_COMPILE_DATE_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
   { .VP = VP_MARLIN_CONFIG_AUTHOR, .memadr = (void*)MarlinConfigurationAuthor, .size = VP_MARLIN_CONFIG_AUTHOR_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM },
+
   // M117 LCD String (We don't need the string in memory but "just" push it to the display on demand, hence the nullptr
   { .VP = VP_M117, .memadr = nullptr, .size = VP_M117_LEN, .set_by_display_handler = nullptr, .send_to_display_handler =&DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplay },
 
@@ -740,9 +763,9 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
       VPHELPER(VP_E0_PID_D, &thermalManager.temp_hotend[0].pid.Kd, DGUSScreenVariableHandler::HandleTemperaturePIDChanged, DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
       VPHELPER(VP_PID_AUTOTUNE_E0, nullptr, &DGUSScreenVariableHandler::HandlePIDAutotune, nullptr),
     #endif
-    #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
-      VPHELPER(VP_E0_FILAMENT_LOAD_UNLOAD, nullptr, &DGUSScreenVariableHandler::HandleFilamentOption, &DGUSScreenVariableHandler::HandleFilamentLoadUnload),
-    #endif
+    //#if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
+    //  VPHELPER(VP_E0_FILAMENT_LOAD_UNLOAD, nullptr, &DGUSScreenVariableHandler::HandleFilamentOption, &DGUSScreenVariableHandler::HandleFilamentLoadUnload),
+    //#endif
   #endif
   #if HOTENDS >= 2
     VPHELPER(VP_T_E1_Is, &thermalManager.temp_hotend[1].celsius, nullptr, DGUSLCD_SendFloatAsLongValueToDisplay<0>),
@@ -755,6 +778,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
       VPHELPER(VP_PID_AUTOTUNE_E1, nullptr, &DGUSScreenVariableHandler::HandlePIDAutotune, nullptr),
     #endif
   #endif
+  // TODO rubienr: missing hotend 3-5 temp handling
   #if HAS_HEATED_BED
     VPHELPER(VP_T_Bed_Is, &thermalManager.temp_bed.celsius, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>),
     VPHELPER(VP_T_Bed_Set, &thermalManager.temp_bed.target, DGUSScreenVariableHandler::HandleTemperatureChanged, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
@@ -865,6 +889,10 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_PROBE_OFFSET_Z, &probe.offset.z, &DGUSScreenVariableHandler::HandleProbeOffsetZAxis, &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
   #endif
 
+  // Filament load/unload screen using native capability via M701/M702
+  #if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
+    VPHELPER(VP_FILAMENT_LOAD_UNLOAD, &OriginVariables.filament_load_unload_request_data, &DGUSScreenVariableHandler::HandleFilamentLoadUnloadWithGcodes, &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  #endif
   VPHELPER(0, 0, 0, 0)  // must be last entry
 };
 

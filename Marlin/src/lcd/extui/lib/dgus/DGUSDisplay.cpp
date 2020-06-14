@@ -160,6 +160,34 @@ void DGUSScreenVariableHandler::setstatusmessagePGM(PGM_P const msg) {
   }
 }
 
+#if ENABLED(SPEAKER)
+  void DGUSScreenVariableHandler::playToneSpeaker(uint8_t start_section, uint8_t sections_count, uint8_t volume) {
+    struct {
+      uint8_t start_section;
+      uint8_t sections_count;
+      uint8_t volume;
+      uint8_t playback_status;
+    } audio_command {.start_section = start_section,
+      .sections_count = sections_count,
+      .volume = volume,
+      .playback_status = 0x02};
+    DGUSDisplay::WriteVariable(0xa0, &audio_command, 4);
+  }
+#else
+  void DGUSScreenVariableHandler::playToneBuzzer(uint8_t time_times_8ms, uint8_t volume) {
+    struct {
+      uint8_t _pad;
+      uint8_t buzz_time_times_8ms;
+      uint8_t volume;
+      uint8_t playback_status;
+    } audio_command {._pad = 0,
+      .buzz_time_times_8ms = time_times_8ms,
+      .volume = volume,
+      .playback_status = 0x02};
+    DGUSDisplay::WriteVariable(0xa0, &audio_command, 4);
+  }
+#endif
+
 // Send an 8 bit or 16 bit value to the display.
 void DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable &var) {
   if (var.memadr) {
@@ -837,17 +865,26 @@ void DGUSScreenVariableHandler::HandleMotorLockUnlock(DGUS_VP_Variable &var, voi
 #if ENABLED(EEPROM_SETTINGS)
   void DGUSScreenVariableHandler::HandleSettings(DGUS_VP_Variable &var, void *val_ptr) {
     DEBUG_ECHOLNPGM("HandleSettings");
-    uint16_t value = swap16(*(uint16_t*)val_ptr);
+    const uint16_t value = swap16(*(uint16_t*)val_ptr);
+
+    constexpr uint16_t restore_to_factory_settings_flag = 0x1;
+    constexpr uint16_t load_from_eeprom_flag = 0x2;
+    constexpr uint16_t save_to_eeprom_flag = 0x4;
+
     switch (value) {
       default: break;
-      case 1:
+      case restore_to_factory_settings_flag:
         #if ENABLED(PRINTCOUNTER)
           print_job_timer.initStats();
         #endif
         queue.enqueue_now_P(PSTR("M502\nM500"));
         break;
-      case 2: queue.enqueue_now_P(PSTR("M501")); break;
-      case 3: queue.enqueue_now_P(PSTR("M500")); break;
+      case load_from_eeprom_flag:
+        queue.enqueue_now_P(PSTR("M501"));
+        break;
+      case save_to_eeprom_flag:
+        queue.enqueue_now_P(PSTR("M500"));
+      break;
     }
   }
 #endif // EEPROM_SETTINGS
@@ -1130,6 +1167,43 @@ void DGUSScreenVariableHandler::HandleHeaterControl(DGUS_VP_Variable &var, void 
   }
 #endif
 
+#if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
+  void DGUSScreenVariableHandler::HandleFilamentLoadUnloadWithGcodes(DGUS_VP_Variable &var, void *val_ptr) {
+    DEBUG_ECHOLNPGM("HandleFilamentLoadUnloadWithGcodes");
+
+    static_assert(EXTRUDERS > 0, "Minimal one extruder neded.");
+    if (val_ptr == nullptr) return;
+    if (var.memadr == nullptr) return;
+
+    union Command { uint16_t data;
+            struct {
+                uint8_t unload_flag : 1;
+                uint8_t load_flag : 1;
+                uint8_t _pad : 6;
+                uint8_t extruder_id;
+            } __attribute__ ((packed));
+    };
+
+    Command display_request = { .data = swap16(*static_cast<uint16_t *>(val_ptr))};
+    Command *filament_command = static_cast<Command *>(var.memadr);
+    *filament_command = display_request;
+    filament_command->extruder_id = static_cast<uint8_t>(constrain(filament_command->extruder_id, 0, EXTRUDERS - 1));
+
+    char buf[16] = {0};
+    if (filament_command->unload_flag) {
+      filament_command->unload_flag = 0;
+      sprintf(buf, "M702 T%d U%d", filament_command->extruder_id, FILAMENT_CHANGE_UNLOAD_LENGTH);
+    }
+    else if (filament_command->load_flag) {
+      filament_command->load_flag = 0;
+      sprintf(buf, "M701 T%d L%d", filament_command->extruder_id, FILAMENT_CHANGE_FAST_LOAD_LENGTH);
+    }
+    else return;
+
+    queue.enqueue_one_now(buf);
+  }
+#endif
+
 #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
   void DGUSScreenVariableHandler::HandleFilamentOption(DGUS_VP_Variable &var, void *val_ptr) {
     DEBUG_ECHOLNPGM("HandleFilamentOption");
@@ -1181,6 +1255,7 @@ void DGUSScreenVariableHandler::HandleHeaterControl(DGUS_VP_Variable &var, void 
       #if HOTENDS >= 2
         thermalManager.setTargetHotend(e_temp, ExtUI::extruder_t::E1);
       #endif
+        // TODO rubienr: missing hotends 3-6
       GotoScreen(DGUSLCD_SCREEN_UTILITY);
     }
     else { // Go to the preheat screen to show the heating progress

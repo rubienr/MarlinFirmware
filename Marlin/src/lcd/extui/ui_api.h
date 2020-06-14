@@ -327,7 +327,7 @@ namespace ExtUI {
   void onMediaInserted();
   void onMediaError();
   void onMediaRemoved();
-  void onPlayTone(const uint16_t frequency, const uint16_t duration);
+  void onPlayTone(const uint16_t frequency = 1000, const uint16_t duration = 10);
   void onPrinterKilled(PGM_P const error, PGM_P const component);
   void onPrintTimerStarted();
   void onPrintTimerPaused();

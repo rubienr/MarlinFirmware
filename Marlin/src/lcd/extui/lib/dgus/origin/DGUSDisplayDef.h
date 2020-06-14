@@ -61,6 +61,9 @@ enum DGUSLCD_Screens : uint8_t {
 #if ENABLED(EEPROM_SETTINGS)
   DGUSLCD_SCREEN_EEPROM = 72, ///< screen for manipulating EEPROM: load, save, restore to factory
 #endif
+#if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
+    DGUSLCD_SCREEN_FILAMENT_LOAD_UNLOAD=74,
+#endif
   // 090-105 reserved for .ico icon sets
   DGUSLCD_SCREEN_POWER_LOSS = 106,
   DGUSLCD_SCREEN_UTILITY=110,
@@ -252,6 +255,14 @@ constexpr uint16_t VP_E1_BED_CONTROL = 0x2222;
 //constexpr uint16_t VP_E3_BED_CONTROL = 0x2226;
 //constexpr uint16_t VP_E4_BED_CONTROL = 0x2228;
 //constexpr uint16_t VP_E5_BED_CONTROL = 0x222A;
+
+// Load M701 / Unload M702
+// low byte:
+//   0x1 unload
+//   0x2 load
+// high byte:
+//   extruder number
+constexpr uint16_t VP_FILAMENT_LOAD_UNLOAD = 0x2300;
 
 // Filament load and unload
 #if EXTRUDERS >= 1

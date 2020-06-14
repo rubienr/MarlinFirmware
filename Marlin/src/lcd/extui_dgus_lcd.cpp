@@ -48,6 +48,7 @@ namespace ExtUI {
   void onPrinterKilled(PGM_P error, PGM_P component) {
     ScreenHandler.sendinfoscreen(GET_TEXT(MSG_HALTED), error, NUL_STR, GET_TEXT(MSG_PLEASE_RESET), true, true, true, true);
     ScreenHandler.GotoScreen(DGUSLCD_SCREEN_KILL);
+    onPlayTone();
     while (!ScreenHandler.loop());  // Wait while anything is left to be sent
   }
 
@@ -58,6 +59,7 @@ namespace ExtUI {
   }
   void onMediaError()    {
     #if ENABLED(SDSUPPORT)
+    onPlayTone();
       ScreenHandler.SDCardError();
     #endif
   }
@@ -67,7 +69,15 @@ namespace ExtUI {
     #endif
   }
 
-  void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
+  void onPlayTone(const uint16_t frequency, const uint16_t duration) {
+    UNUSED(frequency);
+    #if ENABLED(SPEAKER)
+      UNUSED(duration);
+        ScreenHandler.playToneSpeaker();
+    #else
+        ScreenHandler.playToneBuzzer(duration);
+    #endif
+  }
   void onPrintTimerStarted() {}
   void onPrintTimerPaused() {}
   void onPrintTimerStopped() {}

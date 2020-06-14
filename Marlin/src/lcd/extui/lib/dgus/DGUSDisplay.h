@@ -191,6 +191,16 @@ public:
     // Hook for preheat
     static void HandlePreheat(DGUS_VP_Variable &var, void *val_ptr);
   #endif
+  #if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
+    /**
+     * Loads or unloads filament using M70x gcodes. Requires ADVANCED_PAUSE_FEATURE and FILAMENT_LOAD_UNLOAD_GCODES.
+     * Takes display request (flags) and arguments, stores them locally, clears the request (flags) once request
+     * is executed and sends the updated arguments back to display.
+     * @param var locally cached arguments
+     * @param val_ptr display request arguments
+     */
+    static void HandleFilamentLoadUnloadWithGcodes(DGUS_VP_Variable &var, void *val_ptr);
+  #endif
   #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
     // Hook for filament load and unload filament option
     static void HandleFilamentOption(DGUS_VP_Variable &var, void *val_ptr);
@@ -246,6 +256,23 @@ public:
   static void GotoScreen(DGUSLCD_Screens screen, bool ispopup = false);
 
   static void UpdateScreenVPData();
+
+#if ENABLED(SPEAKER)
+    /**
+   * Plays sound if display is in "music player" mode.
+   * @param start_section 1st section (=ID) of audio file
+   * @param sections_count total amount of sections occupied of audio file
+   * @param volume 1/64 steps, 0x40 is 100%
+   */
+    static void playToneSpeaker(uint8_t start_section = DGUS_MUSIC_TONE_ID, uint8_t sections_count = DGUS_MUSIC_TONE_SEGMENTS, uint8_t volume = DGUS_MUSIC_TONE_VOLUME);
+#else
+  /**
+   * Beeps if display is in buzzer mode.
+   * @param time_times_8ms
+   * @param volume 1/64 steps, 0x40 is 100%
+   */
+  static void playToneBuzzer(uint8_t time_times_8ms = DGUS_BUZZER_TONE_DURATION, uint8_t volume = DGUS_BUZZER_TONE_VOLUME);
+#endif
 
   // Helpers to convert and transfer data to the display.
   static void DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable &var);
