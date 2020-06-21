@@ -585,7 +585,8 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
              &dgus_origin::filament::handle_filament_load_unload,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
-    VPHELPER(0, 0, 0, 0) // must be last entry
+    // terminating list with nullptr
+    VPHELPER(nullptr, nullptr, nullptr, nullptr)
 };
 
 #endif // DGUS_LCD_UI_ORIGIN

@@ -154,7 +154,7 @@ void handle_request_flags() {
 
 void handle_parameter_save(DGUS_VP_Variable &var, void *val_ptr) {
   if (var.memadr)
-    *(uint16_t *)var.memadr = Dgus::swap16(*static_cast<uint16_t *>(val_ptr));
+    *(uint16_t *)var.memadr = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
 
   handle_request_flags();
 }
@@ -163,7 +163,7 @@ void handle_parameter_fade_slot(DGUS_VP_Variable &var, void *val_ptr) {
   if (var.memadr) {
     CachedState::FadeHeightSlotNumber *buffered_arguments =
         static_cast<CachedState::FadeHeightSlotNumber *>(var.memadr);
-    const CachedState::FadeHeightSlotNumber new_arguments{.data = Dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+    const CachedState::FadeHeightSlotNumber new_arguments{.data = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
 
     if (buffered_arguments->slot_number != new_arguments.slot_number)
       cached_state.request_flags.slot_changed = 1;

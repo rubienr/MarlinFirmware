@@ -78,7 +78,7 @@ void handle_color_led_update(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_color_led_update");
 #endif
-  *static_cast<uint16_t *>(var.memadr) = Dgus::swap16(*static_cast<uint16_t *>(val_ptr));
+  *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
   update_color_leds();
 }
 

@@ -48,7 +48,7 @@ void handle_filament_load_unload(DGUS_VP_Variable &var, void *val_ptr) {
     } __attribute__((packed));
   };
 
-  Command display_request = {.data = Dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+  Command display_request = {.data = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
   Command *filament_command = static_cast<Command *>(var.memadr);
   *filament_command = display_request;
   filament_command->extruder_id = static_cast<uint8_t>(constrain(filament_command->extruder_id, 0, EXTRUDERS - 1));

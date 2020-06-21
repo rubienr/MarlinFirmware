@@ -26,13 +26,16 @@
 
 #if ENABLED(HAS_DGUS_LCD)
 
+// TODO rubienr - constexpr_strlen -> constexpr_strlen_uint8_t
 uint8_t constexpr constexpr_strlen(const char *str) { return *str ? 1 + constexpr_strlen(str + 1) : 0; }
 
 namespace {
 
 constexpr uint8_t sizeof_vp_adress_variable(nullptr_t) { return 0; }
-template <typename t> constexpr uint8_t sizeof_vp_adress_variable(t *) { return sizeof(t); }
-template <typename t> uint16_t toAddress(t a) { return static_cast<uint16_t>(a); }
+template <typename t> constexpr uint8_t sizeof_vp_adress_variable(const t *) { return sizeof(t); }
+
+template <typename t> constexpr uint16_t toAddress(const t a) { return static_cast<uint16_t>(a); }
+constexpr uint16_t toAddress(nullptr_t) { return 0; }
 
 } // namespace
 

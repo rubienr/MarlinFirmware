@@ -30,7 +30,7 @@ namespace eeprom {
 
 void handle_settings(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("handle_settings");
-  const uint16_t value = Dgus::swap16(*(uint16_t *)val_ptr);
+  const uint16_t value = dgus::swap16(*(uint16_t *)val_ptr);
 
   // TODO raoul
   constexpr uint16_t restore_to_factory_settings_flag = 0x1;

@@ -32,7 +32,7 @@ void handle_psu_on_off(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("handle_psu_on_off");
 
   CachedState *state = static_cast<CachedState *>(var.memadr);
-  state->data = Dgus::swap16(*static_cast<uint16_t *>(val_ptr));
+  state->data = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
 
   switch (state->enable_disable) {
     case CachedState::UNSET:

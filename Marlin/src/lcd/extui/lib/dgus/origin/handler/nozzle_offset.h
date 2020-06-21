@@ -82,7 +82,7 @@ template <ExtUI::axis_t axis> void handle_probe_offset_axis(DGUS_VP_Variable &va
     float as_float;
     uint16_t as_uint;
     int16_t as_int;
-  } offset_mm{.as_uint = Dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+  } offset_mm{.as_uint = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
   offset_mm.as_float = static_cast<float>(offset_mm.as_int) / 100U;
   ExtUI::setProbeOffset_mm(offset_mm.as_float, axis);
 }

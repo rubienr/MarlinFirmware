@@ -58,7 +58,7 @@ void handle_probe_offset_z_axis(DGUS_VP_Variable &var, void *val_ptr) {
     float as_float;
     uint16_t as_uint;
     int16_t as_int;
-  } z_offset_mm{.as_uint = Dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+  } z_offset_mm{.as_uint = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
 
   z_offset_mm.as_float = static_cast<float>(z_offset_mm.as_int) / 100U;
   ExtUI::setZOffset_mm(z_offset_mm.as_float);
