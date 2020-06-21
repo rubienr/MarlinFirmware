@@ -21,13 +21,11 @@
 
 #define DGUS_ORIGIN_DRIVER_CONTROL
 
-#include "../../../../../../core/macros.h"
+#include "../../../../../../inc/MarlinConfig.h"
 
 #if ENABLED(DGUS_ORIGIN_DRIVER_CONTROL)
 
 #include "../handler/driver_control.h"
-
-struct DGUS_VP_Variable;
 
 namespace dgus_origin {
 namespace driver_control {

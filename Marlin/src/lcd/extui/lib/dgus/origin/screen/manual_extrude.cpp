@@ -22,6 +22,8 @@
 
 #if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
 
+#include "../memory_layout.h"
+
 namespace dgus_origin {
 namespace manual_extrude {
 

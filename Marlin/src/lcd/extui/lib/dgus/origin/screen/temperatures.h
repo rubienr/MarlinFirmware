@@ -19,21 +19,19 @@
  */
 #pragma once
 
-#include "../../../../../../core/macros.h"
+#include "../../../../../../inc/MarlinConfig.h"
 
-#define DGUS_ORIGIN_TOOLS
+#define DGUS_ORIGIN_TEMPERATURES
 
-#if ENABLED(DGUS_ORIGIN_TOOLS)
-
-#include "../memory_layout.h"
+#if ENABLED(DGUS_ORIGIN_TEMPERATURES)
 
 namespace dgus_origin {
-namespace tools {
+namespace temperatures {
 
 // screen variables
 extern const uint16_t VPScreenList[] PROGMEM;
 
-} // namespace tools
+} // namespace temperatures
 } // namespace dgus_origin
 
 #endif

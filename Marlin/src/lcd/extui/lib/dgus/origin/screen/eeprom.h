@@ -29,8 +29,6 @@
 
 #include "../handler/eeprom.h"
 
-struct DGUS_VP_Variable;
-
 namespace dgus_origin {
 namespace eeprom {
 

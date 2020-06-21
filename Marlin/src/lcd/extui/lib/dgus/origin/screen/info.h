@@ -27,8 +27,6 @@
 
 #include "../versions.h"
 
-struct DGUS_VP_Variable;
-
 namespace dgus_origin {
 namespace info {
 

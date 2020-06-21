@@ -17,23 +17,20 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include "../../../../../../core/macros.h"
+#include "sd_files.h"
 
-#define DGUS_ORIGIN_TOOLS
-
-#if ENABLED(DGUS_ORIGIN_TOOLS)
+#if ENABLED(DGUS_ORIGIN_SDFILES)
 
 #include "../memory_layout.h"
 
 namespace dgus_origin {
-namespace tools {
+namespace sdfiles {
 
-// screen variables
-extern const uint16_t VPScreenList[] PROGMEM;
+const uint16_t VPScreenList[] PROGMEM = {
+    VP_SD_FileName0, VP_SD_FileName1, VP_SD_FileName2, VP_SD_FileName3, VP_SD_FileName4, 0x0000};
 
-} // namespace tools
+} // namespace sdfiles
 } // namespace dgus_origin
 
 #endif

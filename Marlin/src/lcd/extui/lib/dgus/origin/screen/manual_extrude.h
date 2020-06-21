@@ -25,10 +25,6 @@
 
 #if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
 
-#include "../memory_layout.h"
-
-struct DGUS_VP_Variable;
-
 namespace dgus_origin {
 namespace manual_extrude {
 

@@ -31,8 +31,15 @@
 #include "screen/info.h"
 #include "screen/boot.h"
 #include "screen/tools.h"
+#include "screen/temperatures.h"
+#include "screen/flowrates.h"
+#include "screen/feedrates.h"
+#include "screen/sd_files.h"
+#include "screen/sd_print_manipulation.h"
+#include "screen/status.h"
 #include "screen/manual_move.h"
 #include "screen/manual_extrude.h"
+#include "screen/main.h"
 #include "memory_layout.h"
 
 enum DGUSLCD_Screens : uint8_t {
@@ -45,18 +52,32 @@ enum DGUSLCD_Screens : uint8_t {
   // 022     reserved for 22_Config.bin
   DGUSLCD_SCREEN_BOOT = 24,
   DGUSLCD_SCREEN_MAIN = 26,
+#if ENABLED(DGUS_ORIGIN_TEMPERATURES)
   DGUSLCD_SCREEN_TEMPERATURE = 28,
+#endif
+#if ENABLED(DGUS_ORIGIN_STATUS)
   DGUSLCD_SCREEN_STATUS = 30,
   DGUSLCD_SCREEN_STATUS2 = 32,
+#endif
+#if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
   DGUSLCD_SCREEN_MANUALMOVE = 40,
+#endif
+#if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
   DGUSLCD_SCREEN_MANUALEXTRUDE = 42,
+#endif
+#if ENABLED(DGUS_ORIGIN_FEEDRATES)
   DGUSLCD_SCREEN_FANANDFEEDRATE = 44,
+#endif
+#if ENABLED(DGUS_ORIGIN_FLOWRATES)
   DGUSLCD_SCREEN_FLOWRATES_1 = 46,
   DGUSLCD_SCREEN_FLOWRATES_2 = 48,
-#if ENABLED(SDSUPPORT)
+#endif
+#if ENABLED(DGUS_ORIGIN_SDFILES)
   DGUSLCD_SCREEN_SDFILELIST = 50,
 #endif
+#if ENABLED(DGUS_ORIGIN_SDPRINT_MANIPULATION)
   DGUSLCD_SCREEN_SDPRINTMANIPULATION = 52,
+#endif
 #if ENABLED(DGUS_ORIGIN_INFO)
   DGUSLCD_SCREEN_INFO = 54, ///< info screen shows Versions of CPU, UI, Marlin, Marlin configuration, etc...
 #endif

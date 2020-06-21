@@ -19,21 +19,20 @@
  */
 #pragma once
 
-#include "../../../../../../core/macros.h"
+#include "../../../../../../inc/MarlinConfig.h"
 
-#define DGUS_ORIGIN_TOOLS
+#define DGUS_ORIGIN_FLOWRATES
 
-#if ENABLED(DGUS_ORIGIN_TOOLS)
-
-#include "../memory_layout.h"
+#if ENABLED(DGUS_ORIGIN_FLOWRATES)
 
 namespace dgus_origin {
-namespace tools {
+namespace flowrates {
 
 // screen variables
-extern const uint16_t VPScreenList[] PROGMEM;
+extern const uint16_t VPScreenList1[] PROGMEM;
+extern const uint16_t VPScreenList2[] PROGMEM;
 
-} // namespace tools
+} // namespace flowrates
 } // namespace dgus_origin
 
 #endif

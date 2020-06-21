@@ -17,23 +17,41 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include "../../../../../../core/macros.h"
+#include "flowrates.h"
 
-#define DGUS_ORIGIN_TOOLS
-
-#if ENABLED(DGUS_ORIGIN_TOOLS)
+#if ENABLED(DGUS_ORIGIN_FLOWRATES)
 
 #include "../memory_layout.h"
 
 namespace dgus_origin {
-namespace tools {
+namespace flowrates {
 
-// screen variables
-extern const uint16_t VPScreenList[] PROGMEM;
+const uint16_t VPScreenList1[] PROGMEM = {
+#if EXTRUDERS >= 1
+    VP_Flowrate_E0,
+#endif
+#if EXTRUDERS >= 2
+    VP_Flowrate_E1,
+#endif
+#if EXTRUDERS >= 3
+    VP_Flowrate_E2,
+#endif
+    0x0000};
 
-} // namespace tools
+const uint16_t VPScreenList2[] PROGMEM = {
+#if EXTRUDERS >= 4
+    VP_Flowrate_E3,
+#endif
+#if EXTRUDERS >= 5
+    VP_Flowrate_E4,
+#endif
+#if EXTRUDERS >= 6
+    VP_Flowrate_E5,
+#endif
+    0x0000};
+
+} // namespace flowrates
 } // namespace dgus_origin
 
 #endif

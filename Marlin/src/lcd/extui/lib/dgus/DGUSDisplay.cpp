@@ -565,7 +565,7 @@ void DGUSScreenVariableHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, 
   switch (var.VP) {
     default: return;
     #if HOTENDS >= 1
-      case VP_T_E0_Set:
+    case to_address(dgus::memory_layout::Temperatures::E0Set):
         thermalManager.setTargetHotend(newvalue, 0);
         acceptedvalue = static_cast<uint16_t>(thermalManager.temp_hotend[0].target);
         break;
@@ -577,7 +577,7 @@ void DGUSScreenVariableHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, 
       break;
     #endif
     #if HAS_HEATED_BED
-      case VP_T_Bed_Set:
+      case to_address(dgus::memory_layout::Temperatures::BedSet):
         thermalManager.setTargetBed(newvalue);
         acceptedvalue = static_cast<uint16_t>(thermalManager.temp_bed.target);
         break;

@@ -31,8 +31,6 @@
 
 #include "../handler/lights.h"
 
-struct DGUS_VP_Variable;
-
 namespace dgus_origin {
 namespace lights {
 

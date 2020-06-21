@@ -17,23 +17,19 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
-#include "../../../../../../core/macros.h"
+#include "sd_print_manipulation.h"
 
-#define DGUS_ORIGIN_TOOLS
-
-#if ENABLED(DGUS_ORIGIN_TOOLS)
+#if ENABLED(DGUS_ORIGIN_SDPRINT_MANIPULATION)
 
 #include "../memory_layout.h"
 
 namespace dgus_origin {
-namespace tools {
+namespace sdprint_manipulation {
 
-// screen variables
-extern const uint16_t VPScreenList[] PROGMEM;
+const uint16_t VPScreenList[] PROGMEM = {VP_PrintProgress_Percentage, VP_PrintTime, 0x0000};
 
-} // namespace tools
+} // namespace sdprint_manipulation
 } // namespace dgus_origin
 
 #endif

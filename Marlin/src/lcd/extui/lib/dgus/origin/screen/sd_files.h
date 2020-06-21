@@ -19,21 +19,22 @@
  */
 #pragma once
 
-#include "../../../../../../core/macros.h"
+#include "../../../../../../inc/MarlinConfig.h"
 
-#define DGUS_ORIGIN_TOOLS
+#if ENABLED(SDSUPPORT)
+#define DGUS_ORIGIN_SDFILES
+#endif
 
-#if ENABLED(DGUS_ORIGIN_TOOLS)
-
-#include "../memory_layout.h"
+#if ENABLED(DGUS_ORIGIN_SDFILES)
 
 namespace dgus_origin {
-namespace tools {
+namespace sdfiles {
 
 // screen variables
-extern const uint16_t VPScreenList[] PROGMEM;
+extern const uint16_t VPScreenList1[] PROGMEM;
+extern const uint16_t VPScreenList2[] PROGMEM;
 
-} // namespace tools
+} // namespace sdfiles
 } // namespace dgus_origin
 
 #endif

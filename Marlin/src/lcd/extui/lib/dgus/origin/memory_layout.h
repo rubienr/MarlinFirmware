@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#include "../../../../../inc/MarlinConfig.h"
+
 /**
  * Display memory layout used for T5UID. Except of the system variables the layout is arbitrary.
  *
@@ -60,6 +62,7 @@
 
 namespace dgus {
 namespace memory_layout {
+
 enum class UiVersion : uint16_t {
   // UI Version always on 0x1000 ... 0x1002 so that the firmware can check this and bail out.
   MajorMinor = 0x1000,
@@ -182,6 +185,7 @@ enum class Addresses : uint16_t {
   ColorControl2 = 0x2008,
 #endif
 };
+
 } // namespace memory_layout
 } // namespace dgus
 
@@ -319,43 +323,46 @@ enum class MarlinVersion : uint16_t {
   ConfigAuthor = 0x3540,
   ConfigAuthorBytes = 38,
 };
-}
+
+enum class Temperatures : uint16_t {
+#if HAS_HEATER_0
+  E0Is = 0x3060,
+  E0Set = 0x3062,
+#endif
+#if HAS_HEATER_1
+  E1Is = 0x3064,
+  E1Set = 0x3066,
+#endif
+#if HAS_HEATER_2
+  E2Is = 0x3068,
+  E2Set = 0x306A,
+#endif
+#if HAS_HEATER_3
+  E3Is = 0x306C,
+  E3Set = 0x306E,
+#endif
+#if HAS_HEATER_4
+  E4Is = 0x3070,
+  E4Set = 0x3072,
+#endif
+#if HAS_HEATER_5
+  E5Is = 0x3074,
+  E5Set = 0x3076,
+#endif
+#if HAS_HEATER_BED
+  BedIs = 0x3080,
+  BedSet = 0x3082,
+#endif
+  IsBytes = 4,
+  SetBytes = 2,
+};
+
+} // namespace memory_layout
 } // namespace dgus
 
 // Place for status messages.
 constexpr uint16_t VP_M117 = 0x3020;
 constexpr uint8_t VP_M117_LEN = 0x20;
-
-// Temperatures.
-#if HAS_HEATER_0
-constexpr uint16_t VP_T_E0_Is = 0x3060;  // 4 Byte Integer
-constexpr uint16_t VP_T_E0_Set = 0x3062; // 2 Byte Integer
-#endif
-#if HAS_HEATER_1
-constexpr uint16_t VP_T_E1_Is = 0x3064;  // 4 Byte Integer
-constexpr uint16_t VP_T_E1_Set = 0x3066; // 2 Byte Integer
-#endif
-#if HAS_HEATER_2
-constexpr uint16_t VP_T_E2_Is = 0x3068;  // 4 Byte Integer
-constexpr uint16_t VP_T_E2_Set = 0x306A; // 2 Byte Integer
-#endif
-#if HAS_HEATER_3
-constexpr uint16_t VP_T_E3_Is = 0x306C;  // 4 Byte Integer
-constexpr uint16_t VP_T_E3_Set = 0x306E; // 2 Byte Integer
-#endif
-#if HAS_HEATER_4
-constexpr uint16_t VP_T_E4_Is = 0x3070;  // 4 Byte Integer
-constexpr uint16_t VP_T_E4_Set = 0x3072; // 2 Byte Integer
-#endif
-#if HAS_HEATER_5
-constexpr uint16_t VP_T_E5_Is = 0x3074;  // 4 Byte Integer
-constexpr uint16_t VP_T_E5_Set = 0x3076; // 2 Byte Integer
-#endif
-
-#if HAS_HEATER_BED
-constexpr uint16_t VP_T_Bed_Is = 0x3080;  // 4 Byte Integer
-constexpr uint16_t VP_T_Bed_Set = 0x3082; // 2 Byte Integer
-#endif
 
 #if EXTRUDERS >= 1
 constexpr uint16_t VP_Flowrate_E0 = 0x3090; // 2 Byte Integer
@@ -376,25 +383,33 @@ constexpr uint16_t VP_Flowrate_E4 = 0x3098; // 2 Byte Integer
 constexpr uint16_t VP_Flowrate_E5 = 0x309A; // 2 Byte Integer
 #endif
 
+namespace dgus {
+namespace memory_layout {
+
+enum class FanSpeed : uint16_t {
+  FanPercentageBytes = 2,
 #if HAS_FAN0
-constexpr uint16_t VP_Fan0_Percentage = 0x3100; // 2 Byte Integer (0..100)
+  Fan0Percentage = 0x3100, // 2 Byte Integer (0..100)
 #endif
 #if HAS_FAN1
-constexpr uint16_t VP_Fan1_Percentage = 0x33A2; // 2 Byte Integer (0..100)
+  Fan1Percentage = 0x33A2,
 #endif
 #if HAS_FAN2
-constexpr uint16_t VP_Fan2_Percentage = 0x33A4; // 2 Byte Integer (0..100)
+  Fan2Percentage = 0x33A4,
 #endif
 #if HAS_FAN3
-constexpr uint16_t VP_Fan3_Percentage = 0x33A6; // 2 Byte Integer (0..100)
+  Fan3Percentage = 0x33A6,
 #endif
 #if HAS_FAN4
-constexpr uint16_t VP_Fan4_Percentage = 0x33A8; // 2 Byte Integer (0..100)
+  Fan4Percentage = 0x33A8,
 #endif
 #if HAS_FAN5
-constexpr uint16_t VP_Fan5_Percentage = 0x33AA; // 2 Byte Integer (0..100)
+  Fan5Percentage = 0x33AA,
 #endif
+};
 
+} // namespace memory_layout
+} // namespace dgus
 constexpr uint16_t VP_Feedrate_Percentage = 0x3102;      // 2 Byte Integer (0..100)
 constexpr uint16_t VP_PrintProgress_Percentage = 0x3104; // 2 Byte Integer (0..100)
 
@@ -418,7 +433,7 @@ enum class Position : uint16_t {
 };
 
 // 4 Byte Fixed point number; format xxx.yy
-enum class PoseitionE : uint16_t {
+enum class PositionE : uint16_t {
 #if EXTRUDERS >= 1
   E0 = 0x3120,
 #endif
@@ -458,25 +473,33 @@ constexpr uint16_t VP_SD_FileName4 = 0x3280;
 constexpr uint16_t VP_SD_Print_Filename = 0x32C0; //
 #endif
 
+namespace dgus {
+namespace memory_layout {
+
+enum class FanStatus : uint16_t {
 // Fan status
 #if HAS_FAN0
-constexpr uint16_t VP_FAN0_STATUS = 0x3300;
+  Fan0 = 0x3300,
 #endif
 #if HAS_FAN1
-constexpr uint16_t VP_FAN1_STATUS = 0x3302;
+  Fan1 = 0x3302,
 #endif
 #if HAS_FAN2
-constexpr uint16_t VP_FAN2_STATUS = 0x3304;
+  Fan2 = 0x3304,
 #endif
 #if HAS_FAN3
-constexpr uint16_t VP_FAN3_STATUS = 0x3306;
+  Fan3 = 0x3306,
 #endif
 #if HAS_FAN4
-constexpr uint16_t VP_FAN3_STATUS = 0x3308;
+  Fan4 = 0x3308,
 #endif
 #if HAS_FAN5
-constexpr uint16_t VP_FAN3_STATUS = 0x330A;
+  Fan5 = 0x330A,
 #endif
+};
+
+} // namespace memory_layout
+} // namespace dgus
 
 // Heater status
 #if EXTRUDERS >= 1

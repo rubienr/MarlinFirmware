@@ -29,8 +29,6 @@
 
 #include "../handler/nozzle_offset.h"
 
-struct DGUS_VP_Variable;
-
 namespace dgus_origin {
 namespace nozzle_offset {
 

@@ -25,8 +25,6 @@
 
 #if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
 
-struct DGUS_VP_Variable;
-
 namespace dgus_origin {
 namespace manual_move {
 

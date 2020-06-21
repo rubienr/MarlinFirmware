@@ -29,8 +29,6 @@
 
 #include "../handler/psu_control.h"
 
-struct DGUS_VP_Variable;
-
 namespace dgus_origin {
 namespace psu_control {
 

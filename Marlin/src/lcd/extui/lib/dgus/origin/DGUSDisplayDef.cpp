@@ -20,206 +20,46 @@
  *
  */
 
-/* DGUS implementation written by coldtobi in 2019 for Marlin */
-
 #include "../../../../../inc/MarlinConfig.h"
 
 #if ENABLED(DGUS_LCD_UI_ORIGIN)
 
+#include "../../../../../module/planner.h"
+#include "../../../../../module/temperature.h"
 #include "../DGUSDisplay.h"
 #include "../DGUSDisplayDef.h"
 #include "macros.h"
-
-#include "../../../../../module/temperature.h"
-#include "../../../../../module/planner.h"
 
 #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
 uint16_t distanceToMove = 0.1;
 #endif
 
-const uint16_t VPList_Main[] PROGMEM = {
-    /* VP_M117, for completeness, but it cannot be auto-uploaded. */
-    0x0000};
-
-const uint16_t VPList_Temp[] PROGMEM = {
-#if HOTENDS >= 1
-    VP_T_E0_Is,
-    VP_T_E0_Set,
-#endif
-#if HOTENDS >= 2
-    VP_T_E1_Is,
-    VP_T_E1_Set,
-#endif
-#if HOTENDS >= 3
-    VP_T_E2_Is,
-    VP_T_E2_Set,
-#endif
-#if HOTENDS >= 4
-    VP_T_E3_Is,
-    VP_T_E3_Set,
-#endif
-#if HOTENDS >= 5
-    VP_T_E4_Is,
-    VP_T_E4_Set,
-#endif
-#if HOTENDS >= 6
-    VP_T_E5_Is,
-    VP_T_E5_Set,
-#endif
-#if HAS_HEATED_BED
-    VP_T_Bed_Is,
-    VP_T_Bed_Set,
-#endif
-    0x0000};
-
-const uint16_t VPList_Status[] PROGMEM = {
-/* VP_M117, for completeness, but it cannot be auto-uploaded */
-#if HOTENDS >= 1
-    VP_T_E0_Is,
-    VP_T_E0_Set,
-#endif
-#if HOTENDS >= 2
-    VP_T_E1_Is,
-    VP_T_E1_Set,
-#endif
-#if HOTENDS >= 3
-    VP_T_E2_Is,
-    VP_T_E2_Set,
-#endif
-#if HOTENDS >= 4
-    VP_T_E3_Is,
-    VP_T_E3_Set,
-#endif
-#if HOTENDS >= 5
-    VP_T_E4_Is,
-    VP_T_E4_Set,
-#endif
-#if HOTENDS >= 6
-    VP_T_E5_Is,
-    VP_T_E5_Set,
-#endif
-#if HAS_HEATED_BED
-    VP_T_Bed_Is,
-    VP_T_Bed_Set,
-#endif
-#if HAS_FAN0
-    VP_Fan0_Percentage,
-#endif
-#if FAN_COUNT >= 2
-    VP_Fan1_Percentage,
-#endif
-#if FAN_COUNT >= 3
-    VP_Fan2_Percentage,
-#endif
-#if FAN_COUNT >= 4
-    VP_Fan3_Percentage,
-#endif
-#if FAN_COUNT >= 5
-    VP_Fan4_Percentage,
-#endif
-#if FAN_COUNT >= 6
-    VP_Fan5_Percentage,
-#endif
-    to_address(dgus::memory_layout::Position::X),
-    to_address(dgus::memory_layout::Position::Y),
-    to_address(dgus::memory_layout::Position::Z),
-    // VP_Fan0_Percentage, // TODO rubienr: duplicate?
-    VP_Feedrate_Percentage,
-    VP_PrintProgress_Percentage,
-    0x0000};
-
-const uint16_t VPList_Status2[] PROGMEM = {
-/* VP_M117, for completeness, but it cannot be auto-uploaded */
-#if EXTRUDERS >= 1
-    VP_Flowrate_E0,
-#endif
-#if EXTRUDERS >= 2
-    VP_Flowrate_E1,
-#endif
-#if EXTRUDERS >= 3
-    VP_Flowrate_E2,
-#endif
-#if EXTRUDERS >= 4
-    VP_Flowrate_E3,
-#endif
-#if EXTRUDERS >= 5
-    VP_Flowrate_E4,
-#endif
-#if EXTRUDERS >= 6
-    VP_Flowrate_E5,
-#endif
-    VP_PrintProgress_Percentage,
-    VP_PrintTime,
-    0x0000};
-
-const uint16_t VPList_FanAndFeedrate[] PROGMEM = {VP_Feedrate_Percentage,
-#if HAS_FAN0
-                                                  VP_Fan0_Percentage,
-#endif
-#if HAS_FAN1
-                                                  VP_Fan1_Percentage,
-#endif
-#if HAS_FAN2
-                                                  VP_Fan2_Percentage,
-#endif
-#if HAS_FAN3
-                                                  VP_Fan3_Percentage,
-#endif
-#if HAS_FAN4
-                                                  VP_Fan4_Percentage,
-#endif
-#if HAS_FAN5
-                                                  VP_Fan5_Percentage,
-#endif
-                                                  0x0000};
-
-const uint16_t VPList_SD_FlowRates1[] PROGMEM = {
-#if EXTRUDERS >= 1
-    VP_Flowrate_E0,
-#endif
-#if EXTRUDERS >= 2
-    VP_Flowrate_E1,
-#endif
-#if EXTRUDERS >= 3
-    VP_Flowrate_E2,
-#endif
-    0x0000};
-
-const uint16_t VPList_SD_FlowRates2[] PROGMEM = {
-#if EXTRUDERS >= 4
-    VP_Flowrate_E3,
-#endif
-#if EXTRUDERS >= 5
-    VP_Flowrate_E4,
-#endif
-#if EXTRUDERS >= 6
-    VP_Flowrate_E5,
-#endif
-    0x0000};
-
-#if ENABLED(SDSUPPORT)
-const uint16_t VPList_SDFileList[] PROGMEM = {
-    VP_SD_FileName0, VP_SD_FileName1, VP_SD_FileName2, VP_SD_FileName3, VP_SD_FileName4, 0x0000};
-#endif
-
-const uint16_t VPList_SD_PrintManipulation[] PROGMEM = {VP_PrintProgress_Percentage, VP_PrintTime, 0x0000};
-
 const struct VPMapping VPMap[] PROGMEM = {
     {DGUSLCD_SCREEN_BOOT, dgus_origin::boot::VPScreenList},
-    {DGUSLCD_SCREEN_MAIN, VPList_Main},
-    {DGUSLCD_SCREEN_TEMPERATURE, VPList_Temp},
-    {DGUSLCD_SCREEN_STATUS, VPList_Status},
-    {DGUSLCD_SCREEN_STATUS2, VPList_Status2},
+    {DGUSLCD_SCREEN_MAIN, dgus_origin::main::VPScreenList},
+#if ENABLED(DGUS_ORIGIN_TEMPERATURES)
+    {DGUSLCD_SCREEN_TEMPERATURE, dgus_origin::temperatures::VPScreenList},
+#endif
+#if ENABLED(DGUS_ORIGIN_STATUS)
+    {DGUSLCD_SCREEN_STATUS, dgus_origin::status::VPScreenList1},
+    {DGUSLCD_SCREEN_STATUS2, dgus_origin::status::VPScreenList2},
+#endif
 #if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
     {DGUSLCD_SCREEN_MANUALMOVE, dgus_origin::manual_move::VPScreenList},
 #endif
 #if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
     {DGUSLCD_SCREEN_MANUALEXTRUDE, dgus_origin::manual_extrude::VPScreenList},
 #endif
-    {DGUSLCD_SCREEN_FANANDFEEDRATE, VPList_FanAndFeedrate},
-    {DGUSLCD_SCREEN_FLOWRATES_1, VPList_SD_FlowRates1},
-    {DGUSLCD_SCREEN_FLOWRATES_2, VPList_SD_FlowRates2},
-    {DGUSLCD_SCREEN_SDPRINTMANIPULATION, VPList_SD_PrintManipulation},
+#if ENABLED(DGUS_ORIGIN_FEEDRATES)
+    {DGUSLCD_SCREEN_FANANDFEEDRATE, dgus_origin::feedrates::VPScreenList},
+#endif
+#if ENABLED(DGUS_ORIGIN_FLOWRATES)
+    {DGUSLCD_SCREEN_FLOWRATES_1, dgus_origin::flowrates::VPScreenList1},
+    {DGUSLCD_SCREEN_FLOWRATES_2, dgus_origin::flowrates::VPScreenList2},
+#endif
+#if ENABLED(DGUS_ORIGIN_SDPRINT_MANIPULATION)
+    {DGUSLCD_SCREEN_SDPRINTMANIPULATION, dgus_origin::sdprint_manipulation::VPScreenList},
+#endif
 #if ENABLED(DGUS_ORIGIN_INFO)
     {DGUSLCD_SCREEN_INFO, dgus_origin::info::VPScreenList},
 #endif
@@ -247,8 +87,8 @@ const struct VPMapping VPMap[] PROGMEM = {
 #if ENABLED(DGUS_ORIGIN_FILAMENT_LOAD_UNLOAD)
     {DGUSLCD_SCREEN_FILAMENT_LOAD_UNLOAD, dgus_origin::filament::VPScreenList},
 #endif
-#if ENABLED(SDSUPPORT)
-    {DGUSLCD_SCREEN_SDFILELIST, VPList_SDFileList},
+#if ENABLED(DGUS_ORIGIN_SDFILES)
+    {DGUSLCD_SCREEN_SDFILELIST, dgus_origin::sdfiles::VPScreenList},
 #endif
     {0, nullptr} // List is terminated with an nullptr as table entry.
 };
@@ -257,7 +97,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     // Helper to detect touch events
     VPHELPER(VP_SCREENCHANGE, nullptr, DGUSScreenVariableHandler::ScreenChangeHook, nullptr),
     VPHELPER(VP_SCREENCHANGE_ASK, nullptr, DGUSScreenVariableHandler::ScreenChangeHookIfIdle, nullptr),
-#if ENABLED(SDSUPPORT)
+#if ENABLED(DGUS_ORIGIN_SDFILES)
     VPHELPER(VP_SCREENCHANGE_WHENSD, nullptr, DGUSScreenVariableHandler::ScreenChangeHookIfSD, nullptr),
 #endif
     VPHELPER(VP_CONFIRMED, nullptr, DGUSScreenVariableHandler::ScreenConfirmedOK, nullptr),
@@ -353,7 +193,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 // manual extrude
 #if HOTENDS >= 1
-    VPHELPER(to_address(dgus::memory_layout::PoseitionE::E0),
+    VPHELPER(to_address(dgus::memory_layout::PositionE::E0),
              nullptr,
              &DGUSScreenVariableHandler::HandleManualExtrude,
              nullptr),
@@ -403,11 +243,11 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 // Temperature Data
 #if HOTENDS >= 1
-    VPHELPER(VP_T_E0_Is,
+    VPHELPER(to_address(dgus::memory_layout::Temperatures::E0Is),
              &thermalManager.temp_hotend[0].celsius,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(VP_T_E0_Set,
+    VPHELPER(to_address(dgus::memory_layout::Temperatures::E0Set),
              &thermalManager.temp_hotend[0].target,
              DGUSScreenVariableHandler::HandleTemperatureChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
@@ -415,7 +255,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
              nullptr,
              DGUSScreenVariableHandler::HandleFlowRateChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-    VPHELPER(to_address(dgus::memory_layout::PoseitionE::E0),
+    VPHELPER(to_address(dgus::memory_layout::PositionE::E0),
              &destination.e,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
@@ -446,8 +286,11 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 #endif
 #if HOTENDS >= 2
-    VPHELPER(VP_T_E1_Is, &thermalManager.temp_hotend[1].celsius, nullptr, DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(VP_T_E1_Set,
+    VPHELPER(to_address(dgus::memory_layout::Temperatures::E1Is),
+             &thermalManager.temp_hotend[1].celsius,
+             nullptr,
+             DGUSLCD_SendFloatAsLongValueToDisplay<0>),
+    VPHELPER(to_address(dgus::memory_layout::Temperatures::E1Set),
              &thermalManager.temp_hotend[1].target,
              DGUSScreenVariableHandler::HandleTemperatureChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
@@ -467,12 +310,13 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #endif
 #endif
 // TODO rubienr: missing hotend 3-5 temp handling
+// TODO rubienr: consolidate all #if HOTENDS != N sections
 #if HAS_HEATED_BED
-    VPHELPER(VP_T_Bed_Is,
+    VPHELPER(to_address(dgus::memory_layout::Temperatures::BedIs),
              &thermalManager.temp_bed.celsius,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(VP_T_Bed_Set,
+    VPHELPER(to_address(dgus::memory_layout::Temperatures::BedSet),
              &thermalManager.temp_bed.target,
              DGUSScreenVariableHandler::HandleTemperatureChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
@@ -500,13 +344,13 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 // Fan Data
 #if FAN_COUNT
 #define FAN_VPHELPER(N)                                                                                              \
-  VPHELPER(VP_Fan##N##_Percentage,                                                                                   \
+  VPHELPER(dgus::memory_layout::FanSpeed::Fan##N##Percentage,                                                        \
            &thermalManager.fan_speed[N],                                                                             \
            DGUSScreenVariableHandler::DGUSLCD_PercentageToUint8,                                                     \
            &DGUSScreenVariableHandler::DGUSLCD_SendPercentageToDisplay),                                             \
       VPHELPER(                                                                                                      \
           VP_FAN##N##_CONTROL, &thermalManager.fan_speed[N], &DGUSScreenVariableHandler::HandleFanControl, nullptr), \
-      VPHELPER(VP_FAN##N##_STATUS,                                                                                   \
+      VPHELPER(dgus::memory_layout::FanStatus::Fan##N,                                                               \
                &thermalManager.fan_speed[N],                                                                         \
                nullptr,                                                                                              \
                &DGUSScreenVariableHandler::DGUSLCD_SendFanStatusToDisplay),
@@ -580,7 +424,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #endif
 
 // SDCard File listing.
-#if ENABLED(SDSUPPORT)
+#if ENABLED(DGUS_ORIGIN_SDFILES)
     VPHELPER(VP_SD_ScrollEvent, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_ScrollFilelist, nullptr),
     VPHELPER(VP_SD_FileSelected, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_FileSelected, nullptr),
     VPHELPER(VP_SD_FileSelectConfirm, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_StartPrint, nullptr),
