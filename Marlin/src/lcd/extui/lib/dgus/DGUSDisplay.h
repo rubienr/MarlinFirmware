@@ -154,28 +154,6 @@ public:
   #if HAS_BED_PROBE
     // Hook for "Change probe offset z"
     static void HandleProbeOffsetZChanged(DGUS_VP_Variable &var, void *val_ptr);
-
-    /**
-     * Handle and clear probe offset request flags.
-     * @param var buffered flags that are back propagated to display
-     * @param val_ptr display request flags
-     */
-    static void HandleProbeOffset(DGUS_VP_Variable &var, void *val_ptr) ;
-
-    /**
-     * Take probe offset and write to axis withtout boundary check.
-     * @tparam axis axis idendifier
-     * @param var local axis offset value; probe.offset.x or .y, \sa #HandleProbeOffsetZAxis(DGUS_VP_Variable &, void *)
-     * @param val_ptr display axis offset request
-     */
-    template<ExtUI::axis_t axis>
-    static void HandleProbeOffsetAxis(DGUS_VP_Variable &var, void *val_ptr);
-    /**
-     * Take probe offset and write to Z-axis with boundary check.
-     * @param var local axis offset value; probe.offset.z
-     * @param val_ptr display axis offset request
-     */
-    static void HandleProbeOffsetZAxis(DGUS_VP_Variable &var, void *val_ptr);
   #endif
   #if ENABLED(BABYSTEPPING)
     // Hook for live z adjust action
@@ -190,16 +168,6 @@ public:
   #if ENABLED(DGUS_PREHEAT_UI)
     // Hook for preheat
     static void HandlePreheat(DGUS_VP_Variable &var, void *val_ptr);
-  #endif
-  #if ENABLED(FILAMENT_LOAD_UNLOAD_GCODES)
-    /**
-     * Loads or unloads filament using M70x gcodes. Requires ADVANCED_PAUSE_FEATURE and FILAMENT_LOAD_UNLOAD_GCODES.
-     * Takes display request (flags) and arguments, stores them locally, clears the request (flags) once request
-     * is executed and sends the updated arguments back to display.
-     * @param var locally cached arguments
-     * @param val_ptr display request arguments
-     */
-    static void HandleFilamentLoadUnloadWithGcodes(DGUS_VP_Variable &var, void *val_ptr);
   #endif
   #if ENABLED(DGUS_FILAMENT_LOADUNLOAD)
     // Hook for filament load and unload filament option
@@ -232,14 +200,6 @@ public:
     /// Marlin informed us about a bad SD Card.
     static void SDCardError();
   #endif
-
-#if ENABLED(PSU_CONTROL)
-  static void HandlePsuOnOff(DGUS_VP_Variable &var, void *val_ptr);
-#endif
-
-#if ENABLED(CASE_LIGHT_ENABLE)
-  static void HandleCaseLight(DGUS_VP_Variable &var, void *val_ptr);
-#endif
 
   // OK Button the Confirm screen.
   static void ScreenConfirmedOK(DGUS_VP_Variable &var, void *val_ptr);
@@ -383,15 +343,3 @@ void DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay(DGUS_VP_Var
   data.as_uint = Dgus::swap16(data.as_uint);
   dgusdisplay.WriteVariable(var.VP, &data.as_uint, 2);
 }
-
-#if HAS_BED_PROBE
-  template<ExtUI::axis_t axis>
-  void DGUSScreenVariableHandler::HandleProbeOffsetAxis(DGUS_VP_Variable &var, void *val_ptr) {
-    DEBUG_ECHOLNPGM("HandleProbeOffsetAxis");
-    UNUSED(var);
-    if (val_ptr == nullptr) return;
-    union { float as_float; uint16_t as_uint; int16_t as_int; } offset_mm {.as_uint = Dgus::swap16(*static_cast<uint16_t*>(val_ptr))};
-    offset_mm.as_float = static_cast<float>(offset_mm.as_int) / 100U;
-    ExtUI::setProbeOffset_mm(offset_mm.as_float, axis);
-  }
-#endif
