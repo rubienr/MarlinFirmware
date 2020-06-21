@@ -95,14 +95,26 @@ const struct VPMapping VPMap[] PROGMEM = {
 
 const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     // Helper to detect touch events
-    VPHELPER(VP_SCREENCHANGE, nullptr, DGUSScreenVariableHandler::ScreenChangeHook, nullptr),
-    VPHELPER(VP_SCREENCHANGE_ASK, nullptr, DGUSScreenVariableHandler::ScreenChangeHookIfIdle, nullptr),
+    VPHELPER(dgus::memory_layout::ScreenAction::ScreenChange,
+             nullptr,
+             DGUSScreenVariableHandler::ScreenChangeHook,
+             nullptr),
+    VPHELPER(dgus::memory_layout::ScreenAction::ScreenChangeAsk,
+             nullptr,
+             DGUSScreenVariableHandler::ScreenChangeHookIfIdle,
+             nullptr),
 #if ENABLED(DGUS_ORIGIN_SDFILES)
     VPHELPER(VP_SCREENCHANGE_WHENSD, nullptr, DGUSScreenVariableHandler::ScreenChangeHookIfSD, nullptr),
 #endif
-    VPHELPER(VP_CONFIRMED, nullptr, DGUSScreenVariableHandler::ScreenConfirmedOK, nullptr),
+    VPHELPER(dgus::memory_layout::ScreenAction::UserConfirmed,
+             nullptr,
+             DGUSScreenVariableHandler::ScreenConfirmedOK,
+             nullptr),
 
-    VPHELPER(VP_TEMP_ALL_OFF, nullptr, &DGUSScreenVariableHandler::HandleAllHeatersOff, nullptr),
+    VPHELPER(dgus::memory_layout::ScreenAction::AllHeaderOff,
+             nullptr,
+             &DGUSScreenVariableHandler::HandleAllHeatersOff,
+             nullptr),
 
 #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
     VPHELPER(VP_MOVE_OPTION, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMoveOption, nullptr),
@@ -113,16 +125,10 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
     VPHELPER(VP_MOVE_Z, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
     VPHELPER(VP_HOME_ALL, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
 #else
-    VPHELPER(
-        to_address(dgus::memory_layout::Position::X), nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
-    VPHELPER(
-        to_address(dgus::memory_layout::Position::Y), nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
-    VPHELPER(
-        to_address(dgus::memory_layout::Position::Z), nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
-    VPHELPER(to_address(dgus::memory_layout::Homing::Control),
-             nullptr,
-             &DGUSScreenVariableHandler::HandleManualMove,
-             nullptr),
+    VPHELPER(dgus::memory_layout::Position::X, nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
+    VPHELPER(dgus::memory_layout::Position::Y, nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
+    VPHELPER(dgus::memory_layout::Position::Z, nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
+    VPHELPER(dgus::memory_layout::Homing::Control, nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
 #endif
 
     VPHELPER(dgus::memory_layout::DriverControl::LockUnlockControl,
@@ -134,7 +140,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #endif
 
 #if ENABLED(EEPROM_SETTINGS)
-    VPHELPER(to_address(dgus::memory_layout::Eeprom::Control), nullptr, &dgus_origin::eeprom::handle_settings, nullptr),
+    VPHELPER(dgus::memory_layout::Eeprom::Control, nullptr, &dgus_origin::eeprom::handle_settings, nullptr),
 #endif
 
     // Boot screen
@@ -185,112 +191,120 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
     // M117 LCD String (We don't need the string in memory but "just" push it to
     // the display on demand, hence the nullptr
-    {.VP = VP_M117,
+    {.VP = to_address(dgus::memory_layout::LcdMessage::M117),
      .memadr = nullptr,
-     .size = VP_M117_LEN,
+     .size = to_uint8_t(dgus::memory_layout::LcdMessage::M117Bytes),
      .set_by_display_handler = nullptr,
      .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplay},
 
 // manual extrude
 #if HOTENDS >= 1
-    VPHELPER(to_address(dgus::memory_layout::PositionE::E0),
+    VPHELPER(dgus::memory_layout::PositionE::E0,
              nullptr,
              &DGUSScreenVariableHandler::HandleManualExtrude,
              nullptr),
     VPHELPER(
-        to_address(dgus::memory_layout::MoveE::E0), nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+        dgus::memory_layout::MoveE::E0, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 2
-    VPHELPER(to_address(dgus::memory_layout::PoseitionE::E1),
+    VPHELPER(dgus::memory_layout::PoseitionE::E1,
              nullptr,
              &DGUSScreenVariableHandler::HandleManualExtrude,
              nullptr),
     VPHELPER(
-        to_address(dgus::memory_layout::MoveE::E1), nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+        dgus::memory_layout::MoveE::E1, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 3
-    VPHELPER(to_address(dgus::memory_layout::PoseitionE::E2),
+    VPHELPER(dgus::memory_layout::PoseitionE::E2,
              nullptr,
              &DGUSScreenVariableHandler::HandleManualExtrude,
              nullptr),
     VPHELPER(
-        to_address(dgus::memory_layout::MoveE::E2), nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+        dgus::memory_layout::MoveE::E2, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 4
-    VPHELPER(to_address(dgus::memory_layout::PoseitionE::E3),
+    VPHELPER(dgus::memory_layout::PoseitionE::E3,
              nullptr,
              &DGUSScreenVariableHandler::HandleManualExtrude,
              nullptr),
     VPHELPER(
-        to_address(dgus::memory_layout::MoveE::E3), nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+        dgus::memory_layout::MoveE::E3, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 5
-    VPHELPER(to_address(dgus::memory_layout::PoseitionE::E4),
+    VPHELPER(dgus::memory_layout::PoseitionE::E4,
              nullptr,
              &DGUSScreenVariableHandler::HandleManualExtrude,
              nullptr),
     VPHELPER(
-        to_address(dgus::memory_layout::MoveE::E4), nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+        dgus::memory_layout::MoveE::E4, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 6
-    VPHELPER(to_address(dgus::memory_layout::PoseitionE::E5),
+    VPHELPER(dgus::memory_layout::PoseitionE::E5,
              nullptr,
              &DGUSScreenVariableHandler::HandleManualExtrude,
              nullptr),
     VPHELPER(
-        to_address(dgus::memory_layout::MoveE::E5), nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+        dgus::memory_layout::MoveE::E5, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 
 // Temperature Data
 #if HOTENDS >= 1
-    VPHELPER(to_address(dgus::memory_layout::Temperatures::E0Is),
+    VPHELPER(dgus::memory_layout::Temperatures::E0Is,
              &thermalManager.temp_hotend[0].celsius,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(to_address(dgus::memory_layout::Temperatures::E0Set),
+    VPHELPER(dgus::memory_layout::Temperatures::E0Set,
              &thermalManager.temp_hotend[0].target,
              DGUSScreenVariableHandler::HandleTemperatureChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-    VPHELPER(VP_Flowrate_E0,
+    VPHELPER(dgus::memory_layout::Flowrates::E0,
              nullptr,
              DGUSScreenVariableHandler::HandleFlowRateChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-    VPHELPER(to_address(dgus::memory_layout::PositionE::E0),
+    VPHELPER(dgus::memory_layout::PositionE::E0,
              &destination.e,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
-    VPHELPER(
-        VP_E0_CONTROL, &thermalManager.temp_hotend[0].target, &DGUSScreenVariableHandler::HandleHeaterControl, nullptr),
-    VPHELPER(VP_E0_STATUS,
+    VPHELPER(dgus::memory_layout::HeaterControl::E0,
+             &thermalManager.temp_hotend[0].target,
+             &DGUSScreenVariableHandler::HandleHeaterControl,
+             nullptr),
+    VPHELPER(dgus::memory_layout::HeaterStatus::E0,
              &thermalManager.temp_hotend[0].target,
              nullptr,
              &DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay),
+// TODO rubienr - fix define
 #if ENABLED(DGUS_PREHEAT_UI)
     VPHELPER(VP_E0_BED_PREHEAT, nullptr, &DGUSScreenVariableHandler::HandlePreheat, nullptr),
 #endif
 #if ENABLED(PIDTEMP)
-    VPHELPER(VP_E0_PID_P,
+    VPHELPER(dgus::memory_layout::Pid::E0P,
              &thermalManager.temp_hotend[0].pid.Kp,
              DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
-    VPHELPER(VP_E0_PID_I,
+    VPHELPER(dgus::memory_layout::Pid::E0I,
              &thermalManager.temp_hotend[0].pid.Ki,
              DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
-    VPHELPER(VP_E0_PID_D,
+    VPHELPER(dgus::memory_layout::Pid::E0D,
              &thermalManager.temp_hotend[0].pid.Kd,
              DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
-    VPHELPER(VP_PID_AUTOTUNE_E0, nullptr, &DGUSScreenVariableHandler::HandlePIDAutotune, nullptr),
+    VPHELPER(dgus::memory_layout::PidAutotune::E0,
+             nullptr,
+             &DGUSScreenVariableHandler::HandlePIDAutotune,
+             nullptr),
 #endif
 
 #endif
+
+// TODO rubienr
 #if HOTENDS >= 2
-    VPHELPER(to_address(dgus::memory_layout::Temperatures::E1Is),
+    VPHELPER(dgus::memory_layout::Temperatures::E1Is,
              &thermalManager.temp_hotend[1].celsius,
              nullptr,
              DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(to_address(dgus::memory_layout::Temperatures::E1Set),
+    VPHELPER(dgus::memory_layout::Temperatures::E1Set,
              &thermalManager.temp_hotend[1].target,
              DGUSScreenVariableHandler::HandleTemperatureChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
@@ -306,22 +320,40 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
              nullptr,
              &DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay),
 #if ENABLED(PIDTEMP)
-    VPHELPER(VP_PID_AUTOTUNE_E1, nullptr, &DGUSScreenVariableHandler::HandlePIDAutotune, nullptr),
+    VPHELPER(dgus::memory_layout::Pid::E1P,
+             &thermalManager.temp_hotend[0].pid.Kp,
+             DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
+             DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
+    VPHELPER(dgus::memory_layout::Pid::E1I,
+             &thermalManager.temp_hotend[0].pid.Ki,
+             DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
+             DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
+    VPHELPER(dgus::memory_layout::Pid::E1D,
+             &thermalManager.temp_hotend[0].pid.Kd,
+             DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
+             DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
+    VPHELPER(dgus::memory_layout::PidAutotune::E1,
+             nullptr,
+             &DGUSScreenVariableHandler::HandlePIDAutotune,
+             nullptr),
 #endif
 #endif
 // TODO rubienr: missing hotend 3-5 temp handling
 // TODO rubienr: consolidate all #if HOTENDS != N sections
 #if HAS_HEATED_BED
-    VPHELPER(to_address(dgus::memory_layout::Temperatures::BedIs),
+    VPHELPER(dgus::memory_layout::Temperatures::BedIs,
              &thermalManager.temp_bed.celsius,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-    VPHELPER(to_address(dgus::memory_layout::Temperatures::BedSet),
+    VPHELPER(dgus::memory_layout::Temperatures::BedSet,
              &thermalManager.temp_bed.target,
              DGUSScreenVariableHandler::HandleTemperatureChanged,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-    VPHELPER(VP_BED_CONTROL, &thermalManager.temp_bed.target, &DGUSScreenVariableHandler::HandleHeaterControl, nullptr),
-    VPHELPER(VP_BED_STATUS,
+    VPHELPER(dgus::memory_layout::HeaterControl::Bed,
+             &thermalManager.temp_bed.target,
+             &DGUSScreenVariableHandler::HandleHeaterControl,
+             nullptr),
+    VPHELPER(dgus::memory_layout::HeaterStatus::Bed,
              &thermalManager.temp_bed.target,
              nullptr,
              &DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay),
@@ -343,47 +375,49 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 // Fan Data
 #if FAN_COUNT
-#define FAN_VPHELPER(N)                                                                                              \
-  VPHELPER(dgus::memory_layout::FanSpeed::Fan##N##Percentage,                                                        \
-           &thermalManager.fan_speed[N],                                                                             \
-           DGUSScreenVariableHandler::DGUSLCD_PercentageToUint8,                                                     \
-           &DGUSScreenVariableHandler::DGUSLCD_SendPercentageToDisplay),                                             \
-      VPHELPER(                                                                                                      \
-          VP_FAN##N##_CONTROL, &thermalManager.fan_speed[N], &DGUSScreenVariableHandler::HandleFanControl, nullptr), \
-      VPHELPER(dgus::memory_layout::FanStatus::Fan##N,                                                               \
-               &thermalManager.fan_speed[N],                                                                         \
-               nullptr,                                                                                              \
+#define FAN_VPHELPER(N)                                                  \
+  VPHELPER(dgus::memory_layout::FanSpeed::Fan##N##Percentage,            \
+           &thermalManager.fan_speed[N],                                 \
+           DGUSScreenVariableHandler::DGUSLCD_PercentageToUint8,         \
+           &DGUSScreenVariableHandler::DGUSLCD_SendPercentageToDisplay), \
+      VPHELPER(dgus::memory_layout::FanControl::Fan##N,                  \
+               &thermalManager.fan_speed[N],                             \
+               &DGUSScreenVariableHandler::HandleFanControl,             \
+               nullptr),                                                 \
+      VPHELPER(dgus::memory_layout::FanStatus::Fan##N,                   \
+               &thermalManager.fan_speed[N],                             \
+               nullptr,                                                  \
                &DGUSScreenVariableHandler::DGUSLCD_SendFanStatusToDisplay),
     REPEAT(FAN_COUNT, FAN_VPHELPER)
 #endif
 
     // feed rate
-    VPHELPER(VP_Feedrate_Percentage,
+    VPHELPER(dgus::memory_layout::FeedRate::Percentage,
              &feedrate_percentage,
              DGUSScreenVariableHandler::DGUSLCD_SetValueDirectly<int16_t>,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 
     // position data
-    VPHELPER(to_address(dgus::memory_layout::Position::X),
+    VPHELPER(dgus::memory_layout::Position::X,
              &current_position.x,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
-    VPHELPER(to_address(dgus::memory_layout::Position::Y),
+    VPHELPER(dgus::memory_layout::Position::Y,
              &current_position.y,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
-    VPHELPER(to_address(dgus::memory_layout::Position::Z),
+    VPHELPER(dgus::memory_layout::Position::Z,
              &current_position.z,
              nullptr,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
 
     // print progress
     VPHELPER(
-        VP_PrintProgress_Percentage, nullptr, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay),
+        dgus::memory_layout::PrintStats::PrintProgressPercentage, nullptr, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay),
 
     // Print Time
     VPHELPER_STR(
-        VP_PrintTime, nullptr, VP_PrintTime_LEN, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendPrintTimeToDisplay),
+        dgus::memory_layout::PrintStats::PrintTime, nullptr, to_uint8_t(dgus::memory_layout::PrintStats::PrintTimeBytes), nullptr, DGUSScreenVariableHandler::DGUSLCD_SendPrintTimeToDisplay),
 #if ENABLED(PRINTCOUNTER)
     VPHELPER_STR(VP_PrintAccTime,
                  nullptr,
@@ -398,32 +432,33 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #endif
 
     // todo rubienr: on which screen is VP_N_STEP_PER_MM used?
-    VPHELPER(VP_X_STEP_PER_MM,
+    VPHELPER(dgus::memory_layout::StepsPerMm::X,
              &planner.settings.axis_steps_per_mm[X_AXIS],
              DGUSScreenVariableHandler::HandleStepPerMMChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
-    VPHELPER(VP_Y_STEP_PER_MM,
+    VPHELPER(dgus::memory_layout::StepsPerMm::Y,
              &planner.settings.axis_steps_per_mm[Y_AXIS],
              DGUSScreenVariableHandler::HandleStepPerMMChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
-    VPHELPER(VP_Z_STEP_PER_MM,
+    VPHELPER(dgus::memory_layout::StepsPerMm::Z,
              &planner.settings.axis_steps_per_mm[Z_AXIS],
              DGUSScreenVariableHandler::HandleStepPerMMChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
 #if HOTENDS >= 1
-    VPHELPER(VP_E0_STEP_PER_MM,
+    VPHELPER(dgus::memory_layout::StepsPerMm::E0,
              &planner.settings.axis_steps_per_mm[E_AXIS_N(0)],
              DGUSScreenVariableHandler::HandleStepPerMMExtruderChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
 #endif
 #if HOTENDS >= 2
-    VPHELPER(VP_E1_STEP_PER_MM,
+    VPHELPER(dgus::memory_layout::StepsPerMm::E1,
              &planner.settings.axis_steps_per_mm[E_AXIS_N(1)],
              DGUSScreenVariableHandler::HandleStepPerMMExtruderChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
 #endif
 
 // SDCard File listing.
+// TODO rubienr
 #if ENABLED(DGUS_ORIGIN_SDFILES)
     VPHELPER(VP_SD_ScrollEvent, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_ScrollFilelist, nullptr),
     VPHELPER(VP_SD_FileSelected, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_FileSelected, nullptr),
@@ -448,8 +483,9 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #endif
 #endif
 
+// TODO rubienr DGUSLCD_SendWaitingStatusToDisplay is missing
 #if ENABLED(DGUS_UI_WAITING)
-    VPHELPER(VP_WAITING_STATUS, nullptr, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendWaitingStatusToDisplay),
+    VPHELPER(dgus::memory_layout::ScreenStatus::Waiting, nullptr, nullptr, &DGUSScreenVariableHandler::DGUSLCD_SendWaitingStatusToDisplay),
 #endif
 
     // Messages for the User, shared by the popup and the kill screen. They cant
@@ -477,7 +513,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 // power supply
 #if ENABLED(DGUS_ORIGIN_PSU_CONTROL)
-    VPHELPER(to_address(dgus::memory_layout::PowerSupplyUnit::Control),
+    VPHELPER(dgus::memory_layout::PowerSupplyUnit::Control,
              &dgus_origin::psu_control::cached_state,
              &dgus_origin::psu_control::handle_psu_on_off,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
@@ -524,19 +560,19 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 // nozzle to probe offset
 #if ENABLED(DGUS_ORIGIN_NOZZLE_OFFSET)
 
-    VPHELPER(to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Control),
+    VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Control,
              &dgus_origin::nozzle_offset::cached_state,
              &dgus_origin::nozzle_offset::handle_probe_offset,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-    VPHELPER(to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0X),
+    VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0X,
              &probe.offset.x,
              &dgus_origin::nozzle_offset::handle_probe_offset_axis<ExtUI::X>,
              &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
-    VPHELPER(to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Y),
+    VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Y,
              &probe.offset.y,
              &dgus_origin::nozzle_offset::handle_probe_offset_axis<ExtUI::Y>,
              &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
-    VPHELPER(to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Z),
+    VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Z,
              &probe.offset.z,
              &dgus_origin::nozzle_offset::handle_probe_offset_z_axis,
              &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),

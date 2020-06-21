@@ -27,7 +27,7 @@
 namespace dgus_origin {
 namespace feedrates {
 
-const uint16_t VPScreenList[] PROGMEM = {VP_Feedrate_Percentage,
+const uint16_t VPScreenList[] PROGMEM = {to_address(dgus::memory_layout::FeedRate::Percentage),
 #if HAS_FAN0
                                          to_address(dgus::memory_layout::FanSpeed::Fan0Percentage),
 #endif

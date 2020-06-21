@@ -50,6 +50,8 @@
  * 0x3000 .. 0x4FFF - Marlin data to be displayed
  * 0x5000 ..        - stack pointers to modify display elements, e.g. change color or
  *                    other attributes
+ *
+ * Note: Whenever an address needs a length, add the same name with trailing "Bytes" appended.
  */
 
 //=============================================================================
@@ -85,41 +87,35 @@ enum class UiMessages : uint16_t {
   Message4Bytes = 0x20,
 };
 
-} // namespace memory_layout
-} // namespace dgus
-
 //=============================================================================
 // 0x2000 - 0x2FFF: variable pointer that will trigger Marlin actions =========
 //=============================================================================
 
-// Screenchange request for screens that only make sense when printer is idle.
-// e.g movement is only allowed if printer is not printing.
-// Marlin must confirm by setting the screen manually.
-constexpr uint16_t VP_SCREENCHANGE_ASK = 0x2000;
-constexpr uint16_t VP_SCREENCHANGE =
-    0x2001; // Key-Return button to new menu pressed. Data contains target screen in low byte and info in high byte.
-constexpr uint16_t VP_TEMP_ALL_OFF = 0x2002;        // Turn all heaters off. Value arbitrary ;)=
-constexpr uint16_t VP_SCREENCHANGE_WHENSD = 0x2003; // "Print" Button touched -- go only there if there is an SD Card.
+enum class ScreenAction : uint16_t {
+  // Screenchange request for screens that only make sense when printer is idle.
+  // e.g movement is only allowed if printer is not printing.
+  ScreenChangeAsk = 0x2000, // Marlin must confirm by setting the screen manually.
+  // Key-Return button to new menu pressed. Data contains target screen in low byte and info in high byte.
+  ScreenChange = 0x2001,
+  AllHeaderOff = 0x2002,     // turn all heaters off
+  ScreenchangeIfSd = 0x2003, // "Print" Button touched - go there only if there is an SD Card.
+  UserConfirmed = 0x2010,    // OK on confirm screen.
+};
 
-constexpr uint16_t VP_CONFIRMED = 0x2010; // OK on confirm screen.
-
-// Buttons on the SD-Card File listing.
 #if ENABLED(SDSUPPORT)
-constexpr uint16_t VP_SD_ScrollEvent =
-    0x2020; // Data: 0 for "up a directory", numbers are the amount to scroll, e.g -1 one up, 1 one down
-constexpr uint16_t VP_SD_FileSelected = 0x2022; // Number of file field selected.
-constexpr uint16_t VP_SD_FileSelectConfirm =
-    0x2024; // (This is a virtual VP and emulated by the Confirm Screen when a file has been confirmed)
-
-constexpr uint16_t VP_SD_ResumePauseAbort = 0x2026; // Resume(Data=0), Pause(Data=1), Abort(Data=2) SD Card prints
-constexpr uint16_t VP_SD_AbortPrintConfirmed =
-    0x2028; // Abort print confirmation (virtual, will be injected by the confirm dialog)
-constexpr uint16_t VP_SD_Print_Setting = 0x2040;
-constexpr uint16_t VP_SD_Print_LiveAdjustZ = 0x2050; // Data: 0 down, 1 up
+// Buttons on the SD-Card File listing.
+enum class SdAction : uint16_t {
+  // Data: 0 for "up a directory", numbers are the amount to scroll, e.g -1 one up, 1 one down
+  ScrollEvent = 0x2020,
+  FileSelected = 0x2022, // Number of file field selected.
+  // This is a virtual VP and emulated by the Confirm Screen when a file has been confirmed.
+  FileSelectConfirm = 0x2024,
+  ResumePauseAbort = 0x2026,    // Resume(Data=0), Pause(Data=1), Abort(Data=2) SD Card prints
+  AbortPrintConfirmed = 0x2028, // Abort print confirmation (virtual, will be injected by the confirm dialog)
+  Print_Setting = 0x2040,
+  Print_LiveAdjustZ = 0x2050, // Data: 0 down, 1 up
+};
 #endif
-
-namespace dgus {
-namespace memory_layout {
 
 // display memory addresses
 enum class PowerSupplyUnit : uint16_t {
@@ -186,20 +182,16 @@ enum class Addresses : uint16_t {
 #endif
 };
 
-} // namespace memory_layout
-} // namespace dgus
-
 // Controls for movement (we can't use the incremental / decremental feature of the display at this feature works only
 // with 16 bit values (which would limit us to 655.35mm, which is likely not a problem for common setups, but i don't
 // want to rule out hangprinters support) A word about the coding: The VP will be per axis and the return code will be
 // an signed 16 bit value in 0.01 mm resolution, telling us the relative travel amount t he user wants to do. So eg. if
 // the display sends us VP=2100 with value 100, the user wants us to move X by +1 mm.
-constexpr uint16_t VP_MOVE_X = 0x2100;
-constexpr uint16_t VP_MOVE_Y = 0x2102;
-constexpr uint16_t VP_MOVE_Z = 0x2104;
-
-namespace dgus {
-namespace memory_layout {
+enum class Move : uint16_t {
+  X = 0x2100,
+  Y = 0x2102,
+  Z = 0x2104,
+};
 
 enum class MoveE : uint16_t {
 #if EXTRUDERS >= 1
@@ -226,91 +218,117 @@ enum class Homing : uint16_t {
   Control = 0x2120,
 };
 
-} // namespace memory_layout
-} // namespace dgus
-
 // Power loss recovery
-constexpr uint16_t VP_POWER_LOSS_RECOVERY = 0x2180;
+enum class Recovery : uint16_t {
+  PowerLoss = 0x2180,
+};
 
 // Fan Control Buttons , switch between "off" and "on"
-constexpr uint16_t VP_FAN0_CONTROL = 0x2200;
-constexpr uint16_t VP_FAN1_CONTROL = 0x2202;
-// constexpr uint16_t VP_FAN2_CONTROL = 0x2204;
-// constexpr uint16_t VP_FAN3_CONTROL = 0x2206;
+enum class FanControl : uint16_t {
+#if HAS_FAN0
+  Fan0 = 0x2200,
+#endif
+#if HAS_FAN1
+  Fan1 = 0x2201,
+#endif
+#if HAS_FAN2
+  Fan2 = 0x2202,
+#endif
+#if HAS_FAN3
+  Fan3 = 0x2203,
+#endif
+#if HAS_FAN4
+  Fan4 = 0x2204,
+#endif
+#if HAS_FAN5
+  Fan5 = 0x2205,
+#endif
+};
 
 // Heater Control Buttons, triggered between "cool down" and "heat PLA" state
+enum class HeaterControl : uint16_t {
 #if EXTRUDERS >= 1
-constexpr uint16_t VP_E0_CONTROL = 0x2210;
+  E0 = 0x2210,
 #endif
 #if EXTRUDERS >= 2
-constexpr uint16_t VP_E1_CONTROL = 0x2212;
+  E1 = 0x2212,
 #endif
 #if EXTRUDERS >= 3
-constexpr uint16_t VP_E2_CONTROL = 0x2214;
+  E2 = 0x2214,
 #endif
 #if EXTRUDERS >= 4
-constexpr uint16_t VP_E3_CONTROL = 0x2216;
+  E3 = 0x2216,
 #endif
 #if EXTRUDERS >= 5
-constexpr uint16_t VP_E4_CONTROL = 0x2218;
+  E4 = 0x2218,
 #endif
 #if EXTRUDERS >= 6
-constexpr uint16_t VP_E5_CONTROL = 0x221A;
+  E5 = 0x221A,
 #endif
-
-constexpr uint16_t VP_BED_CONTROL = 0x221C;
+  Bed = 0x221C,
+};
 
 // Preheat
-// TODO rubienr: "preheat" E0 vs. "control" E1 - seems to be mixed up somehow (compare with hiprecyDGUSdisplayDef.h).
-// TODO rubienr: decorate commented code with define-guards to be fully dependent on Configuration*.h
-constexpr uint16_t VP_E0_BED_PREHEAT = 0x2220;
-constexpr uint16_t VP_E1_BED_CONTROL = 0x2222;
-// constexpr uint16_t VP_E2_BED_CONTROL = 0x2224;
-// constexpr uint16_t VP_E3_BED_CONTROL = 0x2226;
-// constexpr uint16_t VP_E4_BED_CONTROL = 0x2228;
-// constexpr uint16_t VP_E5_BED_CONTROL = 0x222A;
-
-namespace dgus {
-namespace memory_layout {
+enum class Preheat : uint16_t {
+#if HAS_HEATER_BED
+  Bed = 0x2220,
+#endif
+#if EXTRUDERS >= 1
+  E0 = 0x2221,
+// constexpr uint16_t VP_E0_BED_PREHEAT = 0x2220; constexpr uint16_t VP_E1_BED_CONTROL = 0x2222;
+#endif
+#if EXTRUDERS >= 2
+  E1 = 0x2222,
+#endif
+#if EXTRUDERS >= 3
+  E2 = 0x2223,
+#endif
+#if EXTRUDERS >= 4
+  E3 = 0x2224,
+#endif
+#if EXTRUDERS >= 5
+  E4 = 0x2225,
+#endif
+#if EXTRUDERS >= 6
+  E5 = 0x2226,
+#endif
+};
 
 // EEPROM store, reset
 enum class Eeprom : uint16_t {
   Control = 0x2400,
 };
 
-} // namespace memory_layout
-} // namespace dgus
-
+enum class PidAutotune : uint16_t {
 // PID auto tune
 #if HAS_HEATER_0
-constexpr uint16_t VP_PID_AUTOTUNE_E0 = 0x2410;
+  E0 = 0x2410,
 #endif
 #if HAS_HEATER_1
-constexpr uint16_t VP_PID_AUTOTUNE_E1 = 0x2412;
+  E1 = 0x2412,
 #endif
 #if HAS_HEATER_2
-constexpr uint16_t VP_PID_AUTOTUNE_E2 = 0x2414;
+  E2 = 0x2414,
 #endif
 #if HAS_HEATER_3
-constexpr uint16_t VP_PID_AUTOTUNE_E3 = 0x2416;
+  E3 = 0x2416,
 #endif
 #if HAS_HEATER_4
-constexpr uint16_t VP_PID_AUTOTUNE_E4 = 0x2418;
+  E4 = 0x2418,
 #endif
 #if HAS_HEATER_5
-constexpr uint16_t VP_PID_AUTOTUNE_E5 = 0x241A;
+  E5 = 0x241A,
 #endif
 #if HAS_HEATER_BED
-constexpr uint16_t VP_PID_AUTOTUNE_BED = 0x2420;
+  Bed = 0x2420,
 #endif
+};
 
 //=============================================================================
 // 0x3000 - 0x4FFF: Marlin data to be displayed  ==============================
 //=============================================================================
 
 // TODO rubienr - reorder version details addresses
-namespace dgus {
-namespace memory_layout {
 enum class MarlinVersion : uint16_t {
   Version = 0x3000,
   VersionBytes = 16,
@@ -357,34 +375,32 @@ enum class Temperatures : uint16_t {
   SetBytes = 2,
 };
 
-} // namespace memory_layout
-} // namespace dgus
+enum class LcdMessage : uint16_t {
+  M117 = 0x3020,
+  M117Bytes = 0x20,
+};
 
-// Place for status messages.
-constexpr uint16_t VP_M117 = 0x3020;
-constexpr uint8_t VP_M117_LEN = 0x20;
-
+enum class Flowrates : uint16_t {
 #if EXTRUDERS >= 1
-constexpr uint16_t VP_Flowrate_E0 = 0x3090; // 2 Byte Integer
+  E0 = 0x3090,
 #endif
 #if EXTRUDERS >= 2
-constexpr uint16_t VP_Flowrate_E1 = 0x3092; // 2 Byte Integer
+  E1 = 0x3092,
 #endif
 #if EXTRUDERS >= 3
-constexpr uint16_t VP_Flowrate_E2 = 0x3094; // 2 Byte Integer
+  E2 = 0x3094,
 #endif
 #if EXTRUDERS >= 4
-constexpr uint16_t VP_Flowrate_E3 = 0x3096; // 2 Byte Integer
+  E3 = 0x3096,
 #endif
 #if EXTRUDERS >= 5
-constexpr uint16_t VP_Flowrate_E4 = 0x3098; // 2 Byte Integer
+  E4 = 0x3098,
 #endif
 #if EXTRUDERS >= 6
-constexpr uint16_t VP_Flowrate_E5 = 0x309A; // 2 Byte Integer
+  E5 = 0x309A,
 #endif
-
-namespace dgus {
-namespace memory_layout {
+  EBytes = 2, // 2 byte integer
+};
 
 enum class FanSpeed : uint16_t {
   FanPercentageBytes = 2,
@@ -408,22 +424,20 @@ enum class FanSpeed : uint16_t {
 #endif
 };
 
-} // namespace memory_layout
-} // namespace dgus
-constexpr uint16_t VP_Feedrate_Percentage = 0x3102;      // 2 Byte Integer (0..100)
-constexpr uint16_t VP_PrintProgress_Percentage = 0x3104; // 2 Byte Integer (0..100)
+enum class FeedRate : uint16_t {
+  Percentage = 0x3102, // 2 Byte Integer (0..100)
+};
 
-constexpr uint16_t VP_PrintTime = 0x3106;
-constexpr uint16_t VP_PrintTime_LEN = 10;
+enum class PrintStats : uint16_t {
+  PrintProgressPercentage = 0x3104, // 2 Byte Integer (0..100)
+  PrintTime = 0x3106,
+  PrintTimeBytes = 10,
+  PrintAccTime = 0x3160,
+  PrintAccTimeBytes = 32,
+  PrintsTotal = 0x3180,
+  PrintsTotalBytes = 16,
+};
 
-constexpr uint16_t VP_PrintAccTime = 0x3160;
-constexpr uint16_t VP_PrintAccTime_LEN = 32;
-
-constexpr uint16_t VP_PrintsTotal = 0x3180;
-constexpr uint16_t VP_PrintsTotal_LEN = 16;
-
-namespace dgus {
-namespace memory_layout {
 // 4 Byte Fixed point number; format xxx.yy
 enum class Position : uint16_t {
   X = 0x3110,
@@ -455,26 +469,19 @@ enum class PositionE : uint16_t {
   Bytes = 4,
 };
 
-} // namespace memory_layout
-} // namespace dgus
-
-// SDCard File Listing
-
 #if ENABLED(SDSUPPORT)
-constexpr uint16_t VP_SD_FileName_LEN = 32;    // LEN is shared for all entries.
-constexpr uint16_t DGUS_SD_FILESPERSCREEN = 5; // FIXME move that info to the display and read it from there.
-constexpr uint16_t VP_SD_FileName0 = 0x3200;
-constexpr uint16_t VP_SD_FileName1 = 0x3220;
-constexpr uint16_t VP_SD_FileName2 = 0x3240;
-constexpr uint16_t VP_SD_FileName3 = 0x3260;
-constexpr uint16_t VP_SD_FileName4 = 0x3280;
-
-// TODO rubienr: cleanup
-constexpr uint16_t VP_SD_Print_Filename = 0x32C0; //
+// SDCard File Listing
+enum class SdFileListing : uint16_t {
+  FileName0 = 0x3200,
+  FileName1 = 0x3220,
+  FileName2 = 0x3240,
+  FileName3 = 0x3260,
+  FileName4 = 0x3280,
+  FileNameBytes = 32, // Length is shared among all entries.
+  FilesPerScreen = 5, // FIXME move that info to the display and read it from there.
+  Print_Filename = 0x32C,
+};
 #endif
-
-namespace dgus {
-namespace memory_layout {
 
 enum class FanStatus : uint16_t {
 // Fan status
@@ -498,85 +505,117 @@ enum class FanStatus : uint16_t {
 #endif
 };
 
-} // namespace memory_layout
-} // namespace dgus
-
 // Heater status
+enum class HeaterStatus : uint16_t {
 #if EXTRUDERS >= 1
-constexpr uint16_t VP_E0_STATUS = 0x3310;
+  E0 = 0x3310,
 #endif
 #if EXTRUDERS >= 2
-constexpr uint16_t VP_E1_STATUS = 0x3312;
+  E1 = 0x3312,
 #endif
 #if EXTRUDERS >= 3
-constexpr uint16_t VP_E2_STATUS = 0x3314;
+  E2 = 0x3314,
 #endif
 #if EXTRUDERS >= 4
-constexpr uint16_t VP_E3_STATUS = 0x3316;
+  E3 = 0x3316,
 #endif
 #if EXTRUDERS >= 5
-constexpr uint16_t VP_E4_STATUS = 0x3318;
+  E4 = 0x3318,
 #endif
 #if EXTRUDERS >= 6
-constexpr uint16_t VP_E5_STATUS = 0x331A;
+  E5 = 0x331A,
 #endif
+  Bed = 0x331C,
+};
 
-constexpr uint16_t VP_BED_STATUS = 0x331C;
-
-constexpr uint16_t VP_MOVE_OPTION = 0x3400;
+enum class MoveOption : uint16_t {
+  MoveDistance = 0x3400,
+};
 
 // Steps per mm
-constexpr uint16_t VP_X_STEP_PER_MM = 0x3600; // at the moment , 2 byte unsigned int , 0~1638.4
+enum class StepsPerMm : uint16_t {
+  X = 0x3600, // at the moment , 2 byte unsigned int , 0~1638.4
 #if ENABLED(X_DUAL_STEPPER_DRIVERS)
-constexpr uint16_t VP_X2_STEP_PER_MM = 0x3602;
+  X2 = 0x3602,
 #endif
-constexpr uint16_t VP_Y_STEP_PER_MM = 0x3604;
+  Y = 0x3604,
 #if ENABLED(Y_DUAL_STEPPER_DRIVERS)
-constexpr uint16_t VP_Y2_STEP_PER_MM = 0x3606;
+  Y2 = 0x3606,
 #endif
-constexpr uint16_t VP_Z_STEP_PER_MM = 0x3608;
+  Z = 0x3608,
 #if NUM_Z_STEPPER_DRIVERS >= 2
-constexpr uint16_t VP_Z2_STEP_PER_MM = 0x360A;
+  Z2 = 0x360A,
 #endif
-
 #if EXTRUDERS >= 1
-constexpr uint16_t VP_E0_STEP_PER_MM = 0x3610;
+  E0 = 0x3610,
 #endif
 #if EXTRUDERS >= 2
-constexpr uint16_t VP_E1_STEP_PER_MM = 0x3612;
+  E1 = 0x3612,
 #endif
 #if EXTRUDERS >= 3
-constexpr uint16_t VP_E2_STEP_PER_MM = 0x3614;
+  E2 = 0x3614,
 #endif
 #if EXTRUDERS >= 4
-constexpr uint16_t VP_E3_STEP_PER_MM = 0x3616;
+  E3 = 0x3616,
 #endif
 #if EXTRUDERS >= 5
-constexpr uint16_t VP_E4_STEP_PER_MM = 0x3618;
+  E4 = 0x3618,
 #endif
 #if HAS_EXTRUDERS >= 6
-constexpr uint16_t VP_E5_STEP_PER_MM = 0x361A;
+  E5 = 0x361A,
 #endif
+};
 
 // PIDs
+enum class Pid : uint16_t {
+// 2 byte unsigned int , 0~1638.4 for heater/bed
 #if HAS_HEATER_0
-constexpr uint16_t VP_E0_PID_P = 0x3700; // at the moment , 2 byte unsigned int , 0~1638.4
-constexpr uint16_t VP_E0_PID_I = 0x3702;
-constexpr uint16_t VP_E0_PID_D = 0x3704;
+  E0P = 0x3700,
+  E0I = 0x3702,
+  E0D = 0x3704,
+#endif
+#if HAS_HEATER_1
+  E1P = 0x370 ?,
+  E1I = 0x370 ?,
+  E1D = 0x370 ?,
+#endif
+#if HAS_HEATER_2
+  E2P = 0x370 ?,
+  E2I = 0x370 ?,
+  E2D = 0x370 ?,
+#endif
+#if HAS_HEATER_3
+  E3P = 0x370 ?,
+  E3I = 0x370 ?,
+  E3D = 0x370 ?,
+#endif
+#if HAS_HEATER_4
+  E4P = 0x370 ?,
+  E4I = 0x370 ?,
+  E4D = 0x370 ?,
+#endif
+#if HAS_HEATER_5
+  E5P = 0x370 ?,
+  E5I = 0x370 ?,
+  E5D = 0x370 ?,
 #endif
 
 #if HAS_HEATER_BED
-constexpr uint16_t VP_BED_PID_P = 0x3710;
-constexpr uint16_t VP_BED_PID_I = 0x3712;
-constexpr uint16_t VP_BED_PID_D = 0x3714;
+  BedP = 0x3710,
+  BedI = 0x3712,
+  BedD = 0x3714,
 #endif
+};
 
 // Wating screen status
-constexpr uint16_t VP_WAITING_STATUS = 0x3800;
+enum class ScreenStatus : uint16_t {
+  Waiting = 0x3800,
+};
 
 //=============================================================================
 // 0x5000 - 0x....: stack pointers  ===========================================
 //=============================================================================
+
 /*
 #if HAS_HEATER_0
 constexpr uint16_t SP_T_E0_Is = 0x5000;
@@ -610,3 +649,9 @@ constexpr uint16_t SP_T_E5_Set = 0x5100;
 
 template <typename enum_t> uint16_t constexpr to_address(const enum_t e) { return static_cast<uint16_t>(e); }
 template <typename enum_t> constexpr uint8_t to_uint8_t(const enum_t e) { return static_cast<uint8_t>(e); }
+
+} // namespace memory_layout
+} // namespace dgus
+
+using dgus::memory_layout::to_address;
+using dgus::memory_layout::to_uint8_t;

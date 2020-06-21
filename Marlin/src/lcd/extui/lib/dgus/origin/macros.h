@@ -43,11 +43,10 @@ template <typename t> uint16_t toAddress(t a) { return static_cast<uint16_t>(a);
     .set_by_display_handler = RXFPTR, .send_to_display_handler = TXFPTR                      \
   }
 
-// Helper to define a DGUS_VP_Variable when the sizeo of the var cannot be
-// determined automaticalyl (eg. a string)
+// Helper to define a DGUS_VP_Variable when the sizeo of the var cannot be determined automatically.
 #define VPHELPER_STR(VPADR, VPADRVAR, STRLEN, RXFPTR, TXFPTR)                          \
   {                                                                                    \
-    .VP = VPADR, .memadr = VPADRVAR, .size = STRLEN, .set_by_display_handler = RXFPTR, \
+    .VP = toAddress(VPADR), .memadr = VPADRVAR, .size = STRLEN, .set_by_display_handler = RXFPTR, \
     .send_to_display_handler = TXFPTR                                                  \
   }
 

@@ -78,32 +78,31 @@ const uint16_t VPScreenList1[] PROGMEM = {
     to_address(dgus::memory_layout::Position::X),
     to_address(dgus::memory_layout::Position::Y),
     to_address(dgus::memory_layout::Position::Z),
-    // VP_Fan0_Percentage, // TODO rubienr: duplicate?
-    VP_Feedrate_Percentage,
-    VP_PrintProgress_Percentage,
+    to_address(dgus::memory_layout::FeedRate::Percentage),
+    to_address(dgus::memory_layout::PrintStats::PrintProgressPercentage),
     0x0000}; // namespace fowrates
 
 const uint16_t VPScreenList2[] PROGMEM = {
 #if EXTRUDERS >= 1
-    VP_Flowrate_E0,
+    to_address(dgus::memory_layout::Flowrates::E0),
 #endif
 #if EXTRUDERS >= 2
-    VP_Flowrate_E1,
+    to_address(dgus::memory_layout::Flowrates::E1),
 #endif
 #if EXTRUDERS >= 3
-    VP_Flowrate_E2,
+    to_address(dgus::memory_layout::Flowrates::E2),
 #endif
 #if EXTRUDERS >= 4
-    VP_Flowrate_E3,
+    to_address(dgus::memory_layout::Flowrates::E3),
 #endif
 #if EXTRUDERS >= 5
-    VP_Flowrate_E4,
+    to_address(dgus::memory_layout::Flowrates::E4),
 #endif
 #if EXTRUDERS >= 6
-    VP_Flowrate_E5,
+    to_address(dgus::memory_layout::Flowrates::E5),
 #endif
-    VP_PrintProgress_Percentage,
-    VP_PrintTime,
+    to_address(dgus::memory_layout::PrintStats::PrintProgressPercentage),
+    to_address(dgus::memory_layout::PrintStats::PrintTime),
     0x0000};
 
 } // namespace status
