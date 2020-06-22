@@ -34,28 +34,27 @@ struct DGUS_VP_Variable;
 namespace dgus_origin {
 namespace eeprom {
 
-struct ScreenData {
-  union {
-    uint8_t restore_to_factory_settings_flag : 1;
-    uint8_t load_from_eeprom_flag : 1;
-    uint8_t save_to_eeprom_flag : 2;
-    uint8_t _unused;
-    uint8_t _unused2;
-  };
+union CachedState {
   uint16_t data;
+  struct {
+    uint8_t restore_to_factory_settings : 1;
+    uint8_t load_from_eeprom : 1;
+    uint8_t save_to_eeprom : 1;
+    uint8_t _unused : 5;
+    uint8_t _unused2;
+  } __attribute__((packed));
 };
-constexpr uint16_t restore_to_factory_settings_flag = 0x1;
-constexpr uint16_t load_from_eeprom_flag = 0x2;
-constexpr uint16_t save_to_eeprom_flag = 0x4;
 
 // --- handler ---
 
 /**
- * TODO rubienr - doxy
+ * Handles eeprom store/restore/factory-reset requests.
+ * - clears request flags for back propagation to display
+ *
  * @param var
  * @param val_ptr
  */
-void handle_settings(DGUS_VP_Variable &var, void *val_ptr);
+void handle_eeprom_store_restore(DGUS_VP_Variable &var, void *val_ptr);
 
 } // namespace eeprom
 } // namespace dgus_origin

@@ -29,8 +29,8 @@ namespace dgus_origin {
 namespace status {
 
 // screen variables
-extern const uint16_t VPScreenList1[] PROGMEM;
-extern const uint16_t VPScreenList2[] PROGMEM;
+extern const uint16_t VPScreenList1[];
+extern const uint16_t VPScreenList2[];
 
 } // namespace status
 } // namespace dgus_origin

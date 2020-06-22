@@ -34,7 +34,7 @@
 uint16_t distanceToMove = 0.1;
 #endif
 
-const struct VPMapping VPMap[] PROGMEM = {
+const struct VPMapping VPMap[] PROGMEM {
     {DGUSLCD_SCREEN_BOOT, dgus_origin::boot::VPScreenList},
     {DGUSLCD_SCREEN_MAIN, dgus_origin::main::VPScreenList},
 #if ENABLED(DGUS_ORIGIN_TEMPERATURES)
@@ -76,7 +76,7 @@ const struct VPMapping VPMap[] PROGMEM = {
     {DGUSLCD_SCREEN_MOTORS, dgus_origin::driver_control::VPScreenList},
 #endif
 #if ANY(DGUS_ORIGIN_LIGHTS)
-    {DGUSLCD_SCREEN_LIGHTS, dgus_origin::filament::VPScreenList},
+    {DGUSLCD_SCREEN_LIGHTS, dgus_origin::lights::VPScreenList},
 #endif
 #if ENABLED(HAS_BED_PROBE)
     {DGUSLCD_SCREEN_PROBE_OFFSET, dgus_origin::nozzle_offset::VPScreenList},
@@ -93,12 +93,10 @@ const struct VPMapping VPMap[] PROGMEM = {
     {0, nullptr} // List is terminated with an nullptr as table entry.
 };
 
-const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
+const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
     // Helper to detect touch events
-    VPHELPER(dgus::memory_layout::ScreenAction::ScreenChange,
-             nullptr,
-             DGUSScreenVariableHandler::ScreenChangeHook,
-             nullptr),
+    VPHELPER(
+        dgus::memory_layout::ScreenAction::ScreenChange, nullptr, DGUSScreenVariableHandler::ScreenChangeHook, nullptr),
     VPHELPER(dgus::memory_layout::ScreenAction::ScreenChangeAsk,
              nullptr,
              DGUSScreenVariableHandler::ScreenChangeHookIfIdle,
@@ -140,7 +138,10 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #endif
 
 #if ENABLED(EEPROM_SETTINGS)
-    VPHELPER(dgus::memory_layout::Eeprom::Control, nullptr, &dgus_origin::eeprom::handle_settings, nullptr),
+    VPHELPER(dgus::memory_layout::Eeprom::Control,
+             &dgus_origin::eeprom::cached_state,
+             &dgus_origin::eeprom::handle_eeprom_store_restore,
+             &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
 
     // Boot screen
@@ -199,52 +200,28 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 // manual extrude
 #if HOTENDS >= 1
-    VPHELPER(dgus::memory_layout::PositionE::E0,
-             nullptr,
-             &DGUSScreenVariableHandler::HandleManualExtrude,
-             nullptr),
-    VPHELPER(
-        dgus::memory_layout::MoveE::E0, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::PositionE::E0, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::MoveE::E0, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 2
-    VPHELPER(dgus::memory_layout::PoseitionE::E1,
-             nullptr,
-             &DGUSScreenVariableHandler::HandleManualExtrude,
-             nullptr),
-    VPHELPER(
-        dgus::memory_layout::MoveE::E1, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::PoseitionE::E1, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::MoveE::E1, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 3
-    VPHELPER(dgus::memory_layout::PoseitionE::E2,
-             nullptr,
-             &DGUSScreenVariableHandler::HandleManualExtrude,
-             nullptr),
-    VPHELPER(
-        dgus::memory_layout::MoveE::E2, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::PoseitionE::E2, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::MoveE::E2, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 4
-    VPHELPER(dgus::memory_layout::PoseitionE::E3,
-             nullptr,
-             &DGUSScreenVariableHandler::HandleManualExtrude,
-             nullptr),
-    VPHELPER(
-        dgus::memory_layout::MoveE::E3, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::PoseitionE::E3, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::MoveE::E3, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 5
-    VPHELPER(dgus::memory_layout::PoseitionE::E4,
-             nullptr,
-             &DGUSScreenVariableHandler::HandleManualExtrude,
-             nullptr),
-    VPHELPER(
-        dgus::memory_layout::MoveE::E4, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::PoseitionE::E4, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::MoveE::E4, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 #if HOTENDS >= 6
-    VPHELPER(dgus::memory_layout::PoseitionE::E5,
-             nullptr,
-             &DGUSScreenVariableHandler::HandleManualExtrude,
-             nullptr),
-    VPHELPER(
-        dgus::memory_layout::MoveE::E5, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::PoseitionE::E5, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
+    VPHELPER(dgus::memory_layout::MoveE::E5, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
 #endif
 
 // Temperature Data
@@ -290,10 +267,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
              &thermalManager.temp_hotend[0].pid.Kd,
              DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
-    VPHELPER(dgus::memory_layout::PidAutotune::E0,
-             nullptr,
-             &DGUSScreenVariableHandler::HandlePIDAutotune,
-             nullptr),
+    VPHELPER(dgus::memory_layout::PidAutotune::E0, nullptr, &DGUSScreenVariableHandler::HandlePIDAutotune, nullptr),
 #endif
 
 #endif
@@ -332,10 +306,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
              &thermalManager.temp_hotend[0].pid.Kd,
              DGUSScreenVariableHandler::HandleTemperaturePIDChanged,
              DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID),
-    VPHELPER(dgus::memory_layout::PidAutotune::E1,
-             nullptr,
-             &DGUSScreenVariableHandler::HandlePIDAutotune,
-             nullptr),
+    VPHELPER(dgus::memory_layout::PidAutotune::E1, nullptr, &DGUSScreenVariableHandler::HandlePIDAutotune, nullptr),
 #endif
 #endif
 // TODO rubienr: missing hotend 3-5 temp handling
@@ -412,12 +383,17 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
              DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
 
     // print progress
-    VPHELPER(
-        dgus::memory_layout::PrintStats::PrintProgressPercentage, nullptr, nullptr, DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay),
+    VPHELPER(dgus::memory_layout::PrintStats::PrintProgressPercentage,
+             nullptr,
+             nullptr,
+             DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay),
 
     // Print Time
-    VPHELPER_STR(
-        dgus::memory_layout::PrintStats::PrintTime, nullptr, to_uint8_t(dgus::memory_layout::PrintStats::PrintTimeBytes), nullptr, DGUSScreenVariableHandler::DGUSLCD_SendPrintTimeToDisplay),
+    VPHELPER_STR(dgus::memory_layout::PrintStats::PrintTime,
+                 nullptr,
+                 to_uint8_t(dgus::memory_layout::PrintStats::PrintTimeBytes),
+                 nullptr,
+                 DGUSScreenVariableHandler::DGUSLCD_SendPrintTimeToDisplay),
 #if ENABLED(PRINTCOUNTER)
     VPHELPER_STR(VP_PrintAccTime,
                  nullptr,
@@ -485,7 +461,10 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
 // TODO rubienr DGUSLCD_SendWaitingStatusToDisplay is missing
 #if ENABLED(DGUS_UI_WAITING)
-    VPHELPER(dgus::memory_layout::ScreenStatus::Waiting, nullptr, nullptr, &DGUSScreenVariableHandler::DGUSLCD_SendWaitingStatusToDisplay),
+    VPHELPER(dgus::memory_layout::ScreenStatus::Waiting,
+             nullptr,
+             nullptr,
+             &DGUSScreenVariableHandler::DGUSLCD_SendWaitingStatusToDisplay),
 #endif
 
     // Messages for the User, shared by the popup and the kill screen. They cant
@@ -529,15 +508,15 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #if ENABLED(HAS_COLOR_LEDS)
     VPHELPER(dgus::memory_layout::ColorLeds::Control0,
              &dgus_origin::lights::cached_state.color_led_control_0,
-             &dgus_origin::lights::handle_color_led_update,
+             &dgus_origin::lights::handle_color_led,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
     VPHELPER(dgus::memory_layout::ColorLeds::Control1,
              &dgus_origin::lights::cached_state.color_led_control_1,
-             &dgus_origin::lights::handle_color_led_update,
+             &dgus_origin::lights::handle_color_led,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
     VPHELPER(dgus::memory_layout::ColorLeds::Control2,
              &dgus_origin::lights::cached_state.color_led_control_2,
-             &dgus_origin::lights::handle_color_led_update,
+             &dgus_origin::lights::handle_color_led,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
 
@@ -545,15 +524,15 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 #if ENABLED(AUTO_BED_LEVELING_UBL)
     VPHELPER(dgus::memory_layout::Ubl::RequestFlags,
              &dgus_origin::bed_leveling_ubl::cached_state.request_flags,
-             &dgus_origin::bed_leveling_ubl::handle_parameter_save,
+             &dgus_origin::bed_leveling_ubl::handle_parameter_load_save_probe,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
     VPHELPER(dgus::memory_layout::Ubl::FadeHeightSlotNnumber,
              &dgus_origin::bed_leveling_ubl::cached_state.fade_height_slot_number,
              &dgus_origin::bed_leveling_ubl::handle_parameter_fade_slot,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
     VPHELPER(dgus::memory_layout::Ubl::OnOoffUnused,
-             &dgus_origin::bed_leveling_ubl::cached_state.on_off,
-             &dgus_origin::bed_leveling_ubl::handle_parameter_save,
+             &dgus_origin::bed_leveling_ubl::cached_state.on_off_state,
+             &dgus_origin::bed_leveling_ubl::handle_parameter_load_save_probe,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
 
@@ -562,19 +541,19 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 
     VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Control,
              &dgus_origin::nozzle_offset::cached_state,
-             &dgus_origin::nozzle_offset::handle_probe_offset,
+             &dgus_origin::nozzle_offset::handle_probe_offset_request,
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
     VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0X,
              &probe.offset.x,
-             &dgus_origin::nozzle_offset::handle_probe_offset_axis<ExtUI::X>,
+             &dgus_origin::nozzle_offset::handle_set_probe_offset_axis<ExtUI::X>,
              &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
     VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Y,
              &probe.offset.y,
-             &dgus_origin::nozzle_offset::handle_probe_offset_axis<ExtUI::Y>,
+             &dgus_origin::nozzle_offset::handle_set_probe_offset_axis<ExtUI::Y>,
              &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
     VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Z,
              &probe.offset.z,
-             &dgus_origin::nozzle_offset::handle_probe_offset_z_axis,
+             &dgus_origin::nozzle_offset::handle_set_probe_offset_z_axis,
              &DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<2>),
 #endif
 
@@ -586,7 +565,6 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
              &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
     // terminating list with nullptr
-    VPHELPER(nullptr, nullptr, nullptr, nullptr)
-};
+    VPHELPER(nullptr, nullptr, nullptr, nullptr)};
 
 #endif // DGUS_LCD_UI_ORIGIN

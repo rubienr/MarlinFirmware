@@ -28,31 +28,31 @@
 namespace dgus_origin {
 namespace eeprom {
 
-void handle_settings(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("handle_settings");
-  const uint16_t value = dgus::swap16(*(uint16_t *)val_ptr);
-
-  // TODO raoul
-  constexpr uint16_t restore_to_factory_settings_flag = 0x1;
-  constexpr uint16_t load_from_eeprom_flag = 0x2;
-  constexpr uint16_t save_to_eeprom_flag = 0x4;
-
-  switch (value) {
-    default:
-      break;
-    case restore_to_factory_settings_flag:
-#if ENABLED(PRINTCOUNTER)
-      print_job_timer.initStats();
+void handle_eeprom_store_restore(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_eeprom_store_restore");
 #endif
-      queue.enqueue_now_P(PSTR("M502\nM500"));
-      break;
-    case load_from_eeprom_flag:
-      queue.enqueue_now_P(PSTR("M501"));
-      break;
-    case save_to_eeprom_flag:
-      queue.enqueue_now_P(PSTR("M500"));
-      break;
+  auto *cached{static_cast<CachedState *>(var.memadr)};
+  auto *request{static_cast<CachedState *>(val_ptr)};
+  request->data = dgus::swap16(request->data);
+
+  if (request->restore_to_factory_settings) {
+#if ENABLED(PRINTCOUNTER)
+    print_job_timer.initStats();
+#endif
+    GCodeQueue::enqueue_now_P(PSTR("M502\nM500"));
+    request->restore_to_factory_settings = 0;
   }
+  if (request->load_from_eeprom) {
+    GCodeQueue::enqueue_now_P(PSTR("M501"));
+    request->load_from_eeprom = 0;
+  }
+  if (request->save_to_eeprom) {
+    GCodeQueue::enqueue_now_P(PSTR("M500"));
+    request->save_to_eeprom = 0;
+  }
+
+  cached->data = request->data;
 }
 
 } // namespace eeprom

@@ -27,7 +27,7 @@
 namespace dgus_origin {
 namespace sdprint_manipulation {
 
-const uint16_t VPScreenList[] PROGMEM = {VP_PrintProgress_Percentage, VP_PrintTime, 0x0000};
+const uint16_t VPScreenList[] PROGMEM{VP_PrintProgress_Percentage, VP_PrintTime, 0x0000};
 
 } // namespace sdprint_manipulation
 } // namespace dgus_origin

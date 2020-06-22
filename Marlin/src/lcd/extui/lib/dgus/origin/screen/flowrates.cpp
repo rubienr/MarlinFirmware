@@ -27,29 +27,31 @@
 namespace dgus_origin {
 namespace flowrates {
 
-const uint16_t VPScreenList1[] PROGMEM = {
+const uint16_t VPScreenList1[] PROGMEM {
 #if EXTRUDERS >= 1
-    to_address(dgus::memory_layout::Flowrates::E0),
+  to_address(dgus::memory_layout::Flowrates::E0),
 #endif
 #if EXTRUDERS >= 2
-    to_address(dgus::memory_layout::Flowrates::E1),
+      to_address(dgus::memory_layout::Flowrates::E1),
 #endif
 #if EXTRUDERS >= 3
-    to_address(dgus::memory_layout::Flowrates::E2),
+      to_address(dgus::memory_layout::Flowrates::E2),
 #endif
-    0x0000};
+      0x0000
+};
 
-const uint16_t VPScreenList2[] PROGMEM = {
+const uint16_t VPScreenList2[] PROGMEM {
 #if EXTRUDERS >= 4
-    to_address(dgus::memory_layout::Flowrates::E3),
+  to_address(dgus::memory_layout::Flowrates::E3),
 #endif
 #if EXTRUDERS >= 5
-    to_address(dgus::memory_layout::Flowrates::E4),
+      to_address(dgus::memory_layout::Flowrates::E4),
 #endif
 #if EXTRUDERS >= 6
-    to_address(dgus::memory_layout::Flowrates::E5),
+      to_address(dgus::memory_layout::Flowrates::E5),
 #endif
-    0x0000};
+      0x0000
+};
 
 } // namespace flowrates
 } // namespace dgus_origin

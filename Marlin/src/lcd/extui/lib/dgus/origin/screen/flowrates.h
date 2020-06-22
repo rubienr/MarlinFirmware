@@ -29,8 +29,8 @@ namespace dgus_origin {
 namespace flowrates {
 
 // screen variables
-extern const uint16_t VPScreenList1[] PROGMEM;
-extern const uint16_t VPScreenList2[] PROGMEM;
+extern const uint16_t VPScreenList1[];
+extern const uint16_t VPScreenList2[];
 
 } // namespace flowrates
 } // namespace dgus_origin

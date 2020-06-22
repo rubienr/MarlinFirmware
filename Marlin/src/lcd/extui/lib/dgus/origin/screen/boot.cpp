@@ -27,11 +27,11 @@
 namespace dgus_origin {
 namespace boot {
 
-const uint16_t VPScreenList[] PROGMEM = {to_address(dgus::memory_layout::MarlinVersion::Version),
-                                         to_address(dgus::memory_layout::UiVersion::MajorMinor),
-                                         to_address(dgus::memory_layout::UiVersion::Patch),
-                                         to_address(dgus::memory_layout::UiVersion::Flavour),
-                                         0x0000};
+const uint16_t VPScreenList[] PROGMEM{to_address(dgus::memory_layout::MarlinVersion::Version),
+                                      to_address(dgus::memory_layout::UiVersion::MajorMinor),
+                                      to_address(dgus::memory_layout::UiVersion::Patch),
+                                      to_address(dgus::memory_layout::UiVersion::Flavour),
+                                      0x0000};
 
 } // namespace boot
 } // namespace dgus_origin

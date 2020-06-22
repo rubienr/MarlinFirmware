@@ -27,8 +27,8 @@
 namespace dgus_origin {
 namespace psu_control {
 
-CachedState cached_state;
-const uint16_t VPScreenList[] PROGMEM = {to_address(dgus::memory_layout::PowerSupplyUnit::Control), 0x0000};
+CachedState cached_state{0};
+const uint16_t VPScreenList[] PROGMEM{to_address(dgus::memory_layout::PowerSupplyUnit::Control), 0x0000};
 
 } // namespace psu_control
 } // namespace dgus_origin

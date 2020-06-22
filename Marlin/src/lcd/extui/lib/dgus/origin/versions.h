@@ -47,7 +47,7 @@ constexpr char MarlinConfigurationAuthor[38] PROGMEM{STRING_CONFIG_H_AUTHOR};
 constexpr char MarlinCompileDate[16] PROGMEM{__DATE__};
 }; // namespace marlin_version
 
-union UiVersion /* todo rubienr - PROGMEM */ {
+union UiVersion {
   struct {
     uint8_t major; // major: incremented when incompatible
     uint8_t minor; // minor: incremented on new features, but compatible
@@ -57,13 +57,13 @@ union UiVersion /* todo rubienr - PROGMEM */ {
   struct {
     uint16_t low_word;
     uint16_t high_word;
-  }; // __attribute__((packed));
-};
+  } __attribute__((packed));
+}__attribute__((packed));
 
 using UiFlavor = uint8_t[to_uint8_t(dgus::memory_layout::UiVersion::FlavourBytes)];
 
 extern const UiVersion ui_version;
-extern const UiFlavor ui_flavor PROGMEM;
+extern const UiFlavor ui_flavor;
 
 } // namespace versions
 } // namespace dgus_origin

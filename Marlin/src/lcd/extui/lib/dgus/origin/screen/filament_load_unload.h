@@ -33,7 +33,7 @@ namespace dgus_origin {
 namespace filament {
 
 // screen variables
-extern const uint16_t VPScreenList[] PROGMEM;
+extern const uint16_t VPScreenList[];
 // cached state
 extern CachedState cached_state;
 

@@ -35,28 +35,22 @@ extern CachedState cached_state;
 namespace {
 
 /**
- * Update LED color according to the bufferd arguments:
- * #CachedState::ColorLedControlN
+ * Update LED color according to the bufferd arguments.
  * - clears on/off request flags
  * - updates the on/off state flags for back propagation to display
-
  */
 void update_color_leds() {
   // disable
   if (cached_state.color_led_control_0.disable) {
-    queue.enqueue_now_P(PSTR("M150 P0 R0 U0 B0 W0"));
-
+    GCodeQueue::enqueue_now_P(PSTR("M150 P0 R0 U0 B0 W0"));
+    cached_state.color_led_control_0.on_off_unknown = CachedState::ColorLedControl0::OFF;
     cached_state.color_led_control_0.disable = 0;
-    cached_state.color_led_control_0.enabled = 0;
-    cached_state.color_led_control_0.disabled = 1;
+    ;
   }
-
-  if (
-      // on enable
-      cached_state.color_led_control_0.enable ||
-      // on color changed
-      cached_state.color_led_control_0.enabled) {
-    char buf[32]{0};
+  // enable
+  if (cached_state.color_led_control_0.enable ||                                              // on enable, or
+      cached_state.color_led_control_0.on_off_unknown == CachedState::ColorLedControl0::ON) { // on color changed
+    char buf[32];
     sprintf(buf,
             "M150 P%d R%d U%d B%d W%d",
             cached_state.color_led_control_0.intensity,
@@ -64,17 +58,16 @@ void update_color_leds() {
             cached_state.color_led_control_1.green,
             cached_state.color_led_control_2.blue,
             cached_state.color_led_control_2.white);
-    queue.enqueue_one_now(buf);
+    GCodeQueue::enqueue_one_now(buf);
 
+    cached_state.color_led_control_0.on_off_unknown = CachedState::ColorLedControl0::ON;
     cached_state.color_led_control_0.enable = 0;
-    cached_state.color_led_control_0.enabled = 1;
-    cached_state.color_led_control_0.disabled = 0;
   }
 }
 
 } // namespace
 
-void handle_color_led_update(DGUS_VP_Variable &var, void *val_ptr) {
+void handle_color_led(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_color_led_update");
 #endif
@@ -87,37 +80,36 @@ void handle_color_led_update(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(CASE_LIGHT_ENABLE)
 
 void handle_case_light(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("handle_case_light");
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLN("handle_case_light");
+#endif
+  *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
+  auto *case_light_request{static_cast<CachedState::CaseLightControl *>(var.memadr)};
 
-  CachedState::CaseLightControl *case_light_request = static_cast<CachedState::CaseLightControl *>(val_ptr);
-
-  const bool do_enable_case_light{!case_light_request->enabled && case_light_request->enable};
-
-  if (do_enable_case_light) {
-    // ExtUI::setCaseLightState(false);
-    case_light_request->enable = 0;
-  }
-
+  // disable
   if (case_light_request->disable) {
-    // ExtUI::setCaseLightState(true);
-    // TODO rubienr: turn colour leds almost off, not full otherwise case light is also off
+    // TODO rubienr: turn colour leds almost off, not fully otherwise case light is also off
     queue.enqueue_now_P(PSTR("M150 P1 R0 U0 B1 W0"));
+    case_light_request->on_off_unknown = CachedState::CaseLightControl::OFF;
     case_light_request->disable = 0;
+  }
+  // enable
+  const bool do_enable_case_light{case_light_request->enable || // on enabled, or
+                                  case_light_request->on_off_unknown ==
+                                      CachedState::CaseLightControl::ON}; // on color changed
+  if (do_enable_case_light) {
+    case_light_request->enable = 0;
+    case_light_request->on_off_unknown = CachedState::CaseLightControl::ON;
   }
 
 #if DISABLED(CASE_LIGHT_NO_BRIGHTNESS)
   const float float_brightness = map(case_light_request->intensity, 0, 255, 0, 100);
   void setCaseLightBrightness_percent(float_brightness);
 #else
-  char buf[16] = {0};
+  char buf[16];
   sprintf(buf, "M355 P%d S%d", case_light_request->intensity, ((do_enable_case_light) ? 1 : 0));
   queue.enqueue_one_now(buf);
 #endif
-
-  case_light_request->enabled = ExtUI::getCaseLightState();
-  case_light_request->disabled = !case_light_request->enabled;
-
-  *static_cast<uint16_t *>(var.memadr) = case_light_request->data;
 }
 
 #endif // CASE_LIGHT_ENABLE

@@ -26,12 +26,12 @@
 namespace dgus_origin {
 namespace bed_leveling_ubl {
 
-CachedState cached_state;
+CachedState cached_state{0, 0, 0};
 
-const uint16_t screen_variables[] PROGMEM = {to_address(dgus::memory_layout::Ubl::RequestFlags),
-                                             to_address(dgus::memory_layout::Ubl::FadeHeightSlotNnumber),
-                                             to_address(dgus::memory_layout::Ubl::OnOoffUnused),
-                                             0x0000};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::Ubl::RequestFlags),
+                                          to_address(dgus::memory_layout::Ubl::FadeHeightSlotNnumber),
+                                          to_address(dgus::memory_layout::Ubl::OnOoffUnused),
+                                          0x0000};
 
 } // namespace bed_leveling_ubl
 } // namespace dgus_origin

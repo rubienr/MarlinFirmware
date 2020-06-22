@@ -29,7 +29,7 @@ namespace dgus_origin {
 namespace manual_move {
 
 // screen variables
-extern const uint16_t VPScreenList[] PROGMEM;
+extern const uint16_t VPScreenList[];
 
 } // namespace manual_move
 } // namespace dgus_origin

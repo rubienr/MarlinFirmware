@@ -39,22 +39,27 @@ namespace filament {
  * flags for display requests; cleared internally
  */
 union CachedState {
+  constexpr static const uint8_t CLEAR{0};
+  constexpr static const uint8_t ERROR{1};
+  constexpr static const uint8_t OK{2};
+  uint16_t data;
   struct {
-    uint8_t unload_flag : 1;
-    uint8_t load_flag : 1;
-    uint8_t _pad : 6;
+    uint8_t unload : 1;
+    uint8_t load : 1;
+    uint8_t ok_error_clear : 2;
+    uint8_t _unused : 4;
     uint8_t extruder_id;
   } __attribute__((packed));
-  uint16_t data;
 };
 
 /**
- * Loads or unloads filament using M70x gcodes. Requires ADVANCED_PAUSE_FEATURE
- * and FILAMENT_LOAD_UNLOAD_GCODES. Takes display request (flags) and arguments,
- * stores them locally, clears the request (flags) once request is executed and
- * sends the updated arguments back to display.
- * @param var locally cached arguments
- * @param val_ptr display request arguments
+ * Caches display request/arguments and performs filament load unload requests.
+ *
+ * Uses M70x gcodes and ADVANCED_PAUSE_FEATURE and FILAMENT_LOAD_UNLOAD_GCODES.
+ * - clears flags once request is handled for back propagation to display
+ *
+ * @param var
+ * @param val_ptr
  */
 void handle_filament_load_unload(DGUS_VP_Variable &var, void *val_ptr);
 

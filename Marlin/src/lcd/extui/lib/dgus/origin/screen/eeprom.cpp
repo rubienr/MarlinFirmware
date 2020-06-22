@@ -22,10 +22,14 @@
 
 #if ENABLED(DGUS_ORIGIN_FILAMENT_EEPROM)
 
+#include "../memory_layout.h"
+
 namespace dgus_origin {
 namespace eeprom {
 
-const uint16_t VPScreenList[] PROGMEM = {0x0000};
+CachedState cached_state{0};
+
+const uint16_t VPScreenList[] PROGMEM{to_address(dgus::memory_layout::Eeprom::Control), 0x0000};
 
 } // namespace eeprom
 } // namespace dgus_origin

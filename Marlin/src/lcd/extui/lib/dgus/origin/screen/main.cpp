@@ -23,7 +23,7 @@
 namespace dgus_origin {
 namespace main {
 
-const uint16_t VPScreenList[] PROGMEM = {0x0000};
+const uint16_t VPScreenList[] PROGMEM{0x0000};
 
-} // namespace sdprint_manipulation
+} // namespace main
 } // namespace dgus_origin

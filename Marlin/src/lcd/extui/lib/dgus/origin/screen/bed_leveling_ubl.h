@@ -33,7 +33,7 @@ namespace dgus_origin {
 namespace bed_leveling_ubl {
 
 // screen variables
-extern const uint16_t screen_variables[] PROGMEM;
+extern const uint16_t screen_variables[];
 // cached state
 extern CachedState cached_state;
 

@@ -27,28 +27,27 @@
 namespace dgus_origin {
 namespace manual_extrude {
 
-const uint16_t VPScreenList[] PROGMEM = {
-    /*
-    #if EXTRUDERS >= 1
-        to_address(dgus::memory_layout::PoseitionE::E0),
-    #endif
-    #if EXTRUDERS >= 2
-        to_address(dgus::memory_layout::PoseitionE::E1),
-    #endif
-    #if EXTRUDERS >= 3
-        to_address(dgus::memory_layout::PoseitionE::E2),
-    #endif
-    #if EXTRUDERS >= 4
-        to_address(dgus::memory_layout::PoseitionE::E3),
-    #endif
-    #if EXTRUDERS >= 5
-        to_address(dgus::memory_layout::PoseitionE::E4),
-    #endif
-    #if EXTRUDERS >= 6
-        to_address(dgus::memory_layout::PoseitionE::E5),
-    #endif
-    */
-    0x0000};
+const uint16_t VPScreenList[] PROGMEM{/*
+                                      #if EXTRUDERS >= 1
+                                          to_address(dgus::memory_layout::PoseitionE::E0),
+                                      #endif
+                                      #if EXTRUDERS >= 2
+                                          to_address(dgus::memory_layout::PoseitionE::E1),
+                                      #endif
+                                      #if EXTRUDERS >= 3
+                                          to_address(dgus::memory_layout::PoseitionE::E2),
+                                      #endif
+                                      #if EXTRUDERS >= 4
+                                          to_address(dgus::memory_layout::PoseitionE::E3),
+                                      #endif
+                                      #if EXTRUDERS >= 5
+                                          to_address(dgus::memory_layout::PoseitionE::E4),
+                                      #endif
+                                      #if EXTRUDERS >= 6
+                                          to_address(dgus::memory_layout::PoseitionE::E5),
+                                      #endif
+                                      */
+                                      0x0000};
 
 } // namespace manual_extrude
 } // namespace dgus_origin

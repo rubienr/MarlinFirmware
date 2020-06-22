@@ -27,26 +27,28 @@
 namespace dgus_origin {
 namespace feedrates {
 
-const uint16_t VPScreenList[] PROGMEM = {to_address(dgus::memory_layout::FeedRate::Percentage),
+const uint16_t VPScreenList[] PROGMEM {
+  to_address(dgus::memory_layout::FeedRate::Percentage),
 #if HAS_FAN0
-                                         to_address(dgus::memory_layout::FanSpeed::Fan0Percentage),
+      to_address(dgus::memory_layout::FanSpeed::Fan0Percentage),
 #endif
 #if HAS_FAN1
-                                         to_address(dgus::memory_layout::FanSpeed::Fan1Percentage),
+      to_address(dgus::memory_layout::FanSpeed::Fan1Percentage),
 #endif
 #if HAS_FAN2
-                                         to_address(dgus::memory_layout::FanSpeed::Fan2Percentage),
+      to_address(dgus::memory_layout::FanSpeed::Fan2Percentage),
 #endif
 #if HAS_FAN3
-                                         to_address(dgus::memory_layout::FanSpeed::Fan3Percentage),
+      to_address(dgus::memory_layout::FanSpeed::Fan3Percentage),
 #endif
 #if HAS_FAN4
-                                         to_address(dgus::memory_layout::FanSpeed::Fan4Percentage),
+      to_address(dgus::memory_layout::FanSpeed::Fan4Percentage),
 #endif
 #if HAS_FAN5
-                                         to_address(dgus::memory_layout::FanSpeed::Fan5Percentage),
+      to_address(dgus::memory_layout::FanSpeed::Fan5Percentage),
 #endif
-                                         0x0000};
+      0x0000
+};
 } // namespace feedrates
 } // namespace dgus_origin
 

@@ -81,10 +81,10 @@ enum class UiMessages : uint16_t {
   Message2 = 0x1140,
   Message3 = 0x1180,
   Message4 = 0x11C0,
-  Message1Bytes = 0x20,
-  Message2Bytes = 0x20,
-  Message3Bytes = 0x20,
-  Message4Bytes = 0x20,
+  Message1Bytes = 32,
+  Message2Bytes = 32,
+  Message3Bytes = 32,
+  Message4Bytes = 32,
 };
 
 //=============================================================================
@@ -122,23 +122,19 @@ enum class PowerSupplyUnit : uint16_t {
   Control = 0x2004,
 };
 
+#if ENABLED(CASE_LIGHT_ENABLE)
 enum class CaseLight : uint16_t {
-  // Case light:
-  // High byte represents the intensity
-  // Low byte is the display request: 0x0 value unset, 0x1 light off, 0x2 light on
   Control = 0x2005,
 };
+#endif
 
+#if HAS_COLOR_LEDS
 enum class ColorLeds : uint16_t {
-  // Colour LEDs:
-  // High byte represents the intensity
-  // Low byte is the display request: 0x0 value unset, 0x1 light off, 0x2 light on
   Control0 = 0x2006,
-  // High byte red component, low byte green component
   Control1 = 0x2007,
-  // High byte blue component, low byte white component
   Control2 = 0x2008,
 };
+#endif
 
 enum class Ubl : uint16_t {
   RequestFlags = 0x2121,
@@ -160,26 +156,6 @@ enum class OffsetNozzleToProbe : uint16_t {
 // display memory addresses
 enum class Filament : uint16_t {
   LoadUnloadControl = 0x2300,
-};
-
-// display memory addresses
-enum class Addresses : uint16_t {
-#if ENABLED(CASE_LIGHT_ENABLE)
-  // Case light:
-  // High byte represents the intensity
-  // Low byte is the display request: 0x0 value unset, 0x1 light off, 0x2 light on
-  CaseLightControl = 0x2005,
-#endif
-#if ENABLED(DGUS_ORIGIN_LIGHTS)
-  // Colour LEDs:
-  // High byte represents the intensity
-  // Low byte is the display request: 0x0 value unset, 0x1 light off, 0x2 light on
-  ColorControl0 = 0x2006,
-  // High byte red component, low byte green component
-  ColorControl1 = 0x2007,
-  // High byte blue component, low byte white component
-  ColorControl2 = 0x2008,
-#endif
 };
 
 // Controls for movement (we can't use the incremental / decremental feature of the display at this feature works only

@@ -36,36 +36,47 @@ namespace dgus_origin {
 namespace nozzle_offset {
 
 union CachedState {
-  struct {
-    uint8_t reset_x_flag : 1;
-    uint8_t reset_y_flag : 1;
-    uint8_t reset_z_flag : 1;
-    uint8_t reset_flag : 1;
-    uint8_t _unused : 4;
-  } __attribute__((packed));
   uint16_t data;
+  struct {
+    // flags set by dispaly
+    uint8_t reset_x : 1;
+    uint8_t reset_y : 1;
+    uint8_t reset_z : 1;
+    uint8_t reset_all : 1;
+    uint8_t _unused : 4;
+    // flags set internally
+    uint8_t _unused2;
+  } __attribute__((packed));
+};
+
+union OffsetDistance {
+  float as_float;
+  uint16_t as_uint;
+  int16_t as_int;
 };
 
 /**
  * Handle and clear probe offset request flags.
- * @param var buffered flags that are back propagated to display; memptr must not be nullptr
- * @param val_ptr display request flags; must not be nullptr
+ *
+ * @param var
+ * @param val_ptr
  */
-void handle_probe_offset(DGUS_VP_Variable &var, void *val_ptr);
+void handle_probe_offset_request(DGUS_VP_Variable &var, void *val_ptr);
 /**
- * Take probe offset and write to axis withtout boundary check.
- * @tparam axis axis idendifier
- * @param var local axis offset value; probe.offset.x or .y, \sa
- * #HandleProbeOffsetZAxis(DGUS_VP_Variable &, void *)
- * @param val_ptr display axis offset request
+ * Take probe offset and write to axis without boundary check.
+ *
+ * @tparam axis
+ * @param var
+ * @param val_ptr
  */
-template <ExtUI::axis_t axis> void handle_probe_offset_axis(DGUS_VP_Variable &var, void *val_ptr);
+template <ExtUI::axis_t axis> void handle_set_probe_offset_axis(DGUS_VP_Variable &var, void *val_ptr);
 /**
- * Take probe offset and write to Z-axis with boundary check.
- * @param var local axis offset value; probe.offset.z
- * @param val_ptr display axis offset request
+ * Take new probe offset and write to Z-axis with boundary check.
+ *
+ * @param var
+ * @param val_ptr
  */
-void handle_probe_offset_z_axis(DGUS_VP_Variable &var, void *val_ptr);
+void handle_set_probe_offset_z_axis(DGUS_VP_Variable &var, void *val_ptr);
 
 } // namespace nozzle_offset
 } // namespace dgus_origin
@@ -73,17 +84,14 @@ void handle_probe_offset_z_axis(DGUS_VP_Variable &var, void *val_ptr);
 namespace dgus_origin {
 namespace nozzle_offset {
 
-template <ExtUI::axis_t axis> void handle_probe_offset_axis(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("HandleProbeOffsetAxis");
+template <ExtUI::axis_t axis> void handle_set_probe_offset_axis(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_set_probe_offset_axis");
+#endif
   UNUSED(var);
-  if (val_ptr == nullptr)
-    return;
-  union {
-    float as_float;
-    uint16_t as_uint;
-    int16_t as_int;
-  } offset_mm{.as_uint = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+  OffsetDistance offset_mm{.as_uint = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
   offset_mm.as_float = static_cast<float>(offset_mm.as_int) / 100U;
+
   ExtUI::setProbeOffset_mm(offset_mm.as_float, axis);
 }
 

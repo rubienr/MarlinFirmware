@@ -36,8 +36,8 @@ namespace dgus_origin {
 namespace bed_leveling_ubl {
 
 struct CachedState {
-  /// flags defining UBL operations to process
   union RequestFlags {
+    uint16_t data;
     struct {
       // falgs set by display
       uint8_t start_ubl : 1;
@@ -45,55 +45,49 @@ struct CachedState {
       uint8_t disable_ubl : 1;
       uint8_t load_mesh : 1;
       uint8_t save_mesh : 1;
+      uint8_t _unused : 3;
       // flags set internally
-      // TODO rubienr - allign unsed
-      uint8_t _unused : 1;
-      uint8_t _unused2 : 1;
       uint8_t slot_changed : 1;
       uint8_t fade_height_changed : 1;
+      uint8_t _unused2 : 6;
     } __attribute__((packed));
-    uint16_t data;
+  } request_flags;
 
-  } request_flags{.data = 0};
-
-  /// fade (low byte) and slot number (hight byte) arguments set by display or internally
   union FadeHeightSlotNumber {
+    uint16_t data;
     struct {
       // falgs set by display
       uint8_t fade_height;
       uint8_t slot_number;
     } __attribute__((packed));
-    uint16_t data;
-  } fade_height_slot_number{.data = 0};
+  } fade_height_slot_number;
 
   union OnOff {
-    static constexpr uint8_t UNSET = 0;
+    static constexpr uint8_t UKNOWN = 0;
     static constexpr uint8_t OFF = 1;
     static constexpr uint8_t ON = 2;
+    uint16_t data;
     struct {
       // falgs set by display
-      uint8_t on_off : 2;
+      uint8_t on_off_unknown : 2;
       uint8_t _unused : 6;
       uint8_t _unused2;
     } __attribute__((packed));
-    uint16_t data;
-  } on_off{0}; /// enable/disable (low byte) state set internally
+  } on_off_state;
 };
 
 /**
- * Buffers the given UBL argument and handles possible UBL requests.
- * \sa #HandleBedLevelingUblParameter_Fade_Slot(DGUS_VP_Variable &, void *)
- * @param var DGUS variable of one of OriginVariables.bed_leveling*
- * OriginVariables.except of bed_leveling__fade_height__slot_number
- * @param val_ptr one of VP_BED_LEVELING_PARAMETER*
+ * Caches the given UBL argument and  triggers "on varible changed" handling.
+ *
+ * @param var
+ * @param val_ptr
  */
-void handle_parameter_save(DGUS_VP_Variable &var, void *val_ptr);
+void handle_parameter_load_save_probe(DGUS_VP_Variable &var, void *val_ptr);
 /**
- * Buffers the given UBL z height-fade and slot number and triggers "on varible
- * changed" handling.
- * @param var DGUS variable of
- * OriginVariables.bed_leveling__fade_height__slot_number
- * @param val_ptr VP_BED_LEVELING_PARAMETER__ON_OFF__UNUSED
+ * Caches the given UBL z height-fade and slot number and triggers "on varible changed" handling.
+ *
+ * @param var
+ * @param val_ptr
  */
 void handle_parameter_fade_slot(DGUS_VP_Variable &var, void *val_ptr);
 

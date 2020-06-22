@@ -25,43 +25,38 @@
 namespace dgus_origin {
 namespace nozzle_offset {
 
-void handle_probe_offset(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("handle_probe_offset");
-
-  CachedState *cached = static_cast<CachedState *>(var.memadr);
-  CachedState *request = static_cast<CachedState *>(val_ptr);
-  cached->data = request->data;
-
-  // todo rubienr - how to get values from MarlinSettings
+void handle_probe_offset_request(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_probe_offset_request");
+#endif
+  auto *request{static_cast<CachedState *>(var.memadr)};
+  request->data = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
   constexpr float default_offset[] = NOZZLE_TO_PROBE_OFFSET;
 
-  if (cached->reset_x_flag) {
+  if (request->reset_x || request->reset_all) {
     ExtUI::setProbeOffset_mm(default_offset[X_AXIS], ExtUI::X);
-    cached->reset_x_flag = 0;
+    request->reset_x = 0;
   }
 
-  if (cached->reset_y_flag) {
+  if (request->reset_y || request->reset_all) {
     ExtUI::setProbeOffset_mm(default_offset[Y_AXIS], ExtUI::Y);
-    cached->reset_y_flag = 0;
+    request->reset_y = 0;
   }
 
-  if (cached->reset_z_flag) {
+  if (request->reset_z || request->reset_all) {
     ExtUI::setZOffset_mm(default_offset[Z_AXIS]);
-    cached->reset_z_flag = 0;
+    request->reset_z = 0;
   }
 }
 
-void handle_probe_offset_z_axis(DGUS_VP_Variable &var, void *val_ptr) {
-  DEBUG_ECHOLNPGM("handle_probe_offset_z_axis");
-  UNUSED(var);
-  union {
-    float as_float;
-    uint16_t as_uint;
-    int16_t as_int;
-  } z_offset_mm{.as_uint = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+void handle_set_probe_offset_z_axis(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_set_probe_offset_z_axis");
+#endif
+  OffsetDistance offset_mm{.as_uint = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+  offset_mm.as_float = static_cast<float>(offset_mm.as_int) / 100U;
 
-  z_offset_mm.as_float = static_cast<float>(z_offset_mm.as_int) / 100U;
-  ExtUI::setZOffset_mm(z_offset_mm.as_float);
+  ExtUI::setZOffset_mm(offset_mm.as_float);
 }
 
 } // namespace nozzle_offset

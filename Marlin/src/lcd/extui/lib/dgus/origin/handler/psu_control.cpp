@@ -29,27 +29,22 @@ namespace dgus_origin {
 namespace psu_control {
 
 void handle_psu_on_off(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_psu_on_off");
+#endif
+  auto *cached{static_cast<CachedState *>(var.memadr)};
+  auto *request{static_cast<CachedState *>(val_ptr)};
+  request->data = dgus::swap16(request->data);
 
-  CachedState *state = static_cast<CachedState *>(var.memadr);
-  state->data = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
-
-  switch (state->enable_disable) {
-    case CachedState::UNSET:
-    default:
-      return;
-    case CachedState::DISABLE:
-      queue.enqueue_now_P(PSTR("M81"));
-      state->enabled_disabled = CachedState::DISABLE;
-
-      break;
-    case CachedState::ENABLE:
-      queue.enqueue_now_P(PSTR("M80"));
-      state->enabled_disabled = CachedState::ENABLE;
-      break;
+  if (request->disable) {
+    GCodeQueue::enqueue_now_P(PSTR("M81"));
+    cached->on_off_unknown = CachedState::OFF;
   }
 
-  state->enable_disable = CachedState::UNSET;
+  if (request->enable) {
+    GCodeQueue::enqueue_now_P(PSTR("M80"));
+    cached->on_off_unknown = CachedState::ON;
+  }
 }
 
 } // namespace psu_control

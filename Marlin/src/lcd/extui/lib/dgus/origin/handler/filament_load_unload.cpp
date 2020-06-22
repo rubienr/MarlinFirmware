@@ -23,47 +23,48 @@
 #if ENABLED(DGUS_ORIGIN_FILAMENT_LOAD_UNLOAD)
 
 #include "../../../../../../gcode/queue.h"
+#include "../../../../../../module/temperature.h"
 #include "../../DGUSDisplay.h"
 
 namespace dgus_origin {
 namespace filament {
 
 void handle_filament_load_unload(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_filament_load_unload");
-
+#endif
   static_assert(EXTRUDERS > 0, "Minimal one extruder neded.");
-  if (val_ptr == nullptr)
-    return;
-  if (var.memadr == nullptr)
-    return;
 
-  // TODO raoul
-  union Command {
-    uint16_t data;
-    struct {
-      uint8_t unload_flag : 1;
-      uint8_t load_flag : 1;
-      uint8_t _pad : 6;
-      uint8_t extruder_id;
-    } __attribute__((packed));
-  };
+  auto *cached{static_cast<CachedState *>(var.memadr)};
+  auto *request{static_cast<CachedState *>(val_ptr)};
+  request->data = dgus::swap16(request->data);
+  char buf[16];
 
-  Command display_request = {.data = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
-  Command *filament_command = static_cast<Command *>(var.memadr);
-  *filament_command = display_request;
-  filament_command->extruder_id = static_cast<uint8_t>(constrain(filament_command->extruder_id, 0, EXTRUDERS - 1));
+  request->extruder_id = constrain(request->extruder_id, 0, EXTRUDERS - 1);
 
-  char buf[16] = {0};
-  if (filament_command->unload_flag) {
-    filament_command->unload_flag = 0;
-    sprintf(buf, "M702 T%d U%d", filament_command->extruder_id, FILAMENT_CHANGE_UNLOAD_LENGTH);
-  } else if (filament_command->load_flag) {
-    filament_command->load_flag = 0;
-    sprintf(buf, "M701 T%d L%d", filament_command->extruder_id, FILAMENT_CHANGE_FAST_LOAD_LENGTH);
-  } else
-    return;
+  if ((request->unload || request->load) && Temperature::targetTooColdToExtrude(request->extruder_id)) {
+    request->ok_error_clear = CachedState::ERROR;
+    request->unload = 0;
+    request->load = 0;
+  } else {
+    request->ok_error_clear = CachedState::CLEAR;
+  }
 
-  queue.enqueue_one_now(buf);
+  if (request->unload) {
+    sprintf(buf, "M702 T%d U%d", request->extruder_id, FILAMENT_CHANGE_UNLOAD_LENGTH);
+    GCodeQueue::enqueue_one_now(buf);
+    request->ok_error_clear = CachedState::OK;
+    request->unload = 0;
+  }
+
+  if (request->load) {
+    sprintf(buf, "M701 T%d L%d", request->extruder_id, FILAMENT_CHANGE_FAST_LOAD_LENGTH);
+    GCodeQueue::enqueue_one_now(buf);
+    request->ok_error_clear = CachedState::OK;
+    request->load = 0;
+  }
+
+  cached->data = request->data;
 }
 
 } // namespace filament

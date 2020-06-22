@@ -34,24 +34,20 @@ extern CachedState cached_state;
 namespace {
 
 /**
- * Handle UBL reqeusts according to the bufferd parameters:
- * OriginVariables.bed_leveling*
+ * Handle UBL reqeusts according to the bufferd parameters.
  */
 void handle_request_flags() {
-#if ENABLED(DEBUG_DGUSLCD)
-  DEBUG_ECHOLNPGM("handle_request_flags");
-#endif
 
   // --- do UBL probing ---
 
   if (cached_state.request_flags.start_ubl) {
 #if ENABLED(DEBUG_DGUSLCD)
-    DEBUG_ECHOLNPGM(": probe mesh");
+    DEBUG_ECHOLNPGM("handle_request_flags: probe mesh");
 #endif
-    queue.enqueue_now_P(PSTR("G28 R X Y")); // home
-    queue.enqueue_now_P(PSTR("G28 Z"));     // home
-    queue.enqueue_now_P(PSTR("G29 P1"));    // probe mesh
-    queue.enqueue_now_P(PSTR("G29 P3"));    // interpolate missing points
+    GCodeQueue::enqueue_now_P(PSTR("G28 R X Y")); // home
+    GCodeQueue::enqueue_now_P(PSTR("G28 Z"));     // home
+    GCodeQueue::enqueue_now_P(PSTR("G29 P1"));    // probe mesh
+    GCodeQueue::enqueue_now_P(PSTR("G29 P3"));    // interpolate missing points
     cached_state.request_flags.start_ubl = 0;
   }
 
@@ -61,19 +57,19 @@ void handle_request_flags() {
 #if ENABLED(DEBUG_DGUSLCD)
     DEBUG_ECHOLNPGM("handle_request_flags: enable UBL");
 #endif
-    queue.enqueue_now_P(PSTR("M420 S1"));
+    GCodeQueue::enqueue_now_P(PSTR("M420 S1"));
 
-    cached_state.on_off.on_off = CachedState::OnOff::ON;
+    cached_state.on_off_state.on_off_unknown = CachedState::OnOff::ON;
     cached_state.request_flags.enable_ubl = 0;
+  }
 
-    if (cached_state.request_flags.disable_ubl) {
+  if (cached_state.request_flags.disable_ubl) {
 #if ENABLED(DEBUG_DGUSLCD)
-      DEBUG_ECHOLNPGM("handle_request_flags: disable UBL");
+    DEBUG_ECHOLNPGM("handle_request_flags: disable UBL");
 #endif
-      queue.enqueue_now_P(PSTR("M420 S0"));
-      cached_state.on_off.on_off = CachedState::OnOff::OFF;
-      cached_state.request_flags.disable_ubl = 0;
-    }
+    GCodeQueue::enqueue_now_P(PSTR("M420 S0"));
+    cached_state.on_off_state.on_off_unknown = CachedState::OnOff::OFF;
+    cached_state.request_flags.disable_ubl = 0;
   }
 
   // --- load mesh from slot ---
@@ -83,9 +79,9 @@ void handle_request_flags() {
     DEBUG_ECHOLNPGM("handle_request_flags: load mesh");
 #endif
     // --- load mesh ---
-    char buf[12]{0};
+    char buf[12];
     sprintf_P(buf, PSTR("M420 L%d"), cached_state.fade_height_slot_number.slot_number);
-    queue.enqueue_one_now(buf);
+    GCodeQueue::enqueue_one_now(buf);
 
 // --- populate details to display ---
 #if ENABLED(HAS_LEVELING)
@@ -94,9 +90,10 @@ void handle_request_flags() {
         constrain(static_cast<uint16_t>(roundf(ExtUI::getMeshFadeHeight() * 10)), 0, 255);
     const uint8_t z_fade_height_mm_percent = static_cast<uint8_t>(z_fade_height_percent_uint16_t);
 
-    cached_state.fade_height_slot_number.fade_height |= z_fade_height_mm_percent;
+    cached_state.fade_height_slot_number.fade_height = z_fade_height_mm_percent;
 #endif // HAS_MESH
-    cached_state.on_off.on_off = (ExtUI::getLevelingActive()) ? CachedState::OnOff::ON : CachedState::OnOff::OFF;
+    cached_state.on_off_state.on_off_unknown =
+        (ExtUI::getLevelingActive()) ? CachedState::OnOff::ON : CachedState::OnOff::OFF;
 
 #endif // HAS_LEVELING
     cached_state.request_flags.load_mesh = 0;
@@ -111,13 +108,13 @@ void handle_request_flags() {
       const uint8_t fade_height_mm_tenth = static_cast<uint8_t>(cached_state.fade_height_slot_number.fade_height);
       const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_tenth / 10U);
       const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_tenth % 10U);
-      char buf[20]{0};
+      char buf[20];
 
       sprintf_P(buf, PSTR("M420 Z%d.%d"), fade_height_mm, fade_height_mm_fraction);
-      queue.enqueue_one_now(buf);
+      GCodeQueue::enqueue_one_now(buf);
 
       sprintf_P(buf, PSTR("G29 S%d"), cached_state.fade_height_slot_number.slot_number);
-      queue.enqueue_one_now(buf);
+      GCodeQueue::enqueue_one_now(buf);
 
       cached_state.request_flags.start_ubl = 0;
     }
@@ -132,10 +129,10 @@ void handle_request_flags() {
     const uint8_t fade_height_mm_tenth = static_cast<uint8_t>(cached_state.fade_height_slot_number.fade_height);
     const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_tenth / 10U);
     const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_tenth % 10U);
-    char buf[16]{0};
+    char buf[16];
 
     sprintf_P(buf, PSTR("M420 Z%d.%d"), fade_height_mm, fade_height_mm_fraction);
-    queue.enqueue_one_now(buf);
+    GCodeQueue::enqueue_one_now(buf);
     cached_state.request_flags.fade_height_changed = 0;
   }
 
@@ -145,30 +142,37 @@ void handle_request_flags() {
 #if ENABLED(DEBUG_DGUSLCD)
     DEBUG_ECHOLNPGM("handle_request_flags: slot selection changed");
 #endif
-    cached_state.request_flags.slot_changed = 1;
+    cached_state.request_flags.slot_changed = 0;
+    cached_state.request_flags.load_mesh = 1;
     handle_request_flags();
   }
 }
 
 } // namespace
 
-void handle_parameter_save(DGUS_VP_Variable &var, void *val_ptr) {
-  if (var.memadr)
-    *(uint16_t *)var.memadr = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
-
+void handle_parameter_load_save_probe(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_parameter_load_save_probe");
+#endif
+  *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
   handle_request_flags();
 }
 
 void handle_parameter_fade_slot(DGUS_VP_Variable &var, void *val_ptr) {
-  if (var.memadr) {
-    CachedState::FadeHeightSlotNumber *buffered_arguments =
-        static_cast<CachedState::FadeHeightSlotNumber *>(var.memadr);
-    const CachedState::FadeHeightSlotNumber new_arguments{.data = dgus::swap16(*static_cast<uint16_t *>(val_ptr))};
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_parameter_fade_slot");
+#endif
+  auto *cached{static_cast<CachedState::FadeHeightSlotNumber *>(var.memadr)};
+  auto *request{static_cast<CachedState::FadeHeightSlotNumber *>(val_ptr)};
+  request->data = dgus::swap16(request->data);
 
-    if (buffered_arguments->slot_number != new_arguments.slot_number)
-      cached_state.request_flags.slot_changed = 1;
-    *buffered_arguments = new_arguments;
-  }
+  if (cached->slot_number != request->slot_number)
+    cached_state.request_flags.slot_changed = 1;
+
+  if (cached->fade_height != request->fade_height)
+    cached_state.request_flags.fade_height_changed = 1;
+
+  cached->data = request->data;
 
   handle_request_flags();
 }

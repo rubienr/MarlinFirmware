@@ -25,7 +25,7 @@
 namespace dgus_origin {
 namespace tools {
 
-const uint16_t VPScreenList[] PROGMEM = {0x0000};
+const uint16_t VPScreenList[] PROGMEM{0x0000};
 
 } // namespace tools
 } // namespace dgus_origin

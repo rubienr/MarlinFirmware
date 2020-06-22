@@ -29,26 +29,22 @@ namespace dgus_origin {
 namespace driver_control {
 
 void handle_motor_lock_unlock(DGUS_VP_Variable &var, void *val_ptr) {
+#if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_motor_lock_unlock");
+#endif
+  auto *cached{static_cast<CachedState *>(var.memadr)};
+  auto *request{static_cast<CachedState *>(val_ptr)};
+  request->data = dgus::swap16(request->data);
 
-  CachedState *state = static_cast<CachedState *>(var.memadr);
-  state->data = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
-
-  switch (state->enable_disable) {
-    case CachedState::UNSET:
-    default:
-      return;
-    case CachedState::DISABLE:
-      queue.enqueue_now_P(PSTR("M18"));
-      state->enabled_disabled = CachedState::DISABLE;
-      break;
-    case CachedState::ENABLE:
-      queue.enqueue_now_P(PSTR("M17"));
-      state->enabled_disabled = CachedState::ENABLE;
-      break;
+  if (request->enable) {
+    GCodeQueue::enqueue_now_P(PSTR("M17"));
+    cached->on_off_unknown = CachedState::ON;
   }
 
-  state->enable_disable = CachedState::UNSET;
+  if (request->disable) {
+    GCodeQueue::enqueue_now_P(PSTR("M18"));
+    cached->on_off_unknown = CachedState::OFF;
+  }
 }
 
 } // namespace driver_control

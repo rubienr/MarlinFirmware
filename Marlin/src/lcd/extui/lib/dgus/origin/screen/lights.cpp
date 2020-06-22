@@ -27,18 +27,18 @@ namespace lights {
 
 #include "../memory_layout.h"
 
-CachedState cached_state;
+CachedState cached_state{0, 0, 0, 0};
 
-const uint16_t VPScreenList[] PROGMEM = {
+const uint16_t VPScreenList[] PROGMEM {
 #if ENABLED(CASE_LIGHT_ENABLE)
-    to_address(dgus::memory_layout::CaseLight::Control),
+  to_address(dgus::memory_layout::CaseLight::Control),
 #endif
 #if ENABLED(HAS_COLOR_LEDS)
-    to_address(dgus::memory_layout::ColorLeds::Control0),
-    to_address(dgus::memory_layout::ColorLeds::Control1),
-    to_address(dgus::memory_layout::ColorLeds::Control2),
+      to_address(dgus::memory_layout::ColorLeds::Control0), to_address(dgus::memory_layout::ColorLeds::Control1),
+      to_address(dgus::memory_layout::ColorLeds::Control2),
 #endif
-    0x0000};
+      0x0000
+};
 
 } // namespace lights
 } // namespace dgus_origin

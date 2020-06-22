@@ -34,25 +34,26 @@ namespace dgus_origin {
 namespace driver_control {
 
 union CachedState {
-
-  static constexpr uint8_t UNSET = 0;
-  static constexpr uint8_t ENABLE = 1;
-  static constexpr uint8_t DISABLE = 2;
+  constexpr static const uint8_t UNKNOWN{0};
+  constexpr static const uint8_t OFF{1};
+  constexpr static const uint8_t ON{2};
+  uint16_t data;
   struct {
     // flags set by display
-    uint8_t enable_disable : 2;
+    uint8_t disable : 1;
+    uint8_t enable : 1;
     uint8_t _unused : 6;
     // flags set internally
-    uint8_t enabled_disabled : 2;
+    uint8_t on_off_unknown : 2;
     uint8_t _unused2 : 6;
   } __attribute__((packed));
-  uint16_t data;
 };
 
 /**
  * Enable or disable motors' driver.
+ *
  * @param var
- * @param val_ptr low byte: 0 - undefined, 1 - disable motors, 2 - enable motors; high byte: unused
+ * @param val_ptr
  */
 void handle_motor_lock_unlock(DGUS_VP_Variable &var, void *val_ptr);
 

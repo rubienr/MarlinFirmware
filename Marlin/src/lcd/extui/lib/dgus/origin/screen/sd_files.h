@@ -31,8 +31,8 @@ namespace dgus_origin {
 namespace sdfiles {
 
 // screen variables
-extern const uint16_t VPScreenList1[] PROGMEM;
-extern const uint16_t VPScreenList2[] PROGMEM;
+extern const uint16_t VPScreenList1[];
+extern const uint16_t VPScreenList2[];
 
 } // namespace sdfiles
 } // namespace dgus_origin

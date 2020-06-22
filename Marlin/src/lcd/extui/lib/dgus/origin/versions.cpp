@@ -22,13 +22,19 @@
 
 #if ENABLED(DGUS_ORIGIN_VERSIONS)
 
+#include "macros.h"
+
 namespace dgus_origin {
 namespace versions {
 
-const UiVersion ui_version{.version = {.major = 0, .minor = 1, .patch = 0, ._unused = 0}};
+const UiVersion ui_version{.version = {.major = 3, .minor = 1, .patch = 2, ._unused = 0}};
 
-// TODO rubienr - unused so far
-const UiFlavor ui_flavor PROGMEM = {0};
+#ifndef DGUS_FLAVOUR
+#define DGUS_FLAVOUR "DGUS Origin"
+#endif
+
+const UiFlavor ui_flavor PROGMEM{DGUS_FLAVOUR};
+static_assert(sizeof(DGUS_FLAVOUR) <= sizeof(UiFlavor), "Failed to declare UI flavour.");
 
 } // namespace versions
 } // namespace dgus_origin
