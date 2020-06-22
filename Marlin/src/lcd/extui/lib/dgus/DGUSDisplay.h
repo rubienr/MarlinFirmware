@@ -44,11 +44,12 @@ typedef enum : uint8_t {
   DGUS_WAIT_TELEGRAM,  //< LEN received, Waiting for to receive all bytes.
 } rx_datagram_state_t;
 
-namespace Dgus{
+namespace dgus{
 
 uint16_t swap16(const uint16_t value);
 
-}
+} // namespace dgus
+
 // Low-Level access to the display.
 class DGUSDisplay {
 public:
@@ -236,6 +237,7 @@ public:
 
   // Helpers to convert and transfer data to the display.
   static void DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable &var);
+  static void DGUSLCD_SendWordValueToDisplayPGM(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &var);
   static void DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var);
   static void DGUSLCD_SendTemperaturePID(DGUS_VP_Variable &var);
@@ -340,6 +342,6 @@ void DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay(DGUS_VP_Var
   union { float as_float; uint16_t as_uint; int16_t as_int; } data {.as_float = *static_cast<float *>(var.memadr)};
   data.as_float *= cpow(10, decimals);
   data.as_int = static_cast<int16_t>(roundf(data.as_float));
-  data.as_uint = Dgus::swap16(data.as_uint);
+  data.as_uint = dgus::swap16(data.as_uint);
   dgusdisplay.WriteVariable(var.VP, &data.as_uint, 2);
 }
