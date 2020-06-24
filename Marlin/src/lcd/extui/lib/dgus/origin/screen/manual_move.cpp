@@ -27,10 +27,7 @@
 namespace dgus_origin {
 namespace manual_move {
 
-const uint16_t VPScreenList[] PROGMEM{to_address(dgus::memory_layout::Position::X),
-                                      to_address(dgus::memory_layout::Position::Y),
-                                      to_address(dgus::memory_layout::Position::Z),
-                                      0x0000};
+const uint16_t VPScreenList[] PROGMEM{0x0000};
 
 } // namespace manual_move
 } // namespace dgus_origin

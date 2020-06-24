@@ -25,6 +25,8 @@
 
 #if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
 
+#include "../handler/move.h"
+
 namespace dgus_origin {
 namespace manual_move {
 

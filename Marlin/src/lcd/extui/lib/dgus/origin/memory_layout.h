@@ -136,6 +136,25 @@ enum class ColorLeds : uint16_t {
 };
 #endif
 
+// TODO rubienr - replace enum Move by this:
+// 4 Byte Fixed point number; format xxx.yy
+namespace PositionAxisMove {
+enum class Absolute : uint16_t {
+  X = 0x2100,
+  Y = 0x2102,
+  Z = 0x2104,
+};
+
+enum class Relative : uint16_t {
+  X = 0x2106,
+  Y = 0x2108,
+  Z = 0x210A,
+};
+
+constexpr uint8_t Bytes = 4; // size shared among all axis
+
+} // namespace PositionAxisMove
+
 enum class Ubl : uint16_t {
   RequestFlags = 0x2121,
   FadeHeightSlotNnumber = 0x2122,
@@ -158,6 +177,7 @@ enum class Filament : uint16_t {
   LoadUnloadControl = 0x2300,
 };
 
+// TODO rubienr - deprecate this: replace by PositionAxisMove
 // Controls for movement (we can't use the incremental / decremental feature of the display at this feature works only
 // with 16 bit values (which would limit us to 655.35mm, which is likely not a problem for common setups, but i don't
 // want to rule out hangprinters support) A word about the coding: The VP will be per axis and the return code will be
@@ -415,11 +435,11 @@ enum class PrintStats : uint16_t {
 };
 
 // 4 Byte Fixed point number; format xxx.yy
-enum class Position : uint16_t {
+enum class PositionAxis : uint16_t {
   X = 0x3110,
   Y = 0x3112,
   Z = 0x3114,
-  Bytes = 4,
+  Bytes = 4, // size shared among all axis
 };
 
 // 4 Byte Fixed point number; format xxx.yy
@@ -504,6 +524,7 @@ enum class HeaterStatus : uint16_t {
   Bed = 0x331C,
 };
 
+// todo rubienr - deprecate this
 enum class MoveOption : uint16_t {
   MoveDistance = 0x3400,
 };
