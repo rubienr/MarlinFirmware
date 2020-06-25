@@ -38,6 +38,7 @@
 #include "screen/sd_print_manipulation.h"
 #include "screen/status.h"
 #include "screen/manual_move.h"
+#include "screen/homing.h"
 #include "screen/manual_extrude.h"
 #include "screen/main.h"
 #include "memory_layout.h"
@@ -60,7 +61,7 @@ enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_STATUS2 = 32,
 #endif
 #if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
-  DGUSLCD_SCREEN_MANUALMOVE = 40,
+  DGUSLCD_SCREEN_MANUALMOVE = 38,
 #endif
 #if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
   DGUSLCD_SCREEN_MANUALEXTRUDE = 42,
@@ -104,6 +105,9 @@ enum DGUSLCD_Screens : uint8_t {
 #endif
 #if ENABLED(DGUS_ORIGIN_FILAMENT_LOAD_UNLOAD)
   DGUSLCD_SCREEN_FILAMENT_LOAD_UNLOAD = 74,
+#endif
+#if ENABLED(DGUS_ORIGIN_HOMING)
+  DGUSLCD_SCREEN_HOMING = 76,
 #endif
   // 090-105 reserved for .ico icon sets
   DGUSLCD_SCREEN_POWER_LOSS = 106,

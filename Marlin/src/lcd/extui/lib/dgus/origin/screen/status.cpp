@@ -27,7 +27,7 @@
 namespace dgus_origin {
 namespace status {
 
-const uint16_t VPScreenList1[] PROGMEM {
+const uint16_t screen_variables_1[] PROGMEM {
 
 #if HOTENDS
 #define HOTENDS_ADDRHELPER(N) \
@@ -46,7 +46,7 @@ const uint16_t VPScreenList1[] PROGMEM {
       to_address(dgus::memory_layout::PrintStats::PrintProgressPercentage), 0x0000
 };
 
-const uint16_t VPScreenList2[] PROGMEM {
+const uint16_t screen_variables_2[] PROGMEM {
 
 #if EXTRUDERS
 #define EXTRUDERS_ADDRHELPER(N) to_address(dgus::memory_layout::Flowrates::E##N),

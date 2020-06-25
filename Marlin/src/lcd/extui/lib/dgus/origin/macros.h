@@ -47,10 +47,10 @@ constexpr uint16_t toAddress(nullptr_t) { return 0; }
   }
 
 // Helper to define a DGUS_VP_Variable when the sizeo of the var cannot be determined automatically.
-#define VPHELPER_STR(VPADR, VPADRVAR, STRLEN, RXFPTR, TXFPTR)                          \
-  {                                                                                    \
+#define VPHELPER_STR(VPADR, VPADRVAR, STRLEN, RXFPTR, TXFPTR)                                     \
+  {                                                                                               \
     .VP = toAddress(VPADR), .memadr = VPADRVAR, .size = STRLEN, .set_by_display_handler = RXFPTR, \
-    .send_to_display_handler = TXFPTR                                                  \
+    .send_to_display_handler = TXFPTR                                                             \
   }
 
 #endif // HAS_DGUS_LCD

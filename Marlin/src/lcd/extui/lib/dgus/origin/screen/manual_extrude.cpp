@@ -27,7 +27,7 @@
 namespace dgus_origin {
 namespace manual_extrude {
 
-const uint16_t VPScreenList[] PROGMEM{/*
+const uint16_t screen_variables[] PROGMEM{/*
                                       #if EXTRUDERS >= 1
                                           to_address(dgus::memory_layout::PoseitionE::E0),
                                       #endif
@@ -47,7 +47,7 @@ const uint16_t VPScreenList[] PROGMEM{/*
                                           to_address(dgus::memory_layout::PoseitionE::E5),
                                       #endif
                                       */
-                                      0x0000};
+                                          0x0000};
 
 } // namespace manual_extrude
 } // namespace dgus_origin

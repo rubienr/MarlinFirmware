@@ -29,7 +29,7 @@ namespace dgus_origin {
 namespace feedrates {
 
 // screen variables
-extern const uint16_t VPScreenList[];
+extern const uint16_t screen_variables[];
 
 } // namespace feedrates
 } // namespace dgus_origin

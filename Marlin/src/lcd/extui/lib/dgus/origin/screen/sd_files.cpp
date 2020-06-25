@@ -27,7 +27,7 @@
 namespace dgus_origin {
 namespace sdfiles {
 
-const uint16_t VPScreenList[] PROGMEM{
+const uint16_t screen_variables[] PROGMEM{
     VP_SD_FileName0, VP_SD_FileName1, VP_SD_FileName2, VP_SD_FileName3, VP_SD_FileName4, 0x0000};
 
 } // namespace sdfiles

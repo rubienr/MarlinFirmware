@@ -29,7 +29,7 @@ namespace dgus_origin {
 namespace temperatures {
 
 // screen variables
-extern const uint16_t VPScreenList[];
+extern const uint16_t screen_variables[];
 
 } // namespace temperatures
 } // namespace dgus_origin

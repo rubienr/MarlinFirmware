@@ -27,7 +27,13 @@
 namespace dgus_origin {
 namespace manual_move {
 
-const uint16_t VPScreenList[] PROGMEM{0x0000};
+CachedState cached_state{100, 0};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::MoveAxis::Command),
+                                          to_address(dgus::memory_layout::MoveAxis::Distance),
+                                          to_address(dgus::memory_layout::PositionAxis::X),
+                                          to_address(dgus::memory_layout::PositionAxis::Y),
+                                          to_address(dgus::memory_layout::PositionAxis::Z),
+                                          0x0000};
 
 } // namespace manual_move
 } // namespace dgus_origin

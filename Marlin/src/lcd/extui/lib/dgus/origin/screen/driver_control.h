@@ -31,7 +31,7 @@ namespace dgus_origin {
 namespace driver_control {
 
 // screen variables
-extern const uint16_t VPScreenList[];
+extern const uint16_t screen_variables[];
 // cached state
 extern CachedState cached_state;
 

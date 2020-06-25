@@ -29,7 +29,7 @@ namespace dgus_origin {
 namespace manual_extrude {
 
 // screen variables
-extern const uint16_t VPScreenList[];
+extern const uint16_t screen_variables[];
 
 } // namespace manual_extrude
 } // namespace dgus_origin

@@ -27,15 +27,15 @@
 namespace dgus_origin {
 namespace info {
 
-const uint16_t VPScreenList[] PROGMEM{to_address(dgus::memory_layout::MarlinVersion::Version),
-                                      to_address(dgus::memory_layout::UiVersion::MajorMinor),
-                                      to_address(dgus::memory_layout::UiVersion::Patch),
-                                      to_address(dgus::memory_layout::UiVersion::Flavour),
-                                      to_address(dgus::memory_layout::MarlinVersion::DetailedVersion),
-                                      to_address(dgus::memory_layout::MarlinVersion::DistributionDate),
-                                      to_address(dgus::memory_layout::MarlinVersion::ConfigAuthor),
-                                      to_address(dgus::memory_layout::MarlinVersion::CompileDate),
-                                      0x0000};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::MarlinVersion::Version),
+                                          to_address(dgus::memory_layout::UiVersion::MajorMinor),
+                                          to_address(dgus::memory_layout::UiVersion::Patch),
+                                          to_address(dgus::memory_layout::UiVersion::Flavour),
+                                          to_address(dgus::memory_layout::MarlinVersion::DetailedVersion),
+                                          to_address(dgus::memory_layout::MarlinVersion::DistributionDate),
+                                          to_address(dgus::memory_layout::MarlinVersion::ConfigAuthor),
+                                          to_address(dgus::memory_layout::MarlinVersion::CompileDate),
+                                          0x0000};
 
 } // namespace info
 } // namespace dgus_origin

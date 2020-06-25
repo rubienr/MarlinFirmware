@@ -31,8 +31,7 @@ namespace dgus_origin {
 namespace sdprint_manipulation {
 
 // screen variables
-extern const uint16_t VPScreenList1[];
-extern const uint16_t VPScreenList2[];
+extern const uint16_t screen_variables[];
 
 } // namespace sdprint_manipulation
 } // namespace dgus_origin

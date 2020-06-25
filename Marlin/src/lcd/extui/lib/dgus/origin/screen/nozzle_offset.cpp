@@ -28,11 +28,11 @@ namespace dgus_origin {
 namespace nozzle_offset {
 
 CachedState cached_state{0};
-const uint16_t VPScreenList[] PROGMEM{to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Control),
-                                      to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0X),
-                                      to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Y),
-                                      to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Z),
-                                      0x0000};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Control),
+                                          to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0X),
+                                          to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Y),
+                                          to_address(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Z),
+                                          0x0000};
 
 } // namespace nozzle_offset
 } // namespace dgus_origin

@@ -58,7 +58,7 @@ union UiVersion {
     uint16_t low_word;
     uint16_t high_word;
   } __attribute__((packed));
-}__attribute__((packed));
+} __attribute__((packed));
 
 using UiFlavor = uint8_t[to_uint8_t(dgus::memory_layout::UiVersion::FlavourBytes)];
 

@@ -35,59 +35,64 @@ uint16_t distanceToMove = 0.1;
 #endif
 
 const struct VPMapping VPMap[] PROGMEM {
-  {DGUSLCD_SCREEN_BOOT, dgus_origin::boot::VPScreenList}, {DGUSLCD_SCREEN_MAIN, dgus_origin::main::VPScreenList},
+  {DGUSLCD_SCREEN_BOOT, dgus_origin::boot::screen_variables},
+      {DGUSLCD_SCREEN_MAIN, dgus_origin::main::screen_variables},
 #if ENABLED(DGUS_ORIGIN_TEMPERATURES)
-      {DGUSLCD_SCREEN_TEMPERATURE, dgus_origin::temperatures::VPScreenList},
+      {DGUSLCD_SCREEN_TEMPERATURE, dgus_origin::temperatures::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_STATUS)
-      {DGUSLCD_SCREEN_STATUS, dgus_origin::status::VPScreenList1},
-      {DGUSLCD_SCREEN_STATUS2, dgus_origin::status::VPScreenList2},
+      {DGUSLCD_SCREEN_STATUS, dgus_origin::status::screen_variables_1},
+      {DGUSLCD_SCREEN_STATUS2, dgus_origin::status::screen_variables_2},
 #endif
 #if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
-      {DGUSLCD_SCREEN_MANUALMOVE, dgus_origin::manual_move::VPScreenList},
+      {DGUSLCD_SCREEN_MANUALMOVE, dgus_origin::manual_move::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
-      {DGUSLCD_SCREEN_MANUALEXTRUDE, dgus_origin::manual_extrude::VPScreenList},
+      {DGUSLCD_SCREEN_MANUALEXTRUDE, dgus_origin::manual_extrude::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_FEEDRATES)
-      {DGUSLCD_SCREEN_FANANDFEEDRATE, dgus_origin::feedrates::VPScreenList},
+      {DGUSLCD_SCREEN_FANANDFEEDRATE, dgus_origin::feedrates::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_FLOWRATES)
-      {DGUSLCD_SCREEN_FLOWRATES_1, dgus_origin::flowrates::VPScreenList1},
-      {DGUSLCD_SCREEN_FLOWRATES_2, dgus_origin::flowrates::VPScreenList2},
+      {DGUSLCD_SCREEN_FLOWRATES_1, dgus_origin::flowrates::screen_variables_1},
+      {DGUSLCD_SCREEN_FLOWRATES_2, dgus_origin::flowrates::screen_variables_2},
 #endif
 #if ENABLED(DGUS_ORIGIN_SDPRINT_MANIPULATION)
-      {DGUSLCD_SCREEN_SDPRINTMANIPULATION, dgus_origin::sdprint_manipulation::VPScreenList},
+      {DGUSLCD_SCREEN_SDPRINTMANIPULATION, dgus_origin::sdprint_manipulation::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_INFO)
-      {DGUSLCD_SCREEN_INFO, dgus_origin::info::VPScreenList},
+      {DGUSLCD_SCREEN_INFO, dgus_origin::info::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_TOOLS)
-      {DGUSLCD_SCREEN_TOOLS, dgus_origin::tools::VPScreenList},
+      {DGUSLCD_SCREEN_TOOLS, dgus_origin::tools::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_PSU_CONTROL)
-      {DGUSLCD_SCREEN_PSU, dgus_origin::psu_control::VPScreenList},
+      {DGUSLCD_SCREEN_PSU, dgus_origin::psu_control::screen_variables},
 #endif
 #if ENABLED(AUTO_BED_LEVELING_UBL)
       {DGUSLCD_SCREEN_BED_LEVELING, dgus_origin::bed_leveling_ubl::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_DRIVER_CONTROL)
-      {DGUSLCD_SCREEN_MOTORS, dgus_origin::driver_control::VPScreenList},
+      {DGUSLCD_SCREEN_MOTORS, dgus_origin::driver_control::screen_variables},
 #endif
 #if ANY(DGUS_ORIGIN_LIGHTS)
-      {DGUSLCD_SCREEN_LIGHTS, dgus_origin::lights::VPScreenList},
+      {DGUSLCD_SCREEN_LIGHTS, dgus_origin::lights::screen_variables},
 #endif
 #if ENABLED(HAS_BED_PROBE)
-      {DGUSLCD_SCREEN_PROBE_OFFSET, dgus_origin::nozzle_offset::VPScreenList},
+      {DGUSLCD_SCREEN_PROBE_OFFSET, dgus_origin::nozzle_offset::screen_variables},
 #endif
 #if ENABLED(EEPROM_SETTINGS)
-      {DGUSLCD_SCREEN_EEPROM, dgus_origin::eeprom::VPScreenList},
+      {DGUSLCD_SCREEN_EEPROM, dgus_origin::eeprom::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_FILAMENT_LOAD_UNLOAD)
-      {DGUSLCD_SCREEN_FILAMENT_LOAD_UNLOAD, dgus_origin::filament::VPScreenList},
+      {DGUSLCD_SCREEN_FILAMENT_LOAD_UNLOAD, dgus_origin::filament::screen_variables},
+#endif
+#if ENABLED(DGUS_ORIGIN_HOMING)
+      {DGUSLCD_SCREEN_HOMING, dgus_origin::homing::screen_variables},
+
 #endif
 #if ENABLED(DGUS_ORIGIN_SDFILES)
-      {DGUSLCD_SCREEN_SDFILELIST, dgus_origin::sdfiles::VPScreenList},
+      {DGUSLCD_SCREEN_SDFILELIST, dgus_origin::sdfiles::screen_variables},
 #endif
   {
     0, nullptr
@@ -116,44 +121,22 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                &DGUSScreenVariableHandler::HandleAllHeatersOff,
                nullptr),
 
-// todo rubienr - simplify/consolidate both options
-#if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
-      VPHELPER(VP_MOVE_OPTION, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMoveOption, nullptr),
+#if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
+      VPHELPER(dgus::memory_layout::MoveAxis::Distance,
+               &dgus_origin::manual_move::cached_state.distance_10_um,
+               &dgus_origin::manual_move::handle_move_argument_update,
+               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+      VPHELPER(dgus::memory_layout::MoveAxis::Command,
+               &dgus_origin::manual_move::cached_state.move_command,
+               &dgus_origin::manual_move::handle_move_argument_update,
+               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
-#if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
-      VPHELPER(VP_MOVE_X, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
-      VPHELPER(VP_MOVE_Y, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
-      VPHELPER(VP_MOVE_Z, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
-      VPHELPER(VP_HOME_ALL, &distanceToMove, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
-#else
-      VPHELPER(dgus::memory_layout::PositionAxisMove::Relative::X,
-               nullptr,
-               &dgus_origin::move::handle_move_relatvie_x,
-               nullptr),
-      VPHELPER(dgus::memory_layout::PositionAxisMove::Relative::Y,
-               nullptr,
-               &dgus_origin::move::handle_move_relatvie_y,
-               nullptr),
-      VPHELPER(dgus::memory_layout::PositionAxisMove::Relative::Z,
-               nullptr,
-               &dgus_origin::move::handle_move_relatvie_z,
-               nullptr),
-      VPHELPER(dgus::memory_layout::PositionAxisMove::Absolute::X,
-               nullptr,
-               &dgus_origin::move::handle_move_absolute_x,
-               nullptr),
-      VPHELPER(dgus::memory_layout::PositionAxisMove::Absolute::Y,
-               nullptr,
-               &dgus_origin::move::handle_move_absolute_y,
-               nullptr),
-      VPHELPER(dgus::memory_layout::PositionAxisMove::Absolute::Z,
-               nullptr,
-               &dgus_origin::move::handle_move_absolute_z,
-               nullptr),
-
-      VPHELPER(dgus::memory_layout::Homing::Control, nullptr, &DGUSScreenVariableHandler::HandleManualMove, nullptr),
+#if ENABLED(DGUS_ORIGIN_HOMING)
+      VPHELPER(dgus::memory_layout::Homing::Control,
+               &dgus_origin::homing::cached_state,
+               &dgus_origin::homing::handle_homing_command,
+               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
-
       VPHELPER(dgus::memory_layout::DriverControl::LockUnlockControl,
                &dgus_origin::driver_control::cached_state,
                &dgus_origin::driver_control::handle_motor_lock_unlock,

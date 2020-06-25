@@ -18,20 +18,19 @@
  *
  */
 
-#include "eeprom.h"
+#include "homing.h"
 
-#if ENABLED(DGUS_ORIGIN_FILAMENT_EEPROM)
+#if ENABLED(DGUS_ORIGIN_HOMING)
 
 #include "../memory_layout.h"
 
 namespace dgus_origin {
-namespace eeprom {
+namespace homing {
 
 CachedState cached_state{0};
+const uint16_t screen_variables[] PROGMEM{0x0000};
 
-const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::Eeprom::Control), 0x0000};
-
-} // namespace eeprom
+} // namespace homing
 } // namespace dgus_origin
 
 #endif

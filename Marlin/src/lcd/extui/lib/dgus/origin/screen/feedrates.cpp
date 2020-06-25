@@ -27,7 +27,8 @@
 namespace dgus_origin {
 namespace feedrates {
 
-const uint16_t VPScreenList[] PROGMEM {
+// TODO rubienr - use repeat macro
+const uint16_t screen_variables[] PROGMEM {
   to_address(dgus::memory_layout::FeedRate::Percentage),
 #if HAS_FAN0
       to_address(dgus::memory_layout::FanSpeed::Fan0Percentage),

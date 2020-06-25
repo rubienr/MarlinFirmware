@@ -27,7 +27,8 @@
 namespace dgus_origin {
 namespace temperatures {
 
-const uint16_t VPScreenList[] PROGMEM {
+// TODO rubienr - use repeat macro
+const uint16_t screen_variables[] PROGMEM {
 
 #if HOTENDS >= 1
   to_address(dgus::memory_layout::Temperatures::E0Is), to_address(dgus::memory_layout::Temperatures::E0Set),

@@ -739,6 +739,8 @@ void DGUSScreenVariableHandler::HandleManualMoveOption(DGUS_VP_Variable &var, vo
 }
 #endif
 
+// TODO rubienr
+/*
 void DGUSScreenVariableHandler::HandleManualMove(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandleManualMove");
 
@@ -754,19 +756,19 @@ void DGUSScreenVariableHandler::HandleManualMove(DGUS_VP_Variable &var, void *va
     default:
       return;
 
-    case to_address(dgus::memory_layout::Move::X):
+    case to_address(dgus::memory_layout::MoveAxis::X):
       axiscode = 'X';
       if (!ExtUI::canMove(ExtUI::axis_t::X))
         goto cannotmove;
       break;
 
-    case to_address(dgus::memory_layout::Move::Y):
+    case to_address(dgus::memory_layout::MoveAxis::Y):
       axiscode = 'Y';
       if (!ExtUI::canMove(ExtUI::axis_t::Y))
         goto cannotmove;
       break;
 
-    case to_address(dgus::memory_layout::Move::Z):
+    case to_address(dgus::memory_layout::MoveAxis::Z):
       axiscode = 'Z';
       speed = 300; // default to 5mm/s
       if (!ExtUI::canMove(ExtUI::axis_t::Z))
@@ -832,6 +834,7 @@ void DGUSScreenVariableHandler::HandleManualMove(DGUS_VP_Variable &var, void *va
 cannotmove:
   DEBUG_ECHOLNPAIR(" cannot move ", axiscode);
 }
+*/
 
 /**
  * Enable or disable motors' driver.

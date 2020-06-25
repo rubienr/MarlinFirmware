@@ -21,9 +21,9 @@
 
 #include "../../../../../../inc/MarlinConfig.h"
 
-#define DGUS_ORIGIN_MOVE
+#define DGUS_ORIGIN_HOMING
 
-#if ENABLED(DGUS_ORIGIN_MOVE)
+#if ENABLED(DGUS_ORIGIN_HOMING)
 
 #include "../../../../ui_api.h"
 #include "../../DGUSDisplay.h"
@@ -31,38 +31,32 @@
 struct DGUS_VP_Variable;
 
 namespace dgus_origin {
-namespace move {
+namespace homing {
 
-union Data {
+union CachedState {
   uint16_t data;
   struct {
-    uint8_t low_byte;
-    uint8_t high_byte;
+    uint8_t x : 1;
+    uint8_t y : 1;
+    uint8_t z : 1;
+    uint8_t a : 1;
+    uint8_t b : 1;
+    uint8_t c : 1;
+    uint8_t raise_before_home : 1;
+    uint8_t _unused : 1;
+    uint8_t cannot_move : 1;
+    uint8_t _unused2 : 7;
   } __attribute__((packed));
-  uint16_t as_uint_16;
-  int16_t as_int_16;
-  float as_float;
 };
 
 /**
- * Moves axis by the given distance.
- * @param var var.memaddr shall be nullptr; value is unused
- * @param val_ptr the signed distance in 1/10th mm to move
+ * Interprets the command flags and clears each handled one for back propagation to display.
+ * @param var var.memaddr must not be nullptr
+ * @param val_ptr
  */
-void handle_move_relatvie_x(DGUS_VP_Variable &var, void *val_ptr);
-void handle_move_relatvie_y(DGUS_VP_Variable &var, void *val_ptr);
-void handle_move_relatvie_z(DGUS_VP_Variable &var, void *val_ptr);
+void handle_homing_command(DGUS_VP_Variable &var, void *val_ptr);
 
-/**
- * Moves axis to the given position.
- * @param var var.memaddr shall be nullptr; value is unused
- * @param val_ptr the signed position in 1/10th mm to move to
- */
-void handle_move_absolute_x(DGUS_VP_Variable &var, void *val_ptr);
-void handle_move_absolute_y(DGUS_VP_Variable &var, void *val_ptr);
-void handle_move_absolute_z(DGUS_VP_Variable &var, void *val_ptr);
-
-} // namespace move
+} // namespace homing
 } // namespace dgus_origin
 
 #endif

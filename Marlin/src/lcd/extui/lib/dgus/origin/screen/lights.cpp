@@ -29,7 +29,7 @@ namespace lights {
 
 CachedState cached_state{0, 0, 0, 0};
 
-const uint16_t VPScreenList[] PROGMEM {
+const uint16_t screen_variables[] PROGMEM {
 #if ENABLED(CASE_LIGHT_ENABLE)
   to_address(dgus::memory_layout::CaseLight::Control),
 #endif

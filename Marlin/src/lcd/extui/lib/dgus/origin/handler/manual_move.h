@@ -25,15 +25,39 @@
 
 #if ENABLED(DGUS_ORIGIN_MANUAL_MOVE)
 
-#include "../handler/manual_move.h"
+#include "../../../../ui_api.h"
+#include "../../DGUSDisplay.h"
+
+struct DGUS_VP_Variable;
 
 namespace dgus_origin {
 namespace manual_move {
 
-// screen variables
-extern const uint16_t screen_variables[];
-// cached state
-extern CachedState cached_state;
+struct CachedState {
+  uint16_t distance_10_um;
+
+  union MoveCommand {
+    constexpr static const uint8_t NO_ACTION{0};
+    constexpr static const uint8_t MOVE_NEGATIVE{1};
+    constexpr static const uint8_t MOVE_POSITIVE{2};
+    uint16_t data;
+    struct {
+      uint8_t axis_id : 8;
+      uint8_t direction : 2;
+      uint8_t _unused : 6;
+    } __attribute__((packed));
+  } move_command;
+};
+
+/**
+ * Caches and moves the respecitve axis if move action is specified.
+ * The cached action is cleared and propagated to display.
+ *
+ * @param var var.memadr must not be nullptr but pointer to one of #CachedState.distance, #CachedState.axis
+ * #CachedState.move_command
+ * @param val_ptr must not be nullptr
+ */
+void handle_move_argument_update(DGUS_VP_Variable &var, void *val_ptr);
 
 } // namespace manual_move
 } // namespace dgus_origin

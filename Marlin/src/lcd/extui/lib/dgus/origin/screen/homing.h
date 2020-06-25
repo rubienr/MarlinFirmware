@@ -17,21 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#include "eeprom.h"
+#include "../../../../../../inc/MarlinConfig.h"
 
-#if ENABLED(DGUS_ORIGIN_FILAMENT_EEPROM)
+#define DGUS_ORIGIN_HOMING
 
-#include "../memory_layout.h"
+#if ENABLED(DGUS_ORIGIN_HOMING)
+
+#include "../handler/homing.h"
 
 namespace dgus_origin {
-namespace eeprom {
+namespace homing {
 
-CachedState cached_state{0};
+// screen variables
+extern const uint16_t screen_variables[];
+// cached state
+extern CachedState cached_state;
 
-const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::Eeprom::Control), 0x0000};
-
-} // namespace eeprom
+} // namespace homing
 } // namespace dgus_origin
 
 #endif

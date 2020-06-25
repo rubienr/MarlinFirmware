@@ -27,7 +27,7 @@
 namespace dgus_origin {
 namespace flowrates {
 
-const uint16_t VPScreenList1[] PROGMEM {
+const uint16_t screen_variables_1[] PROGMEM {
 #if EXTRUDERS >= 1
   to_address(dgus::memory_layout::Flowrates::E0),
 #endif
@@ -40,7 +40,7 @@ const uint16_t VPScreenList1[] PROGMEM {
       0x0000
 };
 
-const uint16_t VPScreenList2[] PROGMEM {
+const uint16_t screen_variables_2[] PROGMEM {
 #if EXTRUDERS >= 4
   to_address(dgus::memory_layout::Flowrates::E3),
 #endif

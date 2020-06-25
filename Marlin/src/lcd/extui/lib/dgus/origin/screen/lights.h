@@ -35,7 +35,7 @@ namespace dgus_origin {
 namespace lights {
 
 // screen variables
-extern const uint16_t VPScreenList[];
+extern const uint16_t screen_variables[];
 // cached state
 extern CachedState cached_state;
 
