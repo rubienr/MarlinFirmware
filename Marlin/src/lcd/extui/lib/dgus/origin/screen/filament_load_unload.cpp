@@ -26,8 +26,10 @@
 namespace dgus_origin {
 namespace filament {
 
-CachedState cached_state{0};
-const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::Filament::LoadUnloadControl), 0x0000};
+CachedState cached_state{{0},{100}};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::Filament::LoadUnloadControl),
+                                          to_address(dgus::memory_layout::Filament::ExtrudeRetractControl),
+                                          0x0000};
 
 } // namespace filament
 } // namespace dgus_origin

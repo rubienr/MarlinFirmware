@@ -38,30 +38,44 @@ namespace filament {
 /**
  * flags for display requests; cleared internally
  */
-union CachedState {
-  constexpr static const uint8_t CLEAR{0};
-  constexpr static const uint8_t ERROR{1};
-  constexpr static const uint8_t OK{2};
-  uint16_t data;
-  struct {
-    uint8_t unload : 1;
-    uint8_t load : 1;
-    uint8_t ok_error_clear : 2;
-    uint8_t _unused : 4;
-    uint8_t extruder_id;
-  } __attribute__((packed));
+struct CachedState {
+
+  union LoadUnload {
+    constexpr static const uint8_t NO_ACTION{0};
+    constexpr static const uint8_t UNLOAD{1};
+    constexpr static const uint8_t LOAD{2};
+    constexpr static const uint8_t RETRACT{3};
+    constexpr static const uint8_t EXTRUDE{4};
+
+    constexpr static const uint8_t CLEAR{0};
+    constexpr static const uint8_t ERROR{1};
+    constexpr static const uint8_t OK{2};
+
+    uint16_t data;
+    struct {
+      uint8_t command : 3;
+      uint8_t ok_error_clear : 2;
+      uint8_t _unused : 2;
+      uint8_t extruder_id;
+    } __attribute__((packed));
+  } load_unload;
+
+  union ExtrudeRetract {
+    uint16_t data;
+    uint16_t distance;
+  } extrude_retract;
 };
 
+
 /**
- * Caches display request/arguments and performs filament load unload requests.
+ * Caches display request/arguments and performs filament load/unload and extrude/retract.
+ * - load/unload: filament change with M701, M702
+ * - extrude/retract: moves E relative to the current position
  *
- * Uses M70x gcodes and ADVANCED_PAUSE_FEATURE and FILAMENT_LOAD_UNLOAD_GCODES.
- * - clears flags once request is handled for back propagation to display
- *
- * @param var
+ * @param var var.memarddr must not be nullptr
  * @param val_ptr
  */
-void handle_filament_load_unload(DGUS_VP_Variable &var, void *val_ptr);
+void handle_filament_move(DGUS_VP_Variable &var, void *val_ptr); // namespace filament
 
 } // namespace filament
 } // namespace dgus_origin

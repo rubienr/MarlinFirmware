@@ -101,6 +101,7 @@ void handle_move_distance() {
   if (!backup_is_relative_mode)
     GCodeQueue::enqueue_now_P(PSTR("G90"));
 
+  // TODO rubienr - necessary?
   DGUSScreenVariableHandler::ForceCompleteUpdate();
 }
 

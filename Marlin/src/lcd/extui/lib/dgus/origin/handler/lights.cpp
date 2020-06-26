@@ -51,8 +51,8 @@ void update_color_leds() {
   if (cached_state.color_led_control_0.enable ||                                              // on enable, or
       cached_state.color_led_control_0.on_off_unknown == CachedState::ColorLedControl0::ON) { // on color changed
     char buf[32];
-    sprintf(buf,
-            "M150 P%d R%d U%d B%d W%d",
+    sprintf_P(buf,
+            PSTR("M150 P%d R%d U%d B%d W%d"),
             cached_state.color_led_control_0.intensity,
             cached_state.color_led_control_1.red,
             cached_state.color_led_control_1.green,
@@ -107,7 +107,7 @@ void handle_case_light(DGUS_VP_Variable &var, void *val_ptr) {
   void setCaseLightBrightness_percent(float_brightness);
 #else
   char buf[16];
-  sprintf(buf, "M355 P%d S%d", case_light_request->intensity, ((do_enable_case_light) ? 1 : 0));
+  sprintf_P(buf, PSTR("M355 P%d S%d"), case_light_request->intensity, ((do_enable_case_light) ? 1 : 0));
   queue.enqueue_one_now(buf);
 #endif
 }

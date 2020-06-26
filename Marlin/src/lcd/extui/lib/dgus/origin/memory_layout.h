@@ -172,6 +172,7 @@ enum class OffsetNozzleToProbe : uint16_t {
 // display memory addresses
 enum class Filament : uint16_t {
   LoadUnloadControl = 0x2300,
+  ExtrudeRetractControl = 0x2301,
 };
 
 enum class MoveE : uint16_t {

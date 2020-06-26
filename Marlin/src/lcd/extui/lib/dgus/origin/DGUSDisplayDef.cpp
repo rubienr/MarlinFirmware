@@ -513,9 +513,13 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 // filament load/unload screen using native capability via M701/M702
 #if ENABLED(DGUS_ORIGIN_FILAMENT_LOAD_UNLOAD)
       VPHELPER(dgus::memory_layout::Filament::LoadUnloadControl,
-               &dgus_origin::filament::cached_state,
-               &dgus_origin::filament::handle_filament_load_unload,
+               &dgus_origin::filament::cached_state.load_unload,
+               &dgus_origin::filament::handle_filament_move,
                &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+  VPHELPER(dgus::memory_layout::Filament::ExtrudeRetractControl,
+           &dgus_origin::filament::cached_state.extrude_retract,
+           &dgus_origin::filament::handle_filament_move,
+           &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
 #endif
       // terminating list with nullptr
       VPHELPER(nullptr, nullptr, nullptr, nullptr)
