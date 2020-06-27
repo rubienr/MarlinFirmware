@@ -79,7 +79,6 @@ void handle_filament_load_unload() {
 }
 
 void handle_filament_extrude_retract() {
-  SERIAL_ECHOLNPGM("handle_filament_extrude_retract");
   cached_state.load_unload.ok_error_clear = CachedState::LoadUnload::CLEAR;
 
   if (cached_state.load_unload.command != CachedState::LoadUnload::EXTRUDE &&
@@ -92,7 +91,6 @@ void handle_filament_extrude_retract() {
     cached_state.load_unload.command = CachedState::LoadUnload::NO_ACTION;
     return;
   }
-  SERIAL_ECHOLNPGM("b");
 
   const bool backup_is_relative_mode{relative_mode};
   if (!backup_is_relative_mode)

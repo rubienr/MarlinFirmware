@@ -66,7 +66,6 @@ struct CachedState {
   } extrude_retract;
 };
 
-
 /**
  * Caches display request/arguments and performs filament load/unload and extrude/retract.
  * - load/unload: filament change with M701, M702
@@ -75,7 +74,7 @@ struct CachedState {
  * @param var var.memarddr must not be nullptr
  * @param val_ptr
  */
-void handle_filament_move(DGUS_VP_Variable &var, void *val_ptr); // namespace filament
+void handle_filament_move(DGUS_VP_Variable &var, void *val_ptr);
 
 } // namespace filament
 } // namespace dgus_origin
