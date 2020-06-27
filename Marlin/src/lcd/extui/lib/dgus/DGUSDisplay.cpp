@@ -98,9 +98,123 @@ bool DGUSDisplay::no_reentrance = false;
 #define dgusserial DGUS_SERIAL
 namespace dgus {
 
-// endianness swap
-uint16_t swap16(const uint16_t value) { return (value & 0xffU) << 8U | (value >> 8U); }
+uint16_t swap16(const uint16_t value) {
+  // clang-format off
+  return
+    ((value & 0x00ffU) << 8U)|
+    ((value & 0xff00U) >> 8U);
+  // clang-format on
+}
 
+uint32_t swap32(const uint32_t value) {
+  // clang-format off
+  return
+    ((value & 0xff000000) >> 24U) |
+    ((value & 0x00ff0000) >>  8U) |
+    ((value & 0x0000ff00) <<  8U) |
+    ((value & 0x000000ff) << 24U) ;
+  // clang-format on
+}
+
+namespace handler {
+
+void assign_float_from_int_word(DGUS_VP_Variable &var, void *val_ptr) {
+  DgusFloat_t *int_data{static_cast<DgusFloat_t *>(val_ptr)};
+  DgusFloat_t *memadr{static_cast<DgusFloat_t *>(var.memadr)};
+  memadr->data_16 = dgus::swap16(int_data->data_16);
+  memadr->as_float = memadr->as_int_16;
+}
+
+void assign_float_from_uint_word(DGUS_VP_Variable &var, void *val_ptr) {
+  DgusFloat_t *int_data{static_cast<DgusFloat_t *>(val_ptr)};
+  DgusFloat_t *memadr{static_cast<DgusFloat_t *>(var.memadr)};
+  memadr->data_16 = dgus::swap16(int_data->data_16);
+  memadr->as_float = memadr->as_uint_16;
+}
+
+void assign_int_from_int_word(DGUS_VP_Variable &var, void *val_ptr) {
+  DgusWord_t *int_data{static_cast<DgusWord_t *>(val_ptr)};
+  DgusWord_t *memadr{static_cast<DgusWord_t *>(var.memadr)};
+  memadr->data = dgus::swap16(int_data->data);
+  memadr->as_int = static_cast<int16_t>(memadr->as_int);
+}
+
+void assign_int_from_uint_word(DGUS_VP_Variable &var, void *val_ptr) {
+  DgusWord_t *int_data{static_cast<DgusWord_t *>(val_ptr)};
+  DgusWord_t *memadr{static_cast<DgusWord_t *>(var.memadr)};
+  memadr->data = dgus::swap16(int_data->data);
+  memadr->as_int = static_cast<uint16_t>(memadr->as_uint);
+}
+
+void assign_uint_from_int_word(DGUS_VP_Variable &var, void *val_ptr) {
+  DgusWord_t *int_data{static_cast<DgusWord_t *>(val_ptr)};
+  DgusWord_t *memadr{static_cast<DgusWord_t *>(var.memadr)};
+  memadr->data = dgus::swap16(int_data->data);
+  memadr->as_uint = static_cast<uint16_t>(memadr->as_int);
+}
+
+void assign_uint_from_uint_word(DGUS_VP_Variable &var, void *val_ptr) {
+  DgusWord_t *int_data{static_cast<DgusWord_t *>(val_ptr)};
+  DgusWord_t *memadr{static_cast<DgusWord_t *>(var.memadr)};
+  memadr->data = dgus::swap16(int_data->data);
+  memadr->as_uint = memadr->as_uint;
+}
+
+void send_word(DGUS_VP_Variable &var) {
+  DgusWord_t value{.data = *static_cast<uint16_t *>(var.memadr)};
+
+  value.data = swap16(value.data);
+  DGUSDisplay::WriteVariable(var.VP, value.as_uint);
+}
+
+void send_word_from_int(DGUS_VP_Variable &var) {
+  DgusWord_t value{.as_int = *static_cast<int16_t *>(var.memadr)};
+
+  value.data = swap16(value.data);
+  DGUSDisplay::WriteVariable(var.VP, value.as_uint);
+}
+
+void send_word_from_uint(DGUS_VP_Variable &var) {
+  DgusWord_t value{.as_uint = *static_cast<uint16_t *>(var.memadr)};
+
+  value.data = swap16(value.data);
+  DGUSDisplay::WriteVariable(var.VP, value.as_uint);
+}
+
+void send_float_from_int(DGUS_VP_Variable &var) {
+  DgusFloat_t value{.as_int_16 = *static_cast<int16_t *>(var.memadr)};
+  value.as_float = value.as_int_16;
+
+  value.data_32 = swap32(value.data_32);
+  DGUSDisplay::WriteVariable(var.VP, &value.data_32, static_cast<uint8_t>(sizeof(float)));
+}
+
+void send_float_from_uint(DGUS_VP_Variable &var) {
+  DgusFloat_t value{.as_uint_16 = *static_cast<uint16_t *>(var.memadr)};
+  value.as_float = value.as_uint_16;
+
+  value.data_32 = swap32(value.data_32);
+  DGUSDisplay::WriteVariable(var.VP, &value.data_32, static_cast<uint8_t>(sizeof(float)));
+}
+
+void send_float_from_float(DGUS_VP_Variable &var) {
+  DgusFloat_t value{.as_float = *static_cast<float *>(var.memadr)};
+
+  value.data_32 = swap32(value.data_32);
+  DGUSDisplay::WriteVariable(var.VP, &value.data_32, static_cast<uint8_t>(sizeof(float)));
+}
+
+void send_string(DGUS_VP_Variable &var) {
+  char *tmp = (char *)var.memadr;
+  DGUSDisplay::WriteVariable(var.VP, tmp, var.size, true);
+}
+
+void send_string_P(DGUS_VP_Variable &var) {
+  char *tmp = (char *)var.memadr;
+  DGUSDisplay::WriteVariablePGM(var.VP, tmp, var.size, true);
+}
+
+} // namespace handler
 } // namespace dgus
 
 using dgus::swap16;
@@ -643,6 +757,7 @@ void DGUSScreenVariableHandler::HandleAllHeatersOff(DGUS_VP_Variable &var, void 
   DGUSScreenVariableHandler::ForceCompleteUpdate(); // hint to send all data.
 }
 
+/*
 void DGUSScreenVariableHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, void *val_ptr) {
   uint16_t newvalue = swap16(*(uint16_t *)val_ptr);
   uint16_t acceptedvalue;
@@ -676,7 +791,7 @@ void DGUSScreenVariableHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, 
   // don't overwrite value the next update time as the display might autoincrement in parallel
   DGUSScreenVariableHandler::skipVP = var.VP;
 }
-
+*/
 void DGUSScreenVariableHandler::HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr) {
 #if EXTRUDERS
   uint16_t newvalue = swap16(*(uint16_t *)val_ptr);
@@ -1086,6 +1201,7 @@ void DGUSScreenVariableHandler::HandleFanControl(DGUS_VP_Variable &var, void *va
 }
 #endif
 
+/*
 void DGUSScreenVariableHandler::HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandleHeaterControl");
   UNUSED(val_ptr);
@@ -1112,7 +1228,7 @@ void DGUSScreenVariableHandler::HandleHeaterControl(DGUS_VP_Variable &var, void 
 
   *(int16_t *)var.memadr = *(int16_t *)var.memadr > 0 ? 0 : preheat_temp;
 }
-
+*/
 #if ENABLED(DGUS_PREHEAT_UI)
 void DGUSScreenVariableHandler::HandlePreheat(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandlePreheat");
