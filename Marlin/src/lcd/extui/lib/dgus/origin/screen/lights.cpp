@@ -22,10 +22,10 @@
 
 #if ENABLED(DGUS_ORIGIN_LIGHTS)
 
+#include "../memory_layout.h"
+
 namespace dgus_origin {
 namespace lights {
-
-#include "../memory_layout.h"
 
 CachedState cached_state{0, 0, 0, 0};
 

@@ -27,29 +27,11 @@
 namespace dgus_origin {
 namespace feedrates {
 
-// TODO rubienr - use repeat macro
-const uint16_t screen_variables[] PROGMEM {
-  to_address(dgus::memory_layout::FeedRate::Percentage),
-#if HAS_FAN0
-      to_address(dgus::memory_layout::FanSpeed::Fan0Percentage),
-#endif
-#if HAS_FAN1
-      to_address(dgus::memory_layout::FanSpeed::Fan1Percentage),
-#endif
-#if HAS_FAN2
-      to_address(dgus::memory_layout::FanSpeed::Fan2Percentage),
-#endif
-#if HAS_FAN3
-      to_address(dgus::memory_layout::FanSpeed::Fan3Percentage),
-#endif
-#if HAS_FAN4
-      to_address(dgus::memory_layout::FanSpeed::Fan4Percentage),
-#endif
-#if HAS_FAN5
-      to_address(dgus::memory_layout::FanSpeed::Fan5Percentage),
-#endif
-      0x0000
-};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::FeedRate::Percentage),
+#define FAN_HELPER(N) to_address(dgus::memory_layout::FanSpeed::Fan##N##Percentage),
+                                          REPEAT(FAN_COUNT, FAN_HELPER)
+#undef FAN_HELPER
+                                              0x0000};
 } // namespace feedrates
 } // namespace dgus_origin
 
