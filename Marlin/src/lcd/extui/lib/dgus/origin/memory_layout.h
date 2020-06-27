@@ -231,6 +231,11 @@ enum class FanControl : uint16_t {
 #endif
 };
 
+enum class TemperatureControl : uint16_t {
+  Control = 0x2210,
+};
+
+/*
 // Heater Control Buttons, triggered between "cool down" and "heat PLA" state
 enum class HeaterControl : uint16_t {
 #if EXTRUDERS >= 1
@@ -252,7 +257,7 @@ enum class HeaterControl : uint16_t {
   E5 = 0x221A,
 #endif
   Bed = 0x221C,
-};
+};*/
 
 // Preheat
 enum class Preheat : uint16_t {
@@ -328,11 +333,24 @@ enum class MarlinVersion : uint16_t {
   ConfigAuthorBytes = 38,
 };
 
-enum class Temperatures : uint16_t {
-#if HAS_HEATER_0
-  E0Is = 0x3060,
-  E0Set = 0x3062,
+
+enum class Temperature : uint16_t {
+  Status = 0x3060,
+
+  ENIs = 0x3061,
+  ENSet = 0x3062,
+
+#if ENABLED(HAS_HEATED_BED)
+  BedIs = 0x3063,
+  BedSet = 0x3064,
 #endif
+
+#if ENABLED(HAS_HEATED_CHAMBER)
+  ChamberIs = 0x3065,
+  ChamberSet = 0x3066,
+#endif
+
+/*
 #if HAS_HEATER_1
   E1Is = 0x3064,
   E1Set = 0x3066,
@@ -352,13 +370,9 @@ enum class Temperatures : uint16_t {
 #if HAS_HEATER_5
   E5Is = 0x3074,
   E5Set = 0x3076,
-#endif
-#if HAS_HEATER_BED
-  BedIs = 0x3080,
-  BedSet = 0x3082,
-#endif
-  IsBytes = 4,
-  SetBytes = 2,
+#endif*/
+
+
 };
 
 enum class LcdMessage : uint16_t {

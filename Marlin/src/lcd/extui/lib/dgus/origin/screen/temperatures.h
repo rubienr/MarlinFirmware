@@ -25,11 +25,15 @@
 
 #if ENABLED(DGUS_ORIGIN_TEMPERATURES)
 
+#include "../handler/temperatures.h"
+
 namespace dgus_origin {
 namespace temperatures {
 
 // screen variables
 extern const uint16_t screen_variables[];
+// cached state
+extern CachedState cached_state;
 
 } // namespace temperatures
 } // namespace dgus_origin

@@ -125,22 +125,22 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::MoveAxis::Distance,
                &dgus_origin::manual_move::cached_state.distance_10_um,
                &dgus_origin::manual_move::handle_move_argument_update,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
       VPHELPER(dgus::memory_layout::MoveAxis::Command,
                &dgus_origin::manual_move::cached_state.move_command,
                &dgus_origin::manual_move::handle_move_argument_update,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
 #endif
 #if ENABLED(DGUS_ORIGIN_HOMING)
       VPHELPER(dgus::memory_layout::Homing::Control,
                &dgus_origin::homing::cached_state,
                &dgus_origin::homing::handle_homing_command,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
 #endif
       VPHELPER(dgus::memory_layout::DriverControl::LockUnlockControl,
                &dgus_origin::driver_control::cached_state,
                &dgus_origin::driver_control::handle_motor_lock_unlock,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
 #if ENABLED(POWER_LOSS_RECOVERY)
       VPHELPER(VP_POWER_LOSS_RECOVERY, nullptr, &DGUSScreenVariableHandler::HandlePowerLossRecovery, nullptr),
 #endif
@@ -149,7 +149,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::Eeprom::Control,
                &dgus_origin::eeprom::cached_state,
                &dgus_origin::eeprom::handle_eeprom_store_restore,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
 #endif
 
       // boot screen
@@ -157,12 +157,12 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
        .memadr = const_cast<uint16_t *>(&dgus_origin::versions::ui_version.low_word),
        .size = 2,
        .set_by_display_handler = nullptr,
-       .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay},
+       .send_to_display_handler = &dgus::handler::send_word},
       {.VP = to_address(dgus::memory_layout::UiVersion::Patch),
        .memadr = const_cast<uint16_t *>(&dgus_origin::versions::ui_version.high_word),
        .size = 2,
        .set_by_display_handler = nullptr,
-       .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay},
+       .send_to_display_handler = &dgus::handler::send_word},
       {.VP = to_address(dgus::memory_layout::UiVersion::Flavour),
        .memadr = const_cast<dgus_origin::versions::UiFlavor *>(&dgus_origin::versions::ui_flavor),
        .size = to_uint8_t(dgus::memory_layout::UiVersion::FlavourBytes),
@@ -207,30 +207,47 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
        .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplay},
 
 // hotends - temperature data and control
-#if HOTENDS
-#define HOTENDS_VPHELPER(N)                                                      \
-  VPHELPER(dgus::memory_layout::Temperatures::E##N##Is,                          \
-           &thermalManager.temp_hotend[N].celsius,                               \
-           nullptr,                                                              \
-           DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>), \
-      VPHELPER(dgus::memory_layout::Temperatures::E##N##Set,                     \
-               &thermalManager.temp_hotend[N].target,                            \
-               DGUSScreenVariableHandler::HandleTemperatureChanged,              \
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),      \
-      VPHELPER(dgus::memory_layout::HeaterControl::E##N,                         \
-               &thermalManager.temp_hotend[N].target,                            \
-               &DGUSScreenVariableHandler::HandleHeaterControl,                  \
-               nullptr),                                                         \
-      VPHELPER(dgus::memory_layout::HeaterStatus::E##N,                          \
-               &thermalManager.temp_hotend[N].target,                            \
-               nullptr,                                                          \
-               &DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay),
-      REPEAT(HOTENDS, HOTENDS_VPHELPER)
-#undef HOTENDS_VPHELPER
-#endif // HOTENDS
+#if ENABLED(DGUS_ORIGIN_TEMPERATURES)
+      VPHELPER(dgus::memory_layout::TemperatureControl::Control,
+               &dgus_origin::temperatures::cached_state.control,
+               &dgus_origin::temperatures::handle_temperature_control_command,
+               &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::Temperature::ENSet,
+               &dgus_origin::temperatures::cached_state.temperatures.hotend_target_temperature.celsius,
+               &dgus_origin::temperatures::handle_set_hotend_temperature,
+               &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::Temperature::BedSet,
+               &Temperature::temp_bed.target,
+               &dgus_origin::temperatures::handle_set_bed_temperature,
+               &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::Temperature::ENIs,
+               nullptr,
+               nullptr,
+               &dgus_origin::temperatures::handle_send_hotend_temperature_to_display),
+#if ENABLED(HAS_HEATED_BED)
+      VPHELPER(dgus::memory_layout::Temperature::BedIs,
+               &Temperature::temp_bed.celsius,
+               nullptr,
+               &dgus::handler::send_uint_word_from_float),
+#endif
+#if ENABLED(HAS_HEATED_CHAMBER)
+    VPHELPER(dgus::memory_layout::Temperature::ChamberSet,
+               &Temperature::temp_bed.target,
+               &dgus_origin::temperatures::handle_set_chamber_temperature,
+               &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::Temperature::ChamberIs,
+               &Temperature::temp_chamber.celsius,
+               nullptr,
+               &dgus::handler::send_uint_word_from_float),
+#endif
+      VPHELPER(dgus::memory_layout::Temperature::Status,
+               &dgus_origin::temperatures::cached_state.status,
+               &dgus_origin::temperatures::handle_heating_status,
+               &dgus::handler::send_word),
+#endif // ENABLED(DGUS_ORIGIN_TEMPERATURES)
 
 // hotends - enabled PID temp
-#if HOTENDS
+#if HOTENDS_XXX
 #if ENABLED(PIDTEMP)
 #define HOTENDS_VPHELPER(N)                                            \
   VPHELPER(dgus::memory_layout::Pid::E##N##P,                          \
@@ -247,7 +264,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID), \
       VPHELPER(                                                        \
           dgus::memory_layout::PidAutotune::E##N, nullptr, &DGUSScreenVariableHandler::HandlePIDAutotune, nullptr),
-          REPEAT(HOTENDS, HOTENDS_VPHELPER)
+      REPEAT(HOTENDS, HOTENDS_VPHELPER)
 #undef HOTENDS_VPHELPER
 #endif // ENABLED(PIDTEMP)
 #endif // HOTENDS
@@ -257,7 +274,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 #define HOTENDS_VPHELPER(N)                                                                                          \
   VPHELPER(dgus::memory_layout::PositionE::E##N, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr), \
       VPHELPER(dgus::memory_layout::MoveE::E##N, nullptr, &DGUSScreenVariableHandler::HandleManualExtrude, nullptr),
-              REPEAT(HOTENDS, HOTENDS_VPHELPER)
+          REPEAT(HOTENDS, HOTENDS_VPHELPER)
 #undef HOTENDS_VPHELPER
 #endif // HOTENDS
 
@@ -268,7 +285,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
            &planner.settings.axis_steps_per_mm[E_AXIS_N(N)],          \
            DGUSScreenVariableHandler::HandleStepPerMMExtruderChanged, \
            DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay<1>),
-                  REPEAT(HOTENDS, HOTENDS_VPHELPER)
+              REPEAT(HOTENDS, HOTENDS_VPHELPER)
 #undef HOTENDS_VPHELPER
 #endif // HOTENDS
 
@@ -278,37 +295,22 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
   VPHELPER(dgus::memory_layout::Flowrates::E##N,                        \
            nullptr,                                                     \
            DGUSScreenVariableHandler::HandleFlowRateChanged,            \
-           &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay), \
+           &dgus::handler::send_word), \
       VPHELPER(dgus::memory_layout::PositionE::E##N,                    \
                &destination.e,                                          \
                nullptr,                                                 \
                DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
-                      REPEAT(HOTENDS, HOTENDS_VPHELPER)
+                  REPEAT(HOTENDS, HOTENDS_VPHELPER)
 #undef HOTENDS_VPHELPER
 #endif // HOTENDS
 
 // TODO rubienr - fix define
 #if ENABLED(DGUS_PREHEAT_UI)
-                          VPHELPER(VP_E0_BED_PREHEAT, nullptr, &DGUSScreenVariableHandler::HandlePreheat, nullptr),
+                      VPHELPER(VP_E0_BED_PREHEAT, nullptr, &DGUSScreenVariableHandler::HandlePreheat, nullptr),
 #endif
 
 #if HAS_HEATED_BED
-      VPHELPER(dgus::memory_layout::Temperatures::BedIs,
-               &thermalManager.temp_bed.celsius,
-               nullptr,
-               DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<0>),
-      VPHELPER(dgus::memory_layout::Temperatures::BedSet,
-               &thermalManager.temp_bed.target,
-               DGUSScreenVariableHandler::HandleTemperatureChanged,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-      VPHELPER(dgus::memory_layout::HeaterControl::Bed,
-               &thermalManager.temp_bed.target,
-               &DGUSScreenVariableHandler::HandleHeaterControl,
-               nullptr),
-      VPHELPER(dgus::memory_layout::HeaterStatus::Bed,
-               &thermalManager.temp_bed.target,
-               nullptr,
-               &DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay),
+
 #if ENABLED(PIDTEMPBED)
       VPHELPER(VP_BED_PID_P,
                &thermalManager.temp_bed.pid.Kp,
@@ -348,7 +350,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::FeedRate::Percentage,
                &feedrate_percentage,
                DGUSScreenVariableHandler::DGUSLCD_SetValueDirectly<int16_t>,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
 
       // axis position data
       VPHELPER(dgus::memory_layout::PositionAxis::X,
@@ -453,7 +455,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
           VPHELPER(dgus::memory_layout::PowerSupplyUnit::Control,
                    &dgus_origin::psu_control::cached_state,
                    &dgus_origin::psu_control::handle_psu_on_off,
-                   &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+                   &dgus::handler::send_word),
 #endif
 
 // light
@@ -461,14 +463,14 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::CaseLight::Control,
                &dgus_origin::lights::cached_state.case_light_control,
                &dgus_origin::lights::handle_case_light,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
 #endif
 #if ENABLED(HAS_COLOR_LEDS)
 #define COLOR_LEDS_VPHELPER(N)                                       \
   VPHELPER(dgus::memory_layout::ColorLeds::Control##N,               \
            &dgus_origin::lights::cached_state.color_led_control_##N, \
            &dgus_origin::lights::handle_color_led,                   \
-           &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+           &dgus::handler::send_word),
       REPEAT(3, COLOR_LEDS_VPHELPER)
 #undef COLOR_LEDS_VPHELPER
 #endif
@@ -478,15 +480,15 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
           VPHELPER(dgus::memory_layout::Ubl::RequestFlags,
                    &dgus_origin::bed_leveling_ubl::cached_state.request_flags,
                    &dgus_origin::bed_leveling_ubl::handle_parameter_load_save_probe,
-                   &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+                   &dgus::handler::send_word),
       VPHELPER(dgus::memory_layout::Ubl::FadeHeightSlotNnumber,
                &dgus_origin::bed_leveling_ubl::cached_state.fade_height_slot_number,
                &dgus_origin::bed_leveling_ubl::handle_parameter_fade_slot,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
       VPHELPER(dgus::memory_layout::Ubl::OnOoffUnused,
                &dgus_origin::bed_leveling_ubl::cached_state.on_off_state,
                &dgus_origin::bed_leveling_ubl::handle_parameter_load_save_probe,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
 #endif
 
 // nozzle to probe offset
@@ -495,7 +497,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0Control,
                &dgus_origin::nozzle_offset::cached_state,
                &dgus_origin::nozzle_offset::handle_probe_offset_request,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
       VPHELPER(dgus::memory_layout::OffsetNozzleToProbe::Nozzle0X,
                &probe.offset.x,
                &dgus_origin::nozzle_offset::handle_set_probe_offset_axis<ExtUI::X>,
@@ -515,11 +517,11 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::Filament::LoadUnloadControl,
                &dgus_origin::filament::cached_state.load_unload,
                &dgus_origin::filament::handle_filament_move,
-               &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
-  VPHELPER(dgus::memory_layout::Filament::ExtrudeRetractControl,
-           &dgus_origin::filament::cached_state.extrude_retract,
-           &dgus_origin::filament::handle_filament_move,
-           &DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay),
+               &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::Filament::ExtrudeRetractControl,
+               &dgus_origin::filament::cached_state.extrude_retract,
+               &dgus_origin::filament::handle_filament_move,
+               &dgus::handler::send_word),
 #endif
       // terminating list with nullptr
       VPHELPER(nullptr, nullptr, nullptr, nullptr)

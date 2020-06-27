@@ -27,31 +27,21 @@
 namespace dgus_origin {
 namespace temperatures {
 
-// TODO rubienr - use repeat macro
-const uint16_t screen_variables[] PROGMEM {
+CachedState cached_state{0};
 
-#if HOTENDS >= 1
-  to_address(dgus::memory_layout::Temperatures::E0Is), to_address(dgus::memory_layout::Temperatures::E0Set),
+const uint16_t screen_variables[] PROGMEM {
+  to_address(dgus::memory_layout::TemperatureControl::Control),
+#if HOTENDS > 0
+      to_address(dgus::memory_layout::Temperature::ENIs),
+      to_address(dgus::memory_layout::Temperature::ENSet),
 #endif
-#if HOTENDS >= 2
-      to_address(dgus::memory_layout::Temperatures::E1Is), to_address(dgus::memory_layout::Temperatures::E1Set),
+#if ENABLED(HAS_HEATED_BED)
+      to_address(dgus::memory_layout::Temperature::BedIs), to_address(dgus::memory_layout::Temperature::BedSet),
 #endif
-#if HOTENDS >= 3
-      to_address(dgus::memory_layout::Temperatures::E1Is), to_address(dgus::memory_layout::Temperatures::E2Set),
+#if ENABLED(HAS_HEATED_CHAMBER)
+      to_address(dgus::memory_layout::Temperature::ChamberIs), to_address(dgus::memory_layout::Temperature::ChamberSet),
 #endif
-#if HOTENDS >= 4
-      to_address(dgus::memory_layout::Temperatures::E3Is), to_address(dgus::memory_layout::Temperatures::E3Set),
-#endif
-#if HOTENDS >= 5
-      to_address(dgus::memory_layout::Temperatures::E4Is), to_address(dgus::memory_layout::Temperatures::E4Set),
-#endif
-#if HOTENDS >= 6
-      to_address(dgus::memory_layout::Temperatures::E5Is), to_address(dgus::memory_layout::Temperatures::E5Set),
-#endif
-#if HAS_HEATED_BED
-      to_address(dgus::memory_layout::Temperatures::BedIs), to_address(dgus::memory_layout::Temperatures::BedSet),
-#endif
-      0x0000
+      to_address(dgus::memory_layout::Temperature::Status), 0x0000
 };
 
 } // namespace temperatures

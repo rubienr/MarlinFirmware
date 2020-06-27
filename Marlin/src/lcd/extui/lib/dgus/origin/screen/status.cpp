@@ -28,15 +28,19 @@ namespace dgus_origin {
 namespace status {
 
 const uint16_t screen_variables_1[] PROGMEM {
-
-#if HOTENDS
-#define HOTENDS_ADDRHELPER(N) \
-  to_address(dgus::memory_layout::Temperatures::E##N##Is), to_address(dgus::memory_layout::Temperatures::E##N##Set),
-  REPEAT(HOTENDS, HOTENDS_ADDRHELPER)
-#undef HOTENDS_ADDRHELPER
+    to_address(dgus::memory_layout::TemperatureControl::Control),
+#if HOTENDS > 0
+    to_address(dgus::memory_layout::Temperature::ENIs),
+    to_address(dgus::memory_layout::Temperature::ENSet),
+#endif
+#if ENABLED(HAS_HEATED_BED)
+    to_address(dgus::memory_layout::Temperature::BedIs), to_address(dgus::memory_layout::Temperature::BedSet),
+#endif
+#if ENABLED(HAS_HEATED_CHAMBER)
+    to_address(dgus::memory_layout::Temperature::ChamberIs), to_address(dgus::memory_layout::Temperature::ChamberSet),
 #endif
 
-#if FAN_COUNT
+#if FAN_COUNT > 0
 #define FAN_COUNT_ADDRHELPER(N) to_address(dgus::memory_layout::FanSpeed::Fan##N##Percentage),
   REPEAT(FAN_COUNT, FAN_COUNT_ADDRHELPER)
 #undef FAN_COUNT_ADDRHELPER
@@ -48,7 +52,7 @@ const uint16_t screen_variables_1[] PROGMEM {
 
 const uint16_t screen_variables_2[] PROGMEM {
 
-#if EXTRUDERS
+#if EXTRUDERS > 0
 #define EXTRUDERS_ADDRHELPER(N) to_address(dgus::memory_layout::Flowrates::E##N),
   REPEAT(EXTRUDERS, EXTRUDERS_ADDRHELPER)
 #undef EXTRUDERS_ADDRHELPER
