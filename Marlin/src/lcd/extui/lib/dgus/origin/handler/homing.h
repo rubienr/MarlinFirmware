@@ -36,16 +36,22 @@ namespace homing {
 union CachedState {
   uint16_t data;
   struct {
-    uint8_t x : 1;
-    uint8_t y : 1;
-    uint8_t z : 1;
-    uint8_t a : 1;
-    uint8_t b : 1;
-    uint8_t c : 1;
-    uint8_t raise_before_home : 1;
+    uint8_t do_home_x : 1;
+    uint8_t do_home_y : 1;
+    uint8_t do_home_z : 1;
+    uint8_t do_home_a : 1;
+    uint8_t do_home_b : 1;
+    uint8_t do_home_c : 1;
+    uint8_t do_raise_before_home : 1;
     uint8_t _unused : 1;
     uint8_t cannot_move : 1;
-    uint8_t _unused2 : 7;
+    uint8_t is_homed_x : 1;
+    uint8_t is_homed_y : 1;
+    uint8_t is_homed_z : 1;
+    uint8_t is_homed_a : 1;
+    uint8_t is_homed_b : 1;
+    uint8_t is_homed_c : 1;
+    uint8_t is_homed_all : 1;
   } __attribute__((packed));
 };
 
@@ -55,6 +61,12 @@ union CachedState {
  * @param val_ptr
  */
 void handle_homing_command(DGUS_VP_Variable &var, void *val_ptr);
+
+/**
+ * Sends the homing status word (command flags and status flags) of all axis to display.
+ * @param var var.memard must not be nullptr
+ */
+void handle_send_homing_status(DGUS_VP_Variable &var);
 
 } // namespace homing
 } // namespace dgus_origin

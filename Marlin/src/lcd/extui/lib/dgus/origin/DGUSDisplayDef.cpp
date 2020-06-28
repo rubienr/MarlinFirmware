@@ -131,7 +131,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::Homing::Control,
                &dgus_origin::homing::cached_state,
                &dgus_origin::homing::handle_homing_command,
-               &dgus::handler::send_word),
+               &dgus_origin::homing::handle_send_homing_status),
 #endif
       VPHELPER(dgus::memory_layout::DriverControl::LockUnlockControl,
                &dgus_origin::driver_control::cached_state,
@@ -287,26 +287,25 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 
 // hotends control, rate and status
 #if HOTENDS > 0
-  VPHELPER(dgus::memory_layout::FlowRate::ExtruderN,
-           &dgus_origin::speedrates::cached_state_flow.rate,
-           &dgus_origin::speedrates::handle_set_flow_rate,
-           &dgus::handler::send_word),
+                  VPHELPER(dgus::memory_layout::FlowRate::ExtruderN,
+                           &dgus_origin::speedrates::cached_state_flow.rate,
+                           &dgus_origin::speedrates::handle_set_flow_rate,
+                           &dgus::handler::send_word),
 
-  VPHELPER(dgus::memory_layout::FlowRate::Control,
-           &dgus_origin::speedrates::cached_state_flow.control,
-           &dgus_origin::speedrates::handle_flow_control_command,
-           &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::FlowRate::Control,
+               &dgus_origin::speedrates::cached_state_flow.control,
+               &dgus_origin::speedrates::handle_flow_control_command,
+               &dgus::handler::send_word),
 
-
-  VPHELPER(dgus::memory_layout::FlowRate::Status,
-           &dgus_origin::speedrates::cached_state_flow.status,
-           nullptr,
-           &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::FlowRate::Status,
+               &dgus_origin::speedrates::cached_state_flow.status,
+               nullptr,
+               &dgus::handler::send_word),
 #endif // HOTENDS
 
 // TODO rubienr - fix define
 #if ENABLED(DGUS_PREHEAT_UI)
-                  VPHELPER(VP_E0_BED_PREHEAT, nullptr, &DGUSScreenVariableHandler::HandlePreheat, nullptr),
+      VPHELPER(VP_E0_BED_PREHEAT, nullptr, &DGUSScreenVariableHandler::HandlePreheat, nullptr),
 #endif
 
 #if HAS_HEATED_BED
@@ -369,13 +368,9 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                nullptr,
                DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay),
 
-      // print time
+  // print time
 #if ENABLED(LCD_SET_PROGRESS_MANUALLY)
-      VPHELPER_STR(dgus::memory_layout::PrintStats::PrintTime,
-                   nullptr,
-                   0,
-                   nullptr,
-                   &dgus::handler::send_print_time),
+      VPHELPER_STR(dgus::memory_layout::PrintStats::PrintTime, nullptr, 0, nullptr, &dgus::handler::send_print_time),
 #endif
 #if ENABLED(PRINTCOUNTER)
       VPHELPER_STR(VP_PrintAccTime,

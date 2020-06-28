@@ -149,8 +149,8 @@ enum class ColorLeds : uint16_t {
 
 enum class MoveAxis : uint16_t {
   Distance = 0x2100, // 0x3400,
-  //DistanceBytes = 4,
-  //Axis = 0x2102,
+  // DistanceBytes = 4,
+  // Axis = 0x2102,
   Command = 0x2101,
 };
 
@@ -335,7 +335,6 @@ enum class MarlinVersion : uint16_t {
   ConfigAuthorBytes = 38,
 };
 
-
 enum class Temperature : uint16_t {
   Status = 0x3060,
 
@@ -352,28 +351,27 @@ enum class Temperature : uint16_t {
   ChamberSet = 0x3066,
 #endif
 
-/*
-#if HAS_HEATER_1
-  E1Is = 0x3064,
-  E1Set = 0x3066,
-#endif
-#if HAS_HEATER_2
-  E2Is = 0x3068,
-  E2Set = 0x306A,
-#endif
-#if HAS_HEATER_3
-  E3Is = 0x306C,
-  E3Set = 0x306E,
-#endif
-#if HAS_HEATER_4
-  E4Is = 0x3070,
-  E4Set = 0x3072,
-#endif
-#if HAS_HEATER_5
-  E5Is = 0x3074,
-  E5Set = 0x3076,
-#endif*/
-
+  /*
+  #if HAS_HEATER_1
+    E1Is = 0x3064,
+    E1Set = 0x3066,
+  #endif
+  #if HAS_HEATER_2
+    E2Is = 0x3068,
+    E2Set = 0x306A,
+  #endif
+  #if HAS_HEATER_3
+    E3Is = 0x306C,
+    E3Set = 0x306E,
+  #endif
+  #if HAS_HEATER_4
+    E4Is = 0x3070,
+    E4Set = 0x3072,
+  #endif
+  #if HAS_HEATER_5
+    E5Is = 0x3074,
+    E5Set = 0x3076,
+  #endif*/
 
 };
 
@@ -386,52 +384,52 @@ enum class FlowRate : uint16_t {
   Control = 0x3090,
   Status = 0x3091,
   ExtruderN = 0x3092, // shared among all N extruders
-/*#if EXTRUDERS >= 1
-  E0 = 0x3090,
-#endif
-#if EXTRUDERS >= 2
-  E1 = 0x3092,
-#endif
-#if EXTRUDERS >= 3
-  E2 = 0x3094,
-#endif
-#if EXTRUDERS >= 4
-  E3 = 0x3096,
-#endif
-#if EXTRUDERS >= 5
-  E4 = 0x3098,
-#endif
-#if EXTRUDERS >= 6
-  E5 = 0x309A,
-#endif
-  EBytes = 2, // 2 byte integer
-  */
+  /*#if EXTRUDERS >= 1
+    E0 = 0x3090,
+  #endif
+  #if EXTRUDERS >= 2
+    E1 = 0x3092,
+  #endif
+  #if EXTRUDERS >= 3
+    E2 = 0x3094,
+  #endif
+  #if EXTRUDERS >= 4
+    E3 = 0x3096,
+  #endif
+  #if EXTRUDERS >= 5
+    E4 = 0x3098,
+  #endif
+  #if EXTRUDERS >= 6
+    E5 = 0x309A,
+  #endif
+    EBytes = 2, // 2 byte integer
+    */
 };
 
 enum class FanSpeed : uint16_t {
-//  FanPercentageBytes = 2,
+  //  FanPercentageBytes = 2,
   Control = 0x3100,
   Status = 0x3101,
   FanN = 0x3102, // shared among all N fans
 
-/*#if HAS_FAN0
-  Fan0Percentage = 0x3100, // 2 Byte Integer (0..100)
-#endif
-#if HAS_FAN1
-  Fan1Percentage = 0x33A2,
-#endif
-#if HAS_FAN2
-  Fan2Percentage = 0x33A4,
-#endif
-#if HAS_FAN3
-  Fan3Percentage = 0x33A6,
-#endif
-#if HAS_FAN4
-  Fan4Percentage = 0x33A8,
-#endif
-#if HAS_FAN5
-  Fan5Percentage = 0x33AA,
-#endif*/
+  /*#if HAS_FAN0
+    Fan0Percentage = 0x3100, // 2 Byte Integer (0..100)
+  #endif
+  #if HAS_FAN1
+    Fan1Percentage = 0x33A2,
+  #endif
+  #if HAS_FAN2
+    Fan2Percentage = 0x33A4,
+  #endif
+  #if HAS_FAN3
+    Fan3Percentage = 0x33A6,
+  #endif
+  #if HAS_FAN4
+    Fan4Percentage = 0x33A8,
+  #endif
+  #if HAS_FAN5
+    Fan5Percentage = 0x33AA,
+  #endif*/
 };
 
 enum class FeedRate : uint16_t {

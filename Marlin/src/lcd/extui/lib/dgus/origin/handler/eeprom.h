@@ -36,12 +36,18 @@ namespace eeprom {
 
 union CachedState {
   uint16_t data;
+  constexpr static const uint8_t UNKNOWN{0};
+  constexpr static const uint8_t SAVED{1};
+  constexpr static const uint8_t LOADED{2};
+  constexpr static const uint8_t RESTORED{4};
+
   struct {
     uint8_t restore_to_factory_settings : 1;
     uint8_t load_from_eeprom : 1;
     uint8_t save_to_eeprom : 1;
     uint8_t _unused : 5;
-    uint8_t _unused2;
+    uint8_t loaded_saved_restored_unknown : 3;
+    uint8_t _unused2 : 5;
   } __attribute__((packed));
 };
 

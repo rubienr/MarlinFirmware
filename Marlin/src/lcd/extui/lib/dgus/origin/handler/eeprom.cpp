@@ -41,14 +41,17 @@ void handle_eeprom_store_restore(DGUS_VP_Variable &var, void *val_ptr) {
     print_job_timer.initStats();
 #endif
     GCodeQueue::enqueue_now_P(PSTR("M502\nM500"));
+    request->loaded_saved_restored_unknown = CachedState::RESTORED;
     request->restore_to_factory_settings = 0;
   }
   if (request->load_from_eeprom) {
     GCodeQueue::enqueue_now_P(PSTR("M501"));
+    request->loaded_saved_restored_unknown = CachedState::LOADED;
     request->load_from_eeprom = 0;
   }
   if (request->save_to_eeprom) {
     GCodeQueue::enqueue_now_P(PSTR("M500"));
+    request->loaded_saved_restored_unknown = CachedState::SAVED;
     request->save_to_eeprom = 0;
   }
 

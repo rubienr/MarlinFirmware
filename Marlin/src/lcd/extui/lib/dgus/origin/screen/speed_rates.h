@@ -36,7 +36,7 @@ extern const uint16_t screen_variables[];
 extern CachedStateFanRate cached_state_fan;
 extern CachedStateFlowRate cached_state_flow;
 
-} // namespace feedrates
+} // namespace speedrates
 } // namespace dgus_origin
 
 #endif

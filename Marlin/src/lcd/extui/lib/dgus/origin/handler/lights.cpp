@@ -52,15 +52,16 @@ void update_color_leds() {
       cached_state.color_led_control_0.on_off_unknown == CachedState::ColorLedControl0::ON) { // on color changed
     char buf[32];
     sprintf_P(buf,
-            PSTR("M150 P%d R%d U%d B%d W%d"),
-            cached_state.color_led_control_0.intensity,
-            cached_state.color_led_control_1.red,
-            cached_state.color_led_control_1.green,
-            cached_state.color_led_control_2.blue,
-            cached_state.color_led_control_2.white);
+              PSTR("M150 P%d R%d U%d B%d W%d"),
+              cached_state.color_led_control_0.intensity,
+              cached_state.color_led_control_1.red,
+              cached_state.color_led_control_1.green,
+              cached_state.color_led_control_2.blue,
+              cached_state.color_led_control_2.white);
     GCodeQueue::enqueue_one_now(buf);
 
     cached_state.color_led_control_0.on_off_unknown = CachedState::ColorLedControl0::ON;
+    cached_state.case_light_control.on_off_unknown = CachedState::CaseLightControl::OFF;
     cached_state.color_led_control_0.enable = 0;
   }
 }
@@ -100,6 +101,7 @@ void handle_case_light(DGUS_VP_Variable &var, void *val_ptr) {
   if (do_enable_case_light) {
     case_light_request->enable = 0;
     case_light_request->on_off_unknown = CachedState::CaseLightControl::ON;
+    cached_state.color_led_control_0.on_off_unknown = CachedState::ColorLedControl0::OFF;
   }
 
 #if DISABLED(CASE_LIGHT_NO_BRIGHTNESS)

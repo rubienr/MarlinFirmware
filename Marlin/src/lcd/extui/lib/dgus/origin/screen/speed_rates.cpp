@@ -30,17 +30,16 @@ namespace speedrates {
 CachedStateFanRate cached_state_fan;
 CachedStateFlowRate cached_state_flow;
 
-const uint16_t screen_variables[] PROGMEM{
-    to_address(dgus::memory_layout::FanSpeed::Control),
-    to_address(dgus::memory_layout::FanSpeed::Status),
-    to_address(dgus::memory_layout::FanSpeed::FanN),
-    to_address(dgus::memory_layout::FeedRate::Percentage),
-    to_address(dgus::memory_layout::FlowRate::Control),
-    to_address(dgus::memory_layout::FlowRate::Status),
-    to_address(dgus::memory_layout::FlowRate::ExtruderN),
-    0x0000};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::FanSpeed::Control),
+                                          to_address(dgus::memory_layout::FanSpeed::Status),
+                                          to_address(dgus::memory_layout::FanSpeed::FanN),
+                                          to_address(dgus::memory_layout::FeedRate::Percentage),
+                                          to_address(dgus::memory_layout::FlowRate::Control),
+                                          to_address(dgus::memory_layout::FlowRate::Status),
+                                          to_address(dgus::memory_layout::FlowRate::ExtruderN),
+                                          0x0000};
 
-} // namespace feedrates
+} // namespace speedrates
 } // namespace dgus_origin
 
 #endif
