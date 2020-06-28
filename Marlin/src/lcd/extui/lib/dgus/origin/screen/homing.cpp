@@ -28,7 +28,10 @@ namespace dgus_origin {
 namespace homing {
 
 CachedState cached_state{0};
-const uint16_t screen_variables[] PROGMEM{0x0000};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::PositionAxis::X),
+                                          to_address(dgus::memory_layout::PositionAxis::Y),
+                                          to_address(dgus::memory_layout::PositionAxis::Z),
+                                          0x0000};
 
 } // namespace homing
 } // namespace dgus_origin

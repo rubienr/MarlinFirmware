@@ -97,6 +97,11 @@ void send_string(DGUS_VP_Variable &var);
 /// DGUS Display does not clear after the \0, remainings shall be overwritten with spaces.
 void send_string_P(DGUS_VP_Variable &var);
 
+#if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+/// Sends print time string of size 32 bytes in formatted as "<yyy>y <ddd>d <hh>h <mm>m <ss>s" to display.
+void send_print_time(DGUS_VP_Variable &var);
+#endif
+
 } // namespace handler
 } // namespace dgus
 
@@ -199,8 +204,8 @@ public:
   static void HandleAllHeatersOff(DGUS_VP_Variable &var, void *val_ptr);
   /*// Hook for "Change this temperature"
   static void HandleTemperatureChanged(DGUS_VP_Variable &var, void *val_ptr);*/
-  // Hook for "Change Flowrate"
-  static void HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr);
+  /*// Hook for "Change Flowrate"
+  static void HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr);*/
 #if ENABLED(DGUS_UI_MOVE_DIS_OPTION)
   // Hook for manual move option
   static void HandleManualMoveOption(DGUS_VP_Variable &var, void *val_ptr);

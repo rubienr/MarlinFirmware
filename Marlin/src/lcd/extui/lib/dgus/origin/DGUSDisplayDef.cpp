@@ -50,12 +50,8 @@ const struct VPMapping VPMap[] PROGMEM {
 #if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
       {DGUSLCD_SCREEN_MANUALEXTRUDE, dgus_origin::manual_extrude::screen_variables},
 #endif
-#if ENABLED(DGUS_ORIGIN_FEEDRATES)
-      {DGUSLCD_SCREEN_FANANDFEEDRATE, dgus_origin::feedrates::screen_variables},
-#endif
-#if ENABLED(DGUS_ORIGIN_FLOWRATES)
-      {DGUSLCD_SCREEN_FLOWRATES_1, dgus_origin::flowrates::screen_variables_1},
-      {DGUSLCD_SCREEN_FLOWRATES_2, dgus_origin::flowrates::screen_variables_2},
+#if ENABLED(DGUS_ORIGIN_SPEED_RATES)
+      {DGUSLCD_SCREEN_SPEED_RATES, dgus_origin::speedrates::screen_variables},
 #endif
 #if ENABLED(DGUS_ORIGIN_SDPRINT_MANIPULATION)
       {DGUSLCD_SCREEN_SDPRINTMANIPULATION, dgus_origin::sdprint_manipulation::screen_variables},
@@ -212,7 +208,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                &dgus_origin::temperatures::cached_state.control,
                &dgus_origin::temperatures::handle_temperature_control_command,
                &dgus::handler::send_word),
-      VPHELPER(dgus::memory_layout::Temperature::ENSet,
+      VPHELPER(dgus::memory_layout::Temperature::ExtruderNSet,
                &dgus_origin::temperatures::cached_state.temperatures.hotend_target_temperature.celsius,
                &dgus_origin::temperatures::handle_set_hotend_temperature,
                &dgus::handler::send_word),
@@ -220,7 +216,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                &Temperature::temp_bed.target,
                &dgus_origin::temperatures::handle_set_bed_temperature,
                &dgus::handler::send_word),
-      VPHELPER(dgus::memory_layout::Temperature::ENIs,
+      VPHELPER(dgus::memory_layout::Temperature::ExtruderNIs,
                nullptr,
                nullptr,
                &dgus_origin::temperatures::handle_send_hotend_temperature_to_display),
@@ -231,7 +227,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                &dgus::handler::send_uint_word_from_float),
 #endif
 #if ENABLED(HAS_HEATED_CHAMBER)
-    VPHELPER(dgus::memory_layout::Temperature::ChamberSet,
+      VPHELPER(dgus::memory_layout::Temperature::ChamberSet,
                &Temperature::temp_bed.target,
                &dgus_origin::temperatures::handle_set_chamber_temperature,
                &dgus::handler::send_word),
@@ -289,24 +285,28 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 #undef HOTENDS_VPHELPER
 #endif // HOTENDS
 
-// hotends - flowrate, position
-#if HOTENDS
-#define HOTENDS_VPHELPER(N)                                             \
-  VPHELPER(dgus::memory_layout::Flowrates::E##N,                        \
-           nullptr,                                                     \
-           DGUSScreenVariableHandler::HandleFlowRateChanged,            \
-           &dgus::handler::send_word), \
-      VPHELPER(dgus::memory_layout::PositionE::E##N,                    \
-               &destination.e,                                          \
-               nullptr,                                                 \
-               DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
-                  REPEAT(HOTENDS, HOTENDS_VPHELPER)
-#undef HOTENDS_VPHELPER
+// hotends control, rate and status
+#if HOTENDS > 0
+  VPHELPER(dgus::memory_layout::FlowRate::ExtruderN,
+           &dgus_origin::speedrates::cached_state_flow.rate,
+           &dgus_origin::speedrates::handle_set_flow_rate,
+           &dgus::handler::send_word),
+
+  VPHELPER(dgus::memory_layout::FlowRate::Control,
+           &dgus_origin::speedrates::cached_state_flow.control,
+           &dgus_origin::speedrates::handle_flow_control_command,
+           &dgus::handler::send_word),
+
+
+  VPHELPER(dgus::memory_layout::FlowRate::Status,
+           &dgus_origin::speedrates::cached_state_flow.status,
+           nullptr,
+           &dgus::handler::send_word),
 #endif // HOTENDS
 
 // TODO rubienr - fix define
 #if ENABLED(DGUS_PREHEAT_UI)
-                      VPHELPER(VP_E0_BED_PREHEAT, nullptr, &DGUSScreenVariableHandler::HandlePreheat, nullptr),
+                  VPHELPER(VP_E0_BED_PREHEAT, nullptr, &DGUSScreenVariableHandler::HandlePreheat, nullptr),
 #endif
 
 #if HAS_HEATED_BED
@@ -327,30 +327,27 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 #endif
 #endif
 
-// Fan Data
-#if FAN_COUNT
-#define FAN_VPHELPER(N)                                                  \
-  VPHELPER(dgus::memory_layout::FanSpeed::Fan##N##Percentage,            \
-           &thermalManager.fan_speed[N],                                 \
-           DGUSScreenVariableHandler::DGUSLCD_PercentageToUint8,         \
-           &DGUSScreenVariableHandler::DGUSLCD_SendPercentageToDisplay), \
-      VPHELPER(dgus::memory_layout::FanControl::Fan##N,                  \
-               &thermalManager.fan_speed[N],                             \
-               &DGUSScreenVariableHandler::HandleFanControl,             \
-               nullptr),                                                 \
-      VPHELPER(dgus::memory_layout::FanStatus::Fan##N,                   \
-               &thermalManager.fan_speed[N],                             \
-               nullptr,                                                  \
-               &DGUSScreenVariableHandler::DGUSLCD_SendFanStatusToDisplay),
-      REPEAT(FAN_COUNT, FAN_VPHELPER)
-#undef FAN_VPHELPER
+// fan control, rate and status
+#if FAN_COUNT > 0
+      VPHELPER(dgus::memory_layout::FanSpeed::FanN,
+               &dgus_origin::speedrates::cached_state_fan.rate,
+               &dgus_origin::speedrates::handle_set_fan_rate,
+               &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::FanSpeed::Control,
+               &dgus_origin::speedrates::cached_state_fan.control,
+               &dgus_origin::speedrates::handle_fan_control_command,
+               &dgus::handler::send_word),
+      VPHELPER(dgus::memory_layout::FanSpeed::Status,
+               &dgus_origin::speedrates::cached_state_fan.status,
+               nullptr,
+               &dgus::handler::send_word),
 #endif
 
       // feed rate
       VPHELPER(dgus::memory_layout::FeedRate::Percentage,
                &feedrate_percentage,
-               DGUSScreenVariableHandler::DGUSLCD_SetValueDirectly<int16_t>,
-               &dgus::handler::send_word),
+               &dgus::handler::assign_int_from_int_word,
+               &dgus::handler::send_word_from_int),
 
       // axis position data
       VPHELPER(dgus::memory_layout::PositionAxis::X,
@@ -373,11 +370,13 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay),
 
       // print time
+#if ENABLED(LCD_SET_PROGRESS_MANUALLY)
       VPHELPER_STR(dgus::memory_layout::PrintStats::PrintTime,
                    nullptr,
-                   to_uint8_t(dgus::memory_layout::PrintStats::PrintTimeBytes),
+                   0,
                    nullptr,
-                   DGUSScreenVariableHandler::DGUSLCD_SendPrintTimeToDisplay),
+                   &dgus::handler::send_print_time),
+#endif
 #if ENABLED(PRINTCOUNTER)
       VPHELPER_STR(VP_PrintAccTime,
                    nullptr,

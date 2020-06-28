@@ -17,43 +17,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#pragma once
 
-#include "flowrates.h"
+#include "../../../../../../inc/MarlinConfig.h"
 
-#if ENABLED(DGUS_ORIGIN_FLOWRATES)
+#define DGUS_ORIGIN_SPEED_RATES
 
-#include "../memory_layout.h"
+#if ENABLED(DGUS_ORIGIN_SPEED_RATES)
+
+#include "../handler/speed_rates.h"
 
 namespace dgus_origin {
-namespace flowrates {
+namespace speedrates {
 
-const uint16_t screen_variables_1[] PROGMEM {
-#if EXTRUDERS >= 1
-  to_address(dgus::memory_layout::Flowrates::E0),
-#endif
-#if EXTRUDERS >= 2
-      to_address(dgus::memory_layout::Flowrates::E1),
-#endif
-#if EXTRUDERS >= 3
-      to_address(dgus::memory_layout::Flowrates::E2),
-#endif
-      0x0000
-};
+// screen variables
+extern const uint16_t screen_variables[];
+// cached state
+extern CachedStateFanRate cached_state_fan;
+extern CachedStateFlowRate cached_state_flow;
 
-const uint16_t screen_variables_2[] PROGMEM {
-#if EXTRUDERS >= 4
-  to_address(dgus::memory_layout::Flowrates::E3),
-#endif
-#if EXTRUDERS >= 5
-      to_address(dgus::memory_layout::Flowrates::E4),
-#endif
-#if EXTRUDERS >= 6
-      to_address(dgus::memory_layout::Flowrates::E5),
-#endif
-      0x0000
-};
-
-} // namespace flowrates
+} // namespace feedrates
 } // namespace dgus_origin
 
 #endif

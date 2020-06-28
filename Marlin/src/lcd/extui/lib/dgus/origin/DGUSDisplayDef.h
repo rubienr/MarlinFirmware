@@ -32,8 +32,7 @@
 #include "screen/boot.h"
 #include "screen/tools.h"
 #include "screen/temperatures.h"
-#include "screen/flowrates.h"
-#include "screen/feedrates.h"
+#include "screen/speed_rates.h"
 #include "screen/sd_files.h"
 #include "screen/sd_print_manipulation.h"
 #include "screen/status.h"
@@ -66,8 +65,8 @@ enum DGUSLCD_Screens : uint8_t {
 #if ENABLED(DGUS_ORIGIN_MANUAL_EXTRUDE)
   DGUSLCD_SCREEN_MANUALEXTRUDE = 42,
 #endif
-#if ENABLED(DGUS_ORIGIN_FEEDRATES)
-  DGUSLCD_SCREEN_FANANDFEEDRATE = 44,
+#if ENABLED(DGUS_ORIGIN_SPEED_RATES)
+  DGUSLCD_SCREEN_SPEED_RATES = 44,
 #endif
 #if ENABLED(DGUS_ORIGIN_FLOWRATES)
   DGUSLCD_SCREEN_FLOWRATES_1 = 46,

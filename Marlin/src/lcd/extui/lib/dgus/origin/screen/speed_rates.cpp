@@ -18,20 +18,28 @@
  *
  */
 
-#include "feedrates.h"
+#include "speed_rates.h"
 
-#if ENABLED(DGUS_ORIGIN_FEEDRATES)
+#if ENABLED(DGUS_ORIGIN_SPEED_RATES)
 
 #include "../memory_layout.h"
 
 namespace dgus_origin {
-namespace feedrates {
+namespace speedrates {
 
-const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::FeedRate::Percentage),
-#define FAN_HELPER(N) to_address(dgus::memory_layout::FanSpeed::Fan##N##Percentage),
-                                          REPEAT(FAN_COUNT, FAN_HELPER)
-#undef FAN_HELPER
-                                              0x0000};
+CachedStateFanRate cached_state_fan;
+CachedStateFlowRate cached_state_flow;
+
+const uint16_t screen_variables[] PROGMEM{
+    to_address(dgus::memory_layout::FanSpeed::Control),
+    to_address(dgus::memory_layout::FanSpeed::Status),
+    to_address(dgus::memory_layout::FanSpeed::FanN),
+    to_address(dgus::memory_layout::FeedRate::Percentage),
+    to_address(dgus::memory_layout::FlowRate::Control),
+    to_address(dgus::memory_layout::FlowRate::Status),
+    to_address(dgus::memory_layout::FlowRate::ExtruderN),
+    0x0000};
+
 } // namespace feedrates
 } // namespace dgus_origin
 

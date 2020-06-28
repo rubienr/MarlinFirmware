@@ -47,11 +47,13 @@
  *                    HW version, music player setting, sytem restart, format flash etc.
  * 0x1000 .. 0x1FFF - variables to never change location, regardless of UI version
  * 0x2000 .. 0x2FFF - controls: variable pointer that will trigger Marlin actions
- * 0x3000 .. 0x4FFF - Marlin data to be displayed
+ * 0x3000 .. 0x4FFF - Read Marlin data to be displayed but not changed by the display (read only)
+ *           0x4210   Reserved for icons' default value (0).
  * 0x5000 ..        - stack pointers to modify display elements, e.g. change color or
  *                    other attributes
  *
- * Note: Whenever an address needs a length, add the same name with trailing "Bytes" appended.
+ * Note: Whenever an address denotes more than one word, add a size hint beginning with same name and
+ * trailing "Bytes" appended.
  */
 
 //=============================================================================
@@ -337,8 +339,8 @@ enum class MarlinVersion : uint16_t {
 enum class Temperature : uint16_t {
   Status = 0x3060,
 
-  ENIs = 0x3061,
-  ENSet = 0x3062,
+  ExtruderNIs = 0x3061,
+  ExtruderNSet = 0x3062,
 
 #if ENABLED(HAS_HEATED_BED)
   BedIs = 0x3063,
@@ -380,8 +382,11 @@ enum class LcdMessage : uint16_t {
   M117Bytes = 0x20,
 };
 
-enum class Flowrates : uint16_t {
-#if EXTRUDERS >= 1
+enum class FlowRate : uint16_t {
+  Control = 0x3090,
+  Status = 0x3091,
+  ExtruderN = 0x3092, // shared among all N extruders
+/*#if EXTRUDERS >= 1
   E0 = 0x3090,
 #endif
 #if EXTRUDERS >= 2
@@ -400,11 +405,16 @@ enum class Flowrates : uint16_t {
   E5 = 0x309A,
 #endif
   EBytes = 2, // 2 byte integer
+  */
 };
 
 enum class FanSpeed : uint16_t {
-  FanPercentageBytes = 2,
-#if HAS_FAN0
+//  FanPercentageBytes = 2,
+  Control = 0x3100,
+  Status = 0x3101,
+  FanN = 0x3102, // shared among all N fans
+
+/*#if HAS_FAN0
   Fan0Percentage = 0x3100, // 2 Byte Integer (0..100)
 #endif
 #if HAS_FAN1
@@ -421,17 +431,17 @@ enum class FanSpeed : uint16_t {
 #endif
 #if HAS_FAN5
   Fan5Percentage = 0x33AA,
-#endif
+#endif*/
 };
 
 enum class FeedRate : uint16_t {
-  Percentage = 0x3102, // 2 Byte Integer (0..100)
+  Percentage = 0x3105, // 2 Byte Integer (0..100)
 };
 
 enum class PrintStats : uint16_t {
   PrintProgressPercentage = 0x3104, // 2 Byte Integer (0..100)
   PrintTime = 0x3106,
-  PrintTimeBytes = 10,
+  PrintTimeBytes = 16,
   PrintAccTime = 0x3160,
   PrintAccTimeBytes = 32,
   PrintsTotal = 0x3180,

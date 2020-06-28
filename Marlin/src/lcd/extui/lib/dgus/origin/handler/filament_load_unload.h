@@ -35,9 +35,6 @@ struct DGUS_VP_Variable;
 namespace dgus_origin {
 namespace filament {
 
-/**
- * flags for display requests; cleared internally
- */
 struct CachedState {
 
   union LoadUnload {
@@ -63,7 +60,7 @@ struct CachedState {
   union ExtrudeRetract {
     uint16_t data;
     uint16_t distance;
-  } extrude_retract;
+  } __attribute__((packed)) extrude_retract;
 };
 
 /**

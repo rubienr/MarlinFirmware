@@ -32,8 +32,8 @@ CachedState cached_state{0};
 const uint16_t screen_variables[] PROGMEM {
   to_address(dgus::memory_layout::TemperatureControl::Control),
 #if HOTENDS > 0
-      to_address(dgus::memory_layout::Temperature::ENIs),
-      to_address(dgus::memory_layout::Temperature::ENSet),
+      to_address(dgus::memory_layout::Temperature::ExtruderNIs),
+      to_address(dgus::memory_layout::Temperature::ExtruderNSet),
 #endif
 #if ENABLED(HAS_HEATED_BED)
       to_address(dgus::memory_layout::Temperature::BedIs), to_address(dgus::memory_layout::Temperature::BedSet),

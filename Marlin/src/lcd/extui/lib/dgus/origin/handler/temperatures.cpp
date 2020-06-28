@@ -35,21 +35,11 @@ extern CachedState cached_state;
 namespace {
 
 void update_selected_hotend_temperature() {
-  SERIAL_ECHOLNPGM("update_selected_hotend_temperature");
-
-  //static uint8_t previous_hotend{cached_state.control.hotend_id};
-
-  // if (previous_hotend != cached_state.control.hotend_id) {
-  //  SERIAL_ECHOLNPAIR("new hotend", cached_state.control.hotend_id);
   cached_state.temperatures.hotend_target_temperature.celsius =
       Temperature::degTargetHotend(cached_state.control.hotend_id);
-  //}
-
-  //previous_hotend = cached_state.control.hotend_id;
 }
 
 void update_heating_status() {
-  SERIAL_ECHOLNPGM("update_is_heating_status");
   cached_state.status.is_hotend_heating = Temperature::isHeatingHotend(cached_state.control.hotend_id);
   cached_state.status.is_hotend_cooling = Temperature::isCoolingHotend(cached_state.control.hotend_id);
 
@@ -65,8 +55,6 @@ void update_heating_status() {
 }
 
 void handle_preheat() {
-  SERIAL_ECHOLNPGM("handle_preheat");
-
   uint16_t hotend_temp;
 #if ENABLED(HAS_HEATED_BED)
   uint16_t bed_temp;
@@ -74,7 +62,6 @@ void handle_preheat() {
   uint16_t fan_speed;
 
   if (cached_state.control.do_preset_preheat_1) {
-    SERIAL_ECHOLNPGM("ph 1");
     hotend_temp = PREHEAT_1_TEMP_HOTEND;
 #if ENABLED(HAS_HEATED_BED)
     bed_temp = PREHEAT_1_TEMP_BED;
@@ -83,7 +70,6 @@ void handle_preheat() {
     cached_state.control.do_preset_preheat_1 = 0;
     cached_state.control.do_preset_preheat_2 = 0;
   } else if (cached_state.control.do_preset_preheat_2) {
-    SERIAL_ECHOLNPGM("ph 2");
     hotend_temp = PREHEAT_2_TEMP_HOTEND;
 #if ENABLED(HAS_HEATED_BED)
     bed_temp = PREHEAT_2_TEMP_BED;
@@ -103,14 +89,12 @@ void handle_preheat() {
 
 void handle_disable_heating() {
   if (cached_state.control.disable_hotend) {
-    SERIAL_ECHOLNPGM("dis hotend");
     Temperature::setTargetHotend(0, cached_state.control.hotend_id);
     cached_state.control.disable_hotend = 0;
   }
 
 #if ENABLED(HAS_HEATED_BED)
   if (cached_state.control.disable_bed) {
-    SERIAL_ECHOLNPGM("dis bed");
     Temperature::setTargetBed(0);
     cached_state.control.disable_bed = 0;
   }
@@ -123,7 +107,6 @@ void handle_disable_heating() {
   }
 #endif
   if (cached_state.control.disable_all) {
-    SERIAL_ECHOLNPGM("dis all");
     Temperature::disable_all_heaters();
     cached_state.control.disable_all = 0;
   }
@@ -135,8 +118,6 @@ void handle_heating_status(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_heating_status");
 #endif
-  SERIAL_ECHOLNPGM("h ht st");
-
   *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
 
   update_heating_status();
@@ -146,8 +127,6 @@ void handle_set_hotend_temperature(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_set_hotend_temperature");
 #endif
-  SERIAL_ECHOLNPGM("h hote temp");
-
   *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
 
   Temperature::setTargetHotend(cached_state.temperatures.hotend_target_temperature.celsius,
@@ -158,9 +137,6 @@ void handle_set_bed_temperature(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_set_bed_temperature");
 #endif
-
-  SERIAL_ECHOLNPGM("h bed temp");
-
   dgus::DgusWord_t temperature{.data = *static_cast<uint16_t *>(val_ptr)};
   temperature.data = dgus::swap16(temperature.data);
   Temperature::setTargetBed(temperature.as_int);
@@ -181,8 +157,6 @@ void handle_temperature_control_command(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_temperature_control_command");
 #endif
-  SERIAL_ECHOLNPGM("h temp control comm.");
-
   *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
 
   cached_state.control.hotend_id = constrain(cached_state.control.hotend_id, 0, EXTRUDERS - 1);
@@ -193,14 +167,15 @@ void handle_temperature_control_command(DGUS_VP_Variable &var, void *val_ptr) {
 }
 
 void handle_send_hotend_temperature_to_display(DGUS_VP_Variable &var) {
-
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_send_hotend_temperature_to_display");
+#endif
   float t{Temperature::degHotend(cached_state.control.hotend_id)};
   t = roundf(t);
   dgus::DgusFloat_t data{.as_float = t};
   data.as_int_16 = static_cast<int16_t>(data.as_float);
   data.data_16 = dgus::swap16(data.data_16);
 
-  SERIAL_ECHOLNPGM("h send hote");
   DGUSDisplay::WriteVariable(var.VP, data.data_16);
 }
 

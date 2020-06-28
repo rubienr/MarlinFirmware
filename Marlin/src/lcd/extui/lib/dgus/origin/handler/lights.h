@@ -37,9 +37,6 @@ struct DGUS_VP_Variable;
 namespace dgus_origin {
 namespace lights {
 
-/**
- *  flags for display requests
- */
 struct CachedState {
 
 #if ENABLED(CASE_LIGHT_ENABLE)

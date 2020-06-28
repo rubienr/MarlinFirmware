@@ -28,39 +28,32 @@ namespace dgus_origin {
 namespace status {
 
 const uint16_t screen_variables_1[] PROGMEM {
-    to_address(dgus::memory_layout::TemperatureControl::Control),
+  to_address(dgus::memory_layout::TemperatureControl::Control),
 #if HOTENDS > 0
-    to_address(dgus::memory_layout::Temperature::ENIs),
-    to_address(dgus::memory_layout::Temperature::ENSet),
+      to_address(dgus::memory_layout::Temperature::ExtruderNIs),
+      to_address(dgus::memory_layout::Temperature::ExtruderNSet),
 #endif
 #if ENABLED(HAS_HEATED_BED)
-    to_address(dgus::memory_layout::Temperature::BedIs), to_address(dgus::memory_layout::Temperature::BedSet),
+      to_address(dgus::memory_layout::Temperature::BedIs), to_address(dgus::memory_layout::Temperature::BedSet),
 #endif
 #if ENABLED(HAS_HEATED_CHAMBER)
-    to_address(dgus::memory_layout::Temperature::ChamberIs), to_address(dgus::memory_layout::Temperature::ChamberSet),
+      to_address(dgus::memory_layout::Temperature::ChamberIs), to_address(dgus::memory_layout::Temperature::ChamberSet),
 #endif
 
-#if FAN_COUNT > 0
-#define FAN_COUNT_ADDRHELPER(N) to_address(dgus::memory_layout::FanSpeed::Fan##N##Percentage),
-  REPEAT(FAN_COUNT, FAN_COUNT_ADDRHELPER)
-#undef FAN_COUNT_ADDRHELPER
-#endif
-  to_address(dgus::memory_layout::PositionAxis::X), to_address(dgus::memory_layout::PositionAxis::Y),
+      to_address(dgus::memory_layout::PositionAxis::X), to_address(dgus::memory_layout::PositionAxis::Y),
       to_address(dgus::memory_layout::PositionAxis::Z), to_address(dgus::memory_layout::FeedRate::Percentage),
+      to_address(dgus::memory_layout::FlowRate::ExtruderN),
+      to_address(dgus::memory_layout::FlowRate::Control),
+#if FAN_COUNT > 0
+      to_address(dgus::memory_layout::FanSpeed::FanN),
+      to_address(dgus::memory_layout::FanSpeed::Control),
+#endif
       to_address(dgus::memory_layout::PrintStats::PrintProgressPercentage), 0x0000
 };
 
-const uint16_t screen_variables_2[] PROGMEM {
-
-#if EXTRUDERS > 0
-#define EXTRUDERS_ADDRHELPER(N) to_address(dgus::memory_layout::Flowrates::E##N),
-  REPEAT(EXTRUDERS, EXTRUDERS_ADDRHELPER)
-#undef EXTRUDERS_ADDRHELPER
-#endif
-
-  to_address(dgus::memory_layout::PrintStats::PrintProgressPercentage),
-      to_address(dgus::memory_layout::PrintStats::PrintTime), 0x0000
-};
+const uint16_t screen_variables_2[] PROGMEM{to_address(dgus::memory_layout::PrintStats::PrintTime),
+                                            to_address(dgus::memory_layout::PrintStats::PrintProgressPercentage),
+                                            0x0000};
 
 } // namespace status
 } // namespace dgus_origin

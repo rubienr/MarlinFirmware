@@ -54,11 +54,12 @@ union UiVersion {
     uint8_t patch; // patch: fixed which do not change functionality
     uint8_t _unused;
   } __attribute__((packed)) version;
+
   struct {
     uint16_t low_word;
     uint16_t high_word;
   } __attribute__((packed));
-} __attribute__((packed));
+};
 
 using UiFlavor = uint8_t[to_uint8_t(dgus::memory_layout::UiVersion::FlavourBytes)];
 

@@ -164,21 +164,21 @@ void send_word(DGUS_VP_Variable &var) {
   DgusWord_t value{.data = *static_cast<uint16_t *>(var.memadr)};
 
   value.data = swap16(value.data);
-  DGUSDisplay::WriteVariable(var.VP, value.as_uint);
+  DGUSDisplay::WriteVariable(var.VP, value.data);
 }
 
 void send_word_from_int(DGUS_VP_Variable &var) {
   DgusWord_t value{.as_int = *static_cast<int16_t *>(var.memadr)};
 
   value.data = swap16(value.data);
-  DGUSDisplay::WriteVariable(var.VP, value.as_uint);
+  DGUSDisplay::WriteVariable(var.VP, value.data);
 }
 
 void send_word_from_uint(DGUS_VP_Variable &var) {
   DgusWord_t value{.as_uint = *static_cast<uint16_t *>(var.memadr)};
 
   value.data = swap16(value.data);
-  DGUSDisplay::WriteVariable(var.VP, value.as_uint);
+  DGUSDisplay::WriteVariable(var.VP, value.data);
 }
 
 void send_float_from_int(DGUS_VP_Variable &var) {
@@ -213,6 +213,15 @@ void send_string_P(DGUS_VP_Variable &var) {
   char *tmp = (char *)var.memadr;
   DGUSDisplay::WriteVariablePGM(var.VP, tmp, var.size, true);
 }
+
+#if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+void send_print_time(DGUS_VP_Variable &var) {
+  duration_t elapsed = Stopwatch::duration();
+  char buf[32]{0}; // "YYYy DDDd HHh MMm SSs"
+  elapsed.toString(buf);
+  DGUSDisplay::WriteVariable(to_address(dgus::memory_layout::PrintStats::PrintTime), buf, sizeof(buf), false);
+}
+#endif
 
 } // namespace handler
 } // namespace dgus
@@ -792,6 +801,8 @@ void DGUSScreenVariableHandler::HandleTemperatureChanged(DGUS_VP_Variable &var, 
   DGUSScreenVariableHandler::skipVP = var.VP;
 }
 */
+
+/*
 void DGUSScreenVariableHandler::HandleFlowRateChanged(DGUS_VP_Variable &var, void *val_ptr) {
 #if EXTRUDERS
   uint16_t newvalue = swap16(*(uint16_t *)val_ptr);
@@ -800,7 +811,7 @@ void DGUSScreenVariableHandler::HandleFlowRateChanged(DGUS_VP_Variable &var, voi
     default:
       return;
 #if HOTENDS >= 1
-    case to_address(dgus::memory_layout::Flowrates::E0):
+    case to_address(dgus::memory_layout::FlowRates::E0):
       target_extruder = 0;
       break;
 #endif
@@ -820,6 +831,7 @@ void DGUSScreenVariableHandler::HandleFlowRateChanged(DGUS_VP_Variable &var, voi
   UNUSED(val_ptr);
 #endif
 }
+*/
 
 void DGUSScreenVariableHandler::HandleManualExtrude(DGUS_VP_Variable &var, void *val_ptr) {
   DEBUG_ECHOLNPGM("HandleManualExtrude");

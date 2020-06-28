@@ -33,9 +33,6 @@ struct DGUS_VP_Variable;
 namespace dgus_origin {
 namespace temperatures {
 
-/**
- * flags for display requests; cleared internally
- */
 struct CachedState {
   union Control {
     uint16_t data;
@@ -48,7 +45,7 @@ struct CachedState {
       uint8_t do_preset_preheat_2 : 1;
       uint8_t _unused : 2;
       uint8_t hotend_id : 8;
-    };
+    } __attribute__((packed));
   } control;
 
   union Status {
@@ -62,7 +59,7 @@ struct CachedState {
       uint8_t is_chamber_cooling : 1;
       uint8_t _unused : 2;
       uint8_t _unused2 : 8;
-    };
+    } __attribute__((packed));
   } status;
 
   struct Temperatures {
@@ -70,7 +67,7 @@ struct CachedState {
       uint16_t data;
       int16_t celsius;
     } hotend_target_temperature;
-  } temperatures;
+  } __attribute__((packed)) temperatures;
 };
 
 /**
