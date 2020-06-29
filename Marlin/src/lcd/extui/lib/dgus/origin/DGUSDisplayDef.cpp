@@ -348,6 +348,8 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                &dgus::handler::assign_int_from_int_word,
                &dgus::handler::send_word_from_int),
 
+      // TODO rubienr - wrong assumption (float)?
+      //  if yes then implement template function to send position depending on axis type
       // axis position data
       VPHELPER(dgus::memory_layout::PositionAxis::X,
                &current_position.x,
@@ -359,6 +361,14 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
       VPHELPER(dgus::memory_layout::PositionAxis::Z,
                &current_position.z,
+               nullptr,
+               DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
+      VPHELPER(dgus::memory_layout::PositionAxis::E,
+#if ENABLED(LCD_SHOW_E_TOTAL)
+               &e_move_accumulator,
+#else
+               &current_position.e,
+#endif
                nullptr,
                DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
 

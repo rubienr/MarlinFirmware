@@ -37,8 +37,6 @@ namespace {
 void handle_filament_load_unload() {
   cached_state.load_unload.extruder_id = constrain(cached_state.load_unload.extruder_id, 0, EXTRUDERS - 1);
 
-  cached_state.load_unload.ok_error_clear = CachedState::LoadUnload::CLEAR;
-
   if (cached_state.load_unload.command != CachedState::LoadUnload::LOAD &&
       cached_state.load_unload.command != CachedState::LoadUnload::UNLOAD) {
     return;
@@ -46,9 +44,12 @@ void handle_filament_load_unload() {
 
   if (Temperature::targetTooColdToExtrude(cached_state.load_unload.extruder_id)) {
     cached_state.load_unload.ok_error_clear = CachedState::LoadUnload::ERROR;
+    cached_state.load_unload.too_cold = 1;
     cached_state.load_unload.command = CachedState::LoadUnload::NO_ACTION;
     return;
   }
+  cached_state.load_unload.ok_error_clear = CachedState::LoadUnload::CLEAR;
+  cached_state.load_unload.too_cold = 0;
 
   char load_unload{' '};
   char command{' '};
@@ -79,8 +80,6 @@ void handle_filament_load_unload() {
 }
 
 void handle_filament_extrude_retract() {
-  cached_state.load_unload.ok_error_clear = CachedState::LoadUnload::CLEAR;
-
   if (cached_state.load_unload.command != CachedState::LoadUnload::EXTRUDE &&
       cached_state.load_unload.command != CachedState::LoadUnload::RETRACT) {
     return;
@@ -88,9 +87,12 @@ void handle_filament_extrude_retract() {
 
   if (Temperature::targetTooColdToExtrude(cached_state.load_unload.extruder_id)) {
     cached_state.load_unload.ok_error_clear = CachedState::LoadUnload::ERROR;
+    cached_state.load_unload.too_cold = 1;
     cached_state.load_unload.command = CachedState::LoadUnload::NO_ACTION;
     return;
   }
+  cached_state.load_unload.ok_error_clear = CachedState::LoadUnload::CLEAR;
+  cached_state.load_unload.too_cold = 0;
 
   const bool backup_is_relative_mode{relative_mode};
   if (!backup_is_relative_mode)

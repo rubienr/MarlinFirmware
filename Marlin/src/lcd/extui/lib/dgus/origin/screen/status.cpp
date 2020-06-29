@@ -41,8 +41,9 @@ const uint16_t screen_variables_1[] PROGMEM {
 #endif
 
       to_address(dgus::memory_layout::PositionAxis::X), to_address(dgus::memory_layout::PositionAxis::Y),
-      to_address(dgus::memory_layout::PositionAxis::Z), to_address(dgus::memory_layout::FeedRate::Percentage),
-      to_address(dgus::memory_layout::FlowRate::ExtruderN), to_address(dgus::memory_layout::FlowRate::Control),
+      to_address(dgus::memory_layout::PositionAxis::Z), to_address(dgus::memory_layout::PositionAxis::E),
+      to_address(dgus::memory_layout::FeedRate::Percentage), to_address(dgus::memory_layout::FlowRate::ExtruderN),
+      to_address(dgus::memory_layout::FlowRate::Control),
 #if FAN_COUNT > 0
       to_address(dgus::memory_layout::FanSpeed::FanN), to_address(dgus::memory_layout::FanSpeed::Control),
 #endif

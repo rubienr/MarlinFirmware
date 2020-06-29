@@ -52,6 +52,7 @@ struct CachedState {
     struct {
       uint8_t command : 3;
       uint8_t ok_error_clear : 2;
+      uint8_t too_cold : 1;
       uint8_t _unused : 2;
       uint8_t extruder_id;
     } __attribute__((packed));

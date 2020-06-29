@@ -451,6 +451,7 @@ enum class PositionAxis : uint16_t {
   X = 0x3110,
   Y = 0x3112,
   Z = 0x3114,
+  E = 0x3116,
   Bytes = 4, // size shared among all axis
 };
 
