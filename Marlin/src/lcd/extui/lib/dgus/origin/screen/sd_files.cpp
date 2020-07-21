@@ -27,8 +27,12 @@
 namespace dgus_origin {
 namespace sdfiles {
 
-const uint16_t screen_variables[] PROGMEM{
-    VP_SD_FileName0, VP_SD_FileName1, VP_SD_FileName2, VP_SD_FileName3, VP_SD_FileName4, 0x0000};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::SdFileListing::FileName0),
+                                          to_address(dgus::memory_layout::SdFileListing::FileName1),
+                                          to_address(dgus::memory_layout::SdFileListing::FileName2),
+                                          to_address(dgus::memory_layout::SdFileListing::FileName3),
+                                          to_address(dgus::memory_layout::SdFileListing::FileName4),
+                                          0x0000};
 
 } // namespace sdfiles
 } // namespace dgus_origin

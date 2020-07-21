@@ -105,7 +105,10 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                nullptr),
 
 #if ENABLED(DGUS_ORIGIN_SDFILES)
-      VPHELPER(VP_SCREENCHANGE_WHENSD, nullptr, DGUSScreenVariableHandler::ScreenChangeHookIfSD, nullptr),
+      VPHELPER(dgus::memory_layout::ScreenAction::ScreenchangeIfSd,
+               nullptr,
+               DGUSScreenVariableHandler::ScreenChangeHookIfSD,
+               nullptr),
 #endif
       VPHELPER(dgus::memory_layout::ScreenAction::UserConfirmed,
                nullptr,
@@ -168,29 +171,29 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       // boot and info screen
       {.VP = to_address(dgus::memory_layout::MarlinVersion::Version),
        .memadr = (void *)dgus_origin::versions::marlin_version::MarlinVersion,
-       .size = constexpr_strlen(dgus_origin::versions::marlin_version::MarlinVersion),
+       .size = constexpr_strlen_uint8(dgus_origin::versions::marlin_version::MarlinVersion),
        .set_by_display_handler = nullptr,
        .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM},
 
       // info screen
       {.VP = to_address(dgus::memory_layout::MarlinVersion::DetailedVersion),
        .memadr = (void *)dgus_origin::versions::marlin_version::MarlinDetailedVersion,
-       .size = constexpr_strlen(dgus_origin::versions::marlin_version::MarlinDetailedVersion),
+       .size = constexpr_strlen_uint8(dgus_origin::versions::marlin_version::MarlinDetailedVersion),
        .set_by_display_handler = nullptr,
        .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM},
       {.VP = to_address(dgus::memory_layout::MarlinVersion::DistributionDate),
        .memadr = (void *)dgus_origin::versions::marlin_version::MarlinDistributionDate,
-       .size = constexpr_strlen(dgus_origin::versions::marlin_version::MarlinDistributionDate),
+       .size = constexpr_strlen_uint8(dgus_origin::versions::marlin_version::MarlinDistributionDate),
        .set_by_display_handler = nullptr,
        .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM},
       {.VP = to_address(dgus::memory_layout::MarlinVersion::CompileDate),
        .memadr = (void *)dgus_origin::versions::marlin_version::MarlinCompileDate,
-       .size = constexpr_strlen(dgus_origin::versions::marlin_version::MarlinCompileDate),
+       .size = constexpr_strlen_uint8(dgus_origin::versions::marlin_version::MarlinCompileDate),
        .set_by_display_handler = nullptr,
        .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM},
       {.VP = to_address(dgus::memory_layout::MarlinVersion::ConfigAuthor),
        .memadr = (void *)dgus_origin::versions::marlin_version::MarlinConfigurationAuthor,
-       .size = constexpr_strlen(dgus_origin::versions::marlin_version::MarlinConfigurationAuthor),
+       .size = constexpr_strlen_uint8(dgus_origin::versions::marlin_version::MarlinConfigurationAuthor),
        .set_by_display_handler = nullptr,
        .send_to_display_handler = &DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM},
 
@@ -290,7 +293,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
                   VPHELPER(dgus::memory_layout::FlowRate::ExtruderN,
                            &dgus_origin::speedrates::cached_state_flow.rate,
                            &dgus_origin::speedrates::handle_set_flow_rate,
-                           &dgus::handler::send_word),
+                           &dgus_origin::speedrates::handle_send_flow_rate),
 
       VPHELPER(dgus::memory_layout::FlowRate::Control,
                &dgus_origin::speedrates::cached_state_flow.control,
@@ -331,7 +334,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(dgus::memory_layout::FanSpeed::FanN,
                &dgus_origin::speedrates::cached_state_fan.rate,
                &dgus_origin::speedrates::handle_set_fan_rate,
-               &dgus::handler::send_word),
+               &dgus_origin::speedrates::handle_send_fan_rate),
       VPHELPER(dgus::memory_layout::FanSpeed::Control,
                &dgus_origin::speedrates::cached_state_fan.control,
                &dgus_origin::speedrates::handle_fan_control_command,
@@ -371,26 +374,24 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 #endif
                nullptr,
                DGUSScreenVariableHandler::DGUSLCD_SendFloatAsLongValueToDisplay<2>),
-
+#if ENABLED(LCD_SET_PROGRESS_MANUALLY)
       // print progress
       VPHELPER(dgus::memory_layout::PrintStats::PrintProgressPercentage,
                nullptr,
                nullptr,
                DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay),
-
-  // print time
-#if ENABLED(LCD_SET_PROGRESS_MANUALLY)
-      VPHELPER_STR(dgus::memory_layout::PrintStats::PrintTime, nullptr, 0, nullptr, &dgus::handler::send_print_time),
 #endif
+  // print time
 #if ENABLED(PRINTCOUNTER)
-      VPHELPER_STR(VP_PrintAccTime,
+      VPHELPER_STR(dgus::memory_layout::PrintStats::PrintTime, nullptr, 0, nullptr, &dgus::handler::send_print_time),
+      VPHELPER_STR(dgus::memory_layout::PrintStats::PrintAccTime,
                    nullptr,
-                   VP_PrintAccTime_LEN,
+                   dgus::memory_layout::PrintStats::PrintAccTimeBytes,
                    nullptr,
                    DGUSScreenVariableHandler::DGUSLCD_SendPrintAccTimeToDisplay),
-      VPHELPER_STR(VP_PrintsTotal,
+      VPHELPER_STR(dgus::memory_layout::PrintStats::PrintsTotal,
                    nullptr,
-                   VP_PrintsTotal_LEN,
+                   dgus::memory_layout::PrintStats::PrintsTotalBytes,
                    nullptr,
                    DGUSScreenVariableHandler::DGUSLCD_SendPrintsTotalToDisplay),
 #endif
@@ -412,25 +413,61 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 // SD card file listing
 // TODO rubienr
 #if ENABLED(DGUS_ORIGIN_SDFILES)
-      VPHELPER(VP_SD_ScrollEvent, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_ScrollFilelist, nullptr),
-      VPHELPER(VP_SD_FileSelected, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_FileSelected, nullptr),
-      VPHELPER(VP_SD_FileSelectConfirm, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_StartPrint, nullptr),
-      VPHELPER_STR(
-          VP_SD_FileName0, nullptr, VP_SD_FileName_LEN, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
-      VPHELPER_STR(
-          VP_SD_FileName1, nullptr, VP_SD_FileName_LEN, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
-      VPHELPER_STR(
-          VP_SD_FileName2, nullptr, VP_SD_FileName_LEN, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
-      VPHELPER_STR(
-          VP_SD_FileName3, nullptr, VP_SD_FileName_LEN, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
-      VPHELPER_STR(
-          VP_SD_FileName4, nullptr, VP_SD_FileName_LEN, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
-      VPHELPER(VP_SD_ResumePauseAbort, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_ResumePauseAbort, nullptr),
-      VPHELPER(VP_SD_AbortPrintConfirmed, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_ReallyAbort, nullptr),
-      VPHELPER(VP_SD_Print_Setting, nullptr, DGUSScreenVariableHandler::DGUSLCD_SD_PrintTune, nullptr),
+      VPHELPER(dgus::memory_layout::SdAction::ScrollEvent,
+               nullptr,
+               DGUSScreenVariableHandler::DGUSLCD_SD_ScrollFilelist,
+               nullptr),
+      VPHELPER(dgus::memory_layout::SdAction::FileSelected,
+               nullptr,
+               DGUSScreenVariableHandler::DGUSLCD_SD_FileSelected,
+               nullptr),
+      VPHELPER(dgus::memory_layout::SdAction::FileSelectConfirm,
+               nullptr,
+               DGUSScreenVariableHandler::DGUSLCD_SD_StartPrint,
+               nullptr),
+      VPHELPER_STR(dgus::memory_layout::SdFileListing::FileName0,
+                   nullptr,
+                   to_uint16_t(dgus::memory_layout::SdFileListing::FileNameBytes),
+                   nullptr,
+                   DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
+      VPHELPER_STR(dgus::memory_layout::SdFileListing::FileName1,
+                   nullptr,
+                   to_uint16_t(dgus::memory_layout::SdFileListing::FileNameBytes),
+                   nullptr,
+                   DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
+      VPHELPER_STR(dgus::memory_layout::SdFileListing::FileName2,
+                   nullptr,
+                   to_uint16_t(dgus::memory_layout::SdFileListing::FileNameBytes),
+                   nullptr,
+                   DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
+      VPHELPER_STR(dgus::memory_layout::SdFileListing::FileName3,
+                   nullptr,
+                   to_uint16_t(dgus::memory_layout::SdFileListing::FileNameBytes),
+                   nullptr,
+                   DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
+      VPHELPER_STR(dgus::memory_layout::SdFileListing::FileName4,
+                   nullptr,
+                   to_uint16_t(dgus::memory_layout::SdFileListing::FileNameBytes),
+                   nullptr,
+                   DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename),
+      VPHELPER(dgus::memory_layout::SdAction::ResumePauseAbort,
+               nullptr,
+               DGUSScreenVariableHandler::DGUSLCD_SD_ResumePauseAbort,
+               nullptr),
+      VPHELPER(dgus::memory_layout::SdAction::AbortPrintConfirmed,
+               nullptr,
+               DGUSScreenVariableHandler::DGUSLCD_SD_ReallyAbort,
+               nullptr),
+      VPHELPER(dgus::memory_layout::SdAction::Print_Setting,
+               nullptr,
+               DGUSScreenVariableHandler::DGUSLCD_SD_PrintTune,
+               nullptr),
 #if HAS_BED_PROBE
 #if ENABLED(BABYSTEPPING)
-      VPHELPER(VP_SD_Print_LiveAdjustZ, nullptr, DGUSScreenVariableHandler::HandleLiveAdjustZ, nullptr),
+      VPHELPER(dgus::memory_layout::SdAction::Print_LiveAdjustZ,
+               nullptr,
+               DGUSScreenVariableHandler::HandleLiveAdjustZ,
+               nullptr),
 #endif
 #endif
 #endif

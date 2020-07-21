@@ -163,7 +163,6 @@ void handle_temperature_control_command(DGUS_VP_Variable &var, void *val_ptr) {
 
   handle_preheat();
   handle_disable_heating();
-  update_selected_hotend_temperature();
 }
 
 void handle_send_hotend_temperature_to_display(DGUS_VP_Variable &var) {
@@ -176,7 +175,10 @@ void handle_send_hotend_temperature_to_display(DGUS_VP_Variable &var) {
   data.as_int_16 = static_cast<int16_t>(data.as_float);
   data.data_16 = dgus::swap16(data.data_16);
 
-  DGUSDisplay::WriteVariable(var.VP, data.data_16);
+  update_selected_hotend_temperature();
+
+
+  DGUSDisplay::write_variable(var.VP, data.data_16);
 }
 
 } // namespace temperatures

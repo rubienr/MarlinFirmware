@@ -46,7 +46,7 @@ void handle_move_distance() {
   constexpr feedRate_t feed_rate_factor = 0.5;
   const auto backup_feed_rate{static_cast<feedRate_t>(roundf(MMS_TO_MMM(feedrate_mm_s)))};
   const bool backup_is_relative_mode{relative_mode};
-  uint16_t feed_rate;
+  uint32_t feed_rate;
   char axiscode;
 
   if (cached_state.move_command.direction == CachedState::MoveCommand::NO_ACTION)
@@ -58,22 +58,22 @@ void handle_move_distance() {
   if (cached_state.move_command.axis_id == static_cast<uint8_t>(AxisEnum::X_AXIS)) {
     if (!ExtUI::canMove(ExtUI::axis_t::X))
       return;
-    constexpr uint16_t constexpr_feed_rate =
-        static_cast<uint16_t>(roundf(MMS_TO_MMM(max_feed_rates[AxisEnum::X_AXIS] * feed_rate_factor)));
+    constexpr uint32_t constexpr_feed_rate =
+        static_cast<uint32_t>(roundf(MMS_TO_MMM(max_feed_rates[AxisEnum::X_AXIS] * feed_rate_factor)));
     feed_rate = constexpr_feed_rate;
     axiscode = 'X';
   } else if (cached_state.move_command.axis_id == static_cast<uint8_t>(AxisEnum::Y_AXIS)) {
     if (!ExtUI::canMove(ExtUI::axis_t::Y))
       return;
-    constexpr uint16_t constexpr_feed_rate =
-        static_cast<uint16_t>(roundf(MMS_TO_MMM(max_feed_rates[AxisEnum::Y_AXIS] * feed_rate_factor)));
+    constexpr uint32_t constexpr_feed_rate =
+        static_cast<uint32_t>(roundf(MMS_TO_MMM(max_feed_rates[AxisEnum::Y_AXIS] * feed_rate_factor)));
     feed_rate = constexpr_feed_rate;
     axiscode = 'Y';
   } else if (cached_state.move_command.axis_id == static_cast<uint8_t>(AxisEnum::Z_AXIS)) {
     if (!ExtUI::canMove(ExtUI::axis_t::Z))
       return;
-    constexpr uint16_t constexpr_feed_rate =
-        static_cast<uint16_t>(roundf(MMS_TO_MMM(max_feed_rates[AxisEnum::Z_AXIS] * feed_rate_factor)));
+    constexpr uint32_t constexpr_feed_rate =
+        static_cast<uint32_t>(roundf(MMS_TO_MMM(max_feed_rates[AxisEnum::Z_AXIS] * feed_rate_factor)));
     feed_rate = constexpr_feed_rate;
     axiscode = 'Z';
   } else
@@ -84,11 +84,11 @@ void handle_move_distance() {
     GCodeQueue::enqueue_now_P(PSTR("G91"));
 
   // move
-  char buf[32]; // "G0 X-9999.99 F12345"
+  char buf[32]; // "G0 X-99999.99 F12345"
   uint16_t move_value = cached_state.distance_10_um / 100;
   uint16_t move_fraction = cached_state.distance_10_um % 100;
 
-  snprintf_P(buf, sizeof(buf), PSTR("G0 %c%c%d.%02d F%d"), axiscode, move_sign, move_value, move_fraction, feed_rate);
+  snprintf_P(buf, sizeof(buf), PSTR("G0 %c%c%d.%02d F%lu"), axiscode, move_sign, move_value, move_fraction, feed_rate);
   GCodeQueue::enqueue_one_now(buf);
 
   // restore feed rate

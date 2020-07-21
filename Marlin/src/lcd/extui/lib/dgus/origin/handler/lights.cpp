@@ -24,6 +24,9 @@
 
 #include "../../../../../../gcode/queue.h"
 #include "../../DGUSDisplay.h"
+#if ENABLED(CASE_LIGHT_ENABLE)
+#include "../../feature/caselight.h"
+#endif
 
 namespace dgus_origin {
 namespace lights {
@@ -105,8 +108,11 @@ void handle_case_light(DGUS_VP_Variable &var, void *val_ptr) {
   }
 
 #if DISABLED(CASE_LIGHT_NO_BRIGHTNESS)
-  const float float_brightness = map(case_light_request->intensity, 0, 255, 0, 100);
-  void setCaseLightBrightness_percent(float_brightness);
+  // TODO rubienr - set brightness via ExtUI
+  //const float float_brightness = map(case_light_request->intensity, 0, 255, 0, 100);
+  //ExtUI::setCaseLightBrightness_percent(float_brightness);
+  case_light_brightness = case_light_request->intensity;
+  update_case_light();
 #else
   char buf[16];
   sprintf_P(buf, PSTR("M355 P%d S%d"), case_light_request->intensity, ((do_enable_case_light) ? 1 : 0));

@@ -37,7 +37,7 @@ namespace {
 
 void update_selected_fan_rate() {
   cached_state_fan.rate.percent = Temperature::fanPercent(Temperature::fan_speed[cached_state_fan.control.fan_id]);
-  cached_state_fan.rate.speed = Temperature::fan_speed[cached_state_fan.control.fan_id];
+  cached_state_fan.rate.pwm = Temperature::fan_speed[cached_state_fan.control.fan_id];
 }
 
 void set_selected_fan_rate() {
@@ -75,6 +75,17 @@ void handle_set_fan_rate(DGUS_VP_Variable &var, void *val_ptr) {
   set_selected_fan_rate();
 }
 
+void handle_send_fan_rate(DGUS_VP_Variable &var) {
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_send_fan_rate");
+#endif
+  update_selected_fan_rate();
+
+  dgus::DgusWord_t status{.data = cached_state_fan.rate.data};
+  status.data = dgus::swap16(status.data);
+  DGUSDisplay::write_variable(var.VP, status.data);
+}
+
 void handle_flow_control_command(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_flow_control_command");
@@ -91,6 +102,17 @@ void handle_set_flow_rate(DGUS_VP_Variable &var, void *val_ptr) {
 #endif
   *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
   set_selected_extruder_flow_rate();
+}
+
+void handle_send_flow_rate(DGUS_VP_Variable &var) {
+#if ENABLED(DEBUG_DGUSLCD)
+  DEBUG_ECHOLNPGM("handle_send_flow_rate");
+#endif
+  update_selected_extruder_flow_rate();
+
+  dgus::DgusWord_t status{.data = cached_state_flow.rate.data};
+  status.data = dgus::swap16(status.data);
+  DGUSDisplay::write_variable(var.VP, status.data);
 }
 
 } // namespace speedrates

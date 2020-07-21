@@ -37,7 +37,7 @@
 #include "../../../../gcode/queue.h"
 #include "../../../../module/planner.h"
 #if ENABLED(SDSUPPORT)
-//#include "../../../../sd/cardreader.h"
+#include "../../../../sd/cardreader.h"
 #endif
 #include "../../../../libs/duration_t.h"
 #include "../../../../module/printcounter.h"
@@ -214,12 +214,12 @@ void send_string_P(DGUS_VP_Variable &var) {
   DGUSDisplay::WriteVariablePGM(var.VP, tmp, var.size, true);
 }
 
-#if ENABLED(LCD_SET_PROGRESS_MANUALLY)
+#if ENABLED(PRINTCOUNTER)
 void send_print_time(DGUS_VP_Variable &var) {
-  duration_t elapsed = Stopwatch::duration();
-  char buf[32]{0}; // "YYYy DDDd HHh MMm SSs"
-  elapsed.toString(buf);
-  DGUSDisplay::WriteVariable(to_address(dgus::memory_layout::PrintStats::PrintTime), buf, sizeof(buf), false);
+  //duration_t elapsed = Stopwatch::duration();
+  char buf[21]{0}; // "YYYy DDDd HHh MMm SSs"
+  ExtUI::getTotalPrintTime_str(buf);
+  DGUSDisplay::write_variable(to_address(dgus::memory_layout::PrintStats::PrintTime), buf, sizeof(buf), false);
 }
 #endif
 
@@ -313,7 +313,7 @@ void DGUSScreenVariableHandler::playToneSpeaker(uint8_t start_section, uint8_t s
     uint8_t playback_status;
   } audio_command{
       .start_section = start_section, .sections_count = sections_count, .volume = volume, .playback_status = 0x02};
-  DGUSDisplay::WriteVariable(0xa0, &audio_command, 4);
+  DGUSDisplay::write_variable(0xa0, &audio_command, 4);
 }
 #else
 void DGUSScreenVariableHandler::playToneBuzzer(uint8_t time_times_8ms, uint8_t volume) {
@@ -336,7 +336,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplay(DGUS_VP_Variable 
     uint16_t data_to_send = (tmp[0] << 8U);
     if (var.size >= 1)
       data_to_send |= tmp[1];
-    DGUSDisplay::WriteVariable(var.VP, data_to_send);
+    DGUSDisplay::write_variable(var.VP, data_to_send);
   }
 }
 
@@ -348,7 +348,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendWordValueToDisplayPGM(DGUS_VP_Variab
     uint16_t data_to_send = (tmp[0] << 8U);
     if (var.size >= 1)
       data_to_send |= tmp[1];
-    DGUSDisplay::WriteVariablePGM(var.VP, &data_to_send, (var.size >= 1) ? 2 : 1);
+    DGUSDisplay::write_variable_P(var.VP, &data_to_send, (var.size >= 1) ? 2 : 1);
   }
 }
 
@@ -359,7 +359,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendPercentageToDisplay(DGUS_VP_Variable
   uint16_t tmp = *static_cast<uint8_t *>(var.memadr);
   tmp = static_cast<uint16_t>(map(tmp, 0, 0xff, 0, 100));
   uint16_t data_to_send = swap16(tmp);
-  DGUSDisplay::WriteVariable(var.VP, data_to_send);
+  DGUSDisplay::write_variable(var.VP, data_to_send);
 }
 
 // Send the current print progress to the display.
@@ -368,7 +368,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendPrintProgressToDisplay(DGUS_VP_Varia
   uint16_t tmp = ExtUI::getProgress_percent();
   // DEBUG_ECHOLNPAIR(" data ", tmp);
   uint16_t data_to_send = swap16(tmp);
-  DGUSDisplay::WriteVariable(var.VP, data_to_send);
+  DGUSDisplay::write_variable(var.VP, data_to_send);
 }
 
 // Send the current print time to the display.
@@ -377,7 +377,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendPrintTimeToDisplay(DGUS_VP_Variable 
   duration_t elapsed = Stopwatch::duration();
   char buf[32];
   elapsed.toString(buf);
-  DGUSDisplay::WriteVariable(to_address(dgus::memory_layout::PrintStats::PrintTime), buf, var.size, true);
+  DGUSDisplay::write_variable(to_address(dgus::memory_layout::PrintStats::PrintTime), buf, var.size, true);
 }
 
 // Send an uint8_t between 0 and 100 to a variable scale to 0..255
@@ -393,7 +393,7 @@ void DGUSScreenVariableHandler::DGUSLCD_PercentageToUint8(DGUS_VP_Variable &var,
 // overwrite the remainings with spaces.// var.size has the display buffer size!
 void DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &var) {
   char *tmp = (char *)var.memadr;
-  DGUSDisplay::WriteVariable(var.VP, tmp, var.size, true);
+  DGUSDisplay::write_variable(var.VP, tmp, var.size, true);
 }
 
 // Sends a (flash located) string to the DGUS Display
@@ -401,7 +401,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplay(DGUS_VP_Variable &va
 // overwrite the remainings with spaces.// var.size has the display buffer size!
 void DGUSScreenVariableHandler::DGUSLCD_SendStringToDisplayPGM(DGUS_VP_Variable &var) {
   char *tmp = (char *)var.memadr;
-  DGUSDisplay::WriteVariablePGM(var.VP, tmp, var.size, true);
+  DGUSDisplay::write_variable_P(var.VP, tmp, var.size, true);
 }
 
 #if HAS_PID_HEATING
@@ -454,7 +454,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendTemperaturePID(DGUS_VP_Variable &var
   valuesend.as_int = static_cast<uint16_t>(roundf(valuesend.as_float));
   valuesend.as_uint = swap16(valuesend.as_uint);
 
-  DGUSDisplay::WriteVariable(var.VP, &valuesend.as_uint, 2);
+  DGUSDisplay::write_variable(var.VP, &valuesend.as_uint, 2);
 }
 #endif
 
@@ -467,14 +467,14 @@ void DGUSScreenVariableHandler::DGUSLCD_SendPrintAccTimeToDisplay(DGUS_VP_Variab
   char buf[21];
   duration_t elapsed = state.printTime;
   elapsed.toString(buf);
-  dgusdisplay.WriteVariable(VP_PrintAccTime, buf, var.size, true);
+  DGUSDisplay::write_variable(to_address(dgus::memory_layout::PrintStats::PrintAccTime), buf, var.size, true);
 }
 
 void DGUSScreenVariableHandler::DGUSLCD_SendPrintsTotalToDisplay(DGUS_VP_Variable &var) {
   printStatistics state = print_job_timer.getStats();
   char buf[21];
   sprintf_P(buf, PSTR("%u"), state.totalPrints);
-  dgusdisplay.WriteVariable(VP_PrintsTotal, buf, var.size, true);
+  DGUSDisplay::write_variable(to_address(dgus::memory_layout::PrintStats::PrintsTotal), buf, var.size, true);
 }
 
 #endif
@@ -489,7 +489,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendFanStatusToDisplay(DGUS_VP_Variable 
     if (*(uint8_t *)var.memadr)
       data_to_send = 1;
     data_to_send = swap16(data_to_send);
-    DGUSDisplay::WriteVariable(var.VP, data_to_send);
+    DGUSDisplay::write_variable(var.VP, data_to_send);
   }
 }
 #endif
@@ -503,7 +503,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SendHeaterStatusToDisplay(DGUS_VP_Variab
     if (*(int16_t *)var.memadr)
       data_to_send = 1;
     data_to_send = swap16(data_to_send);
-    DGUSDisplay::WriteVariable(var.VP, data_to_send);
+    DGUSDisplay::write_variable(var.VP, data_to_send);
   }
 }
 
@@ -563,7 +563,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SD_ScrollFilelist(DGUS_VP_Variable &var,
       top_file = 0;
       DEBUG_ECHOLNPGM("Top of filelist reached");
     } else {
-      int16_t max_top = filelist.count() - DGUS_SD_FILESPERSCREEN;
+      int16_t max_top = filelist.count() - to_uint16_t(dgus::memory_layout::SdFileListing::FilesPerScreen);
       NOLESS(max_top, 0);
       NOMORE(top_file, max_top);
     }
@@ -598,7 +598,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SD_FileSelected(DGUS_VP_Variable &var, v
 
   // Setup Confirmation screen
   file_to_print = touched_nr;
-  HandleUserConfirmationPopUp(VP_SD_FileSelectConfirm,
+  HandleUserConfirmationPopUp(to_address(dgus::memory_layout::SdAction::FileSelectConfirm),
                               nullptr,
                               PSTR("Print file"),
                               filelist.filename(),
@@ -635,7 +635,7 @@ void DGUSScreenVariableHandler::DGUSLCD_SD_ResumePauseAbort(DGUS_VP_Variable &va
         ExtUI::pausePrint();
       break;
     case 2: // Abort
-      ScreenHandler.HandleUserConfirmationPopUp(VP_SD_AbortPrintConfirmed,
+      ScreenHandler.HandleUserConfirmationPopUp(to_address(dgus::memory_layout::SdAction::AbortPrintConfirmed),
                                                 nullptr,
                                                 PSTR("Abort printing"),
                                                 filelist.filename(),
@@ -660,13 +660,16 @@ void DGUSScreenVariableHandler::DGUSLCD_SD_PrintTune(DGUS_VP_Variable &var, void
 }
 
 void DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename(DGUS_VP_Variable &var) {
-  uint16_t target_line = (var.VP - VP_SD_FileName0) / VP_SD_FileName_LEN;
-  if (target_line > DGUS_SD_FILESPERSCREEN)
+  constexpr uint16_t filename_length{to_uint16_t(dgus::memory_layout::SdFileListing::FileNameBytes)};
+  constexpr uint16_t files_per_screen{to_uint16_t(dgus::memory_layout::SdFileListing::FilesPerScreen)};
+
+  uint16_t target_line = (var.VP - to_address(dgus::memory_layout::SdFileListing::FileName0)) / filename_length;
+  if (target_line > files_per_screen)
     return;
-  char tmpfilename[VP_SD_FileName_LEN + 1] = "";
+  char tmpfilename[filename_length + 1] = "";
   var.memadr = (void *)tmpfilename;
   if (filelist.seek(top_file + target_line))
-    snprintf_P(tmpfilename, VP_SD_FileName_LEN, PSTR("%s%c"), filelist.filename(), filelist.isDir() ? '/' : 0);
+    snprintf_P(tmpfilename, filename_length, PSTR("%s%c"), filelist.filename(), filelist.isDir() ? '/' : 0);
   DGUSLCD_SendStringToDisplay(var);
 }
 
@@ -680,7 +683,8 @@ void DGUSScreenVariableHandler::SDCardInserted() {
 void DGUSScreenVariableHandler::SDCardRemoved() {
   if (current_screen == DGUSLCD_SCREEN_SDFILELIST ||
       (current_screen == DGUSLCD_SCREEN_CONFIRM &&
-       (ConfirmVP == VP_SD_AbortPrintConfirmed || ConfirmVP == VP_SD_FileSelectConfirm)) ||
+       (ConfirmVP == to_address(dgus::memory_layout::SdAction::AbortPrintConfirmed) ||
+        ConfirmVP == to_address(dgus::memory_layout::SdAction::FileSelectConfirm))) ||
       current_screen == DGUSLCD_SCREEN_SDPRINTMANIPULATION)
     ScreenHandler.GotoScreen(DGUSLCD_SCREEN_MAIN);
 }
@@ -1535,7 +1539,39 @@ void DGUSDisplay::WriteVariable(uint16_t adr, const void *values, uint8_t values
   }
 }
 
+void DGUSDisplay::write_variable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {
+  const char *myvalues = static_cast<const char *>(values);
+  bool strend = !myvalues;
+  WriteHeader(adr, DGUS_CMD_WRITEVAR, valueslen);
+  while (valueslen--) {
+    char x{0};
+    if (!strend)
+      x = *myvalues++;
+    if ((isstr && !x) || strend) {
+      strend = true;
+      x = ' ';
+    }
+    dgusserial.write(static_cast<uint8_t>(x));
+  }
+}
+
 void DGUSDisplay::WriteVariablePGM(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {
+  const char *myvalues = static_cast<const char *>(values);
+  bool strend = !myvalues;
+  WriteHeader(adr, DGUS_CMD_WRITEVAR, valueslen);
+  while (valueslen--) {
+    char x{0};
+    if (!strend)
+      x = pgm_read_byte(myvalues++);
+    if ((isstr && !x) || strend) {
+      strend = true;
+      x = ' ';
+    }
+    dgusserial.write(static_cast<uint8_t>(x));
+  }
+}
+
+void DGUSDisplay::write_variable_P(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {
   const char *myvalues = static_cast<const char *>(values);
   bool strend = !myvalues;
   WriteHeader(adr, DGUS_CMD_WRITEVAR, valueslen);

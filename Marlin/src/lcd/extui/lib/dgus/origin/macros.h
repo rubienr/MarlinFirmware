@@ -26,30 +26,29 @@
 
 #if ENABLED(HAS_DGUS_LCD)
 
-// TODO rubienr - constexpr_strlen -> constexpr_strlen_uint8_t
-uint8_t constexpr constexpr_strlen(const char *str) { return *str ? 1 + constexpr_strlen(str + 1) : 0; }
+uint8_t constexpr constexpr_strlen_uint8(const char *str) { return (*str) ? (1 + constexpr_strlen_uint8(str + 1)) : 0; }
 
-namespace {
+namespace vp_macros {
 
 constexpr uint8_t sizeof_vp_adress_variable(nullptr_t) { return 0; }
 template <typename t> constexpr uint8_t sizeof_vp_adress_variable(const t *) { return sizeof(t); }
 
-template <typename t> constexpr uint16_t toAddress(const t a) { return static_cast<uint16_t>(a); }
-constexpr uint16_t toAddress(nullptr_t) { return 0; }
+constexpr uint16_t to_address(nullptr_t) { return 0; }
+template <typename t> constexpr uint16_t to_address(const t a) { return static_cast<uint16_t>(a);}
 
-} // namespace
+} // namespace vp_macros
 
 // Helper to define a DGUS_VP_Variable for common use cases.
 #define VPHELPER(VPADR, VPADRVAR, RXFPTR, TXFPTR)                                            \
   {                                                                                          \
-    .VP = toAddress(VPADR), .memadr = VPADRVAR, .size = sizeof_vp_adress_variable(VPADRVAR), \
+    .VP = vp_macros::to_address(VPADR), .memadr = VPADRVAR, .size = vp_macros::sizeof_vp_adress_variable(VPADRVAR), \
     .set_by_display_handler = RXFPTR, .send_to_display_handler = TXFPTR                      \
   }
 
 // Helper to define a DGUS_VP_Variable when the sizeo of the var cannot be determined automatically.
 #define VPHELPER_STR(VPADR, VPADRVAR, STRLEN, RXFPTR, TXFPTR)                                     \
   {                                                                                               \
-    .VP = toAddress(VPADR), .memadr = VPADRVAR, .size = STRLEN, .set_by_display_handler = RXFPTR, \
+    .VP = vp_macros::to_address(VPADR), .memadr = VPADRVAR, .size = static_cast<uint8_t>(STRLEN), .set_by_display_handler = RXFPTR, \
     .send_to_display_handler = TXFPTR                                                             \
   }
 

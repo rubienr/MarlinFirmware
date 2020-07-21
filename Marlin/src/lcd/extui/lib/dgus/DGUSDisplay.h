@@ -125,8 +125,15 @@ public:
   static void InitDisplay();
 
   // Variable access.
+  static void write_variable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr = false);
+  static void write_variable_P(uint16_t adr, const void *values, uint8_t valueslen, bool isstr = false);
+  template <typename T> static void write_variable(uint16_t adr, T value);
+
+  /// @deprecated
   static void WriteVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr = false);
+  /// @deprecated
   static void WriteVariablePGM(uint16_t adr, const void *values, uint8_t valueslen, bool isstr = false);
+  /// @deprecated
   template <typename T> static void WriteVariable(uint16_t adr, T value) {
     WriteVariable(adr, static_cast<const void *>(&value), sizeof(T));
   }
@@ -439,6 +446,11 @@ void DGUSScreenVariableHandler::DGUSLCD_SendFloatAsIntValueToDisplay(DGUS_VP_Var
   data.as_int = static_cast<int16_t>(roundf(data.as_float));
   data.as_uint = dgus::swap16(data.as_uint);
   dgusdisplay.WriteVariable(var.VP, &data.as_uint, 2);
+}
+
+template <typename T>
+void DGUSDisplay::write_variable(uint16_t adr, T value) {
+  write_variable(adr, static_cast<const void *>(&value), sizeof(T));
 }
 
 namespace dgus {

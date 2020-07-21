@@ -51,6 +51,12 @@ void handle_homing_command(DGUS_VP_Variable &var, void *val_ptr) {
   cached_state.data = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
   char r{' '}, x{' '}, y{' '}, z{' '};
 
+  if (cached_state.do_sync_z) {
+    GCodeQueue::enqueue_now_P(PSTR("G34"));
+    cached_state.do_sync_z = 0;
+    return;
+  }
+
   if (cached_state.do_raise_before_home) {
     r = 'R';
     cached_state.do_raise_before_home = 0;
@@ -90,7 +96,7 @@ void handle_send_homing_status(DGUS_VP_Variable &var) {
 
   dgus::DgusWord_t status{.data = cached_state.data};
   status.data = dgus::swap16(status.data);
-  DGUSDisplay::WriteVariable(var.VP, status.data);
+  DGUSDisplay::write_variable(var.VP, status.data);
 }
 
 } // namespace homing

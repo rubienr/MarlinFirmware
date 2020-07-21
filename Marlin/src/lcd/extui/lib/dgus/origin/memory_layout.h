@@ -481,6 +481,8 @@ enum class PositionE : uint16_t {
 #if ENABLED(SDSUPPORT)
 // SDCard File Listing
 enum class SdFileListing : uint16_t {
+  // TODO rubienr: implementation assumes correct alignment of FileNameN in
+  //  DGUSScreenVariableHandler::DGUSLCD_SD_SendFilename
   FileName0 = 0x3200,
   FileName1 = 0x3220,
   FileName2 = 0x3240,
@@ -580,29 +582,29 @@ enum class Pid : uint16_t {
   E0D = 0x3704,
 #endif
 #if HAS_HEATER_1
-  E1P = 0x370 ?,
-  E1I = 0x370 ?,
-  E1D = 0x370 ?,
+  E1P = 0x3706,
+  E1I = 0x3708,
+  E1D = 0x370A,
 #endif
 #if HAS_HEATER_2
-  E2P = 0x370 ?,
-  E2I = 0x370 ?,
-  E2D = 0x370 ?,
+  E2P = 0x370C,
+  E2I = 0x370E,
+  E2D = 0x3710,
 #endif
 #if HAS_HEATER_3
-  E3P = 0x370 ?,
-  E3I = 0x370 ?,
-  E3D = 0x370 ?,
+  E3P = 0x3712,
+  E3I = 0x3714,
+  E3D = 0x3716,
 #endif
 #if HAS_HEATER_4
-  E4P = 0x370 ?,
-  E4I = 0x370 ?,
-  E4D = 0x370 ?,
+  E4P = 0x3718,
+  E4I = 0x371A,
+  E4D = 0x371C,
 #endif
 #if HAS_HEATER_5
-  E5P = 0x370 ?,
-  E5I = 0x370 ?,
-  E5D = 0x370 ?,
+  E5P = 0x371E,
+  E5I = 0x3720,
+  E5D = 0x3722,
 #endif
 
 #if HAS_HEATER_BED
@@ -653,10 +655,19 @@ constexpr uint16_t SP_T_E5_Set = 0x5100;
 */
 
 template <typename enum_t> uint16_t constexpr to_address(const enum_t e) { return static_cast<uint16_t>(e); }
-template <typename enum_t> constexpr uint8_t to_uint8_t(const enum_t e) { return static_cast<uint8_t>(e); }
+
+namespace {
+  template <typename from_enum_t, typename to_cast_type_t> constexpr uint8_t to_XintNN_t(const from_enum_t e) {
+    return static_cast<to_cast_type_t>(e);
+  }
+}
+
+template <typename enum_t> constexpr uint8_t to_uint8_t(const enum_t e) { return to_XintNN_t<enum_t, uint8_t>(e); }
+template <typename enum_t> constexpr uint16_t to_uint16_t(const enum_t e) { return to_XintNN_t<enum_t, uint16_t>(e); }
 
 } // namespace memory_layout
 } // namespace dgus
 
 using dgus::memory_layout::to_address;
 using dgus::memory_layout::to_uint8_t;
+using dgus::memory_layout::to_uint16_t;

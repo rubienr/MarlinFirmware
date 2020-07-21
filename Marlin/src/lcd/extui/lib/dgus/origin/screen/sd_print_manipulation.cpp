@@ -27,7 +27,9 @@
 namespace dgus_origin {
 namespace sdprint_manipulation {
 
-const uint16_t screen_variables[] PROGMEM{VP_PrintProgress_Percentage, VP_PrintTime, 0x0000};
+const uint16_t screen_variables[] PROGMEM{to_address(dgus::memory_layout::PrintStats::PrintProgressPercentage),
+                                          to_address(dgus::memory_layout::PrintStats::PrintTime),
+                                          0x0000};
 
 } // namespace sdprint_manipulation
 } // namespace dgus_origin

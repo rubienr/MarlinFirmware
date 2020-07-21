@@ -67,7 +67,7 @@ struct CachedState {
       uint16_t data;
       int16_t celsius;
     } hotend_target_temperature;
-  } __attribute__((packed)) temperatures;
+  } temperatures;
 };
 
 /**

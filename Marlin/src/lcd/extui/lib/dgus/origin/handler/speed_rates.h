@@ -50,9 +50,10 @@ struct CachedStateFlowRate {
     } __attribute__((packed));
   } status;
 
-  struct Speed {
+  union Speed {
+    uint16_t data;
     int16_t percent;
-  } __attribute__((packed)) rate;
+  } rate;
 };
 
 struct CachedStateFanRate {
@@ -72,19 +73,26 @@ struct CachedStateFanRate {
     } __attribute__((packed));
   } status;
 
-  struct Speed {
-    uint8_t percent;
-    uint8_t speed;
-  } __attribute__((packed)) rate;
+  union Speed {
+    uint16_t data;
+    struct {
+      uint8_t percent;
+      uint8_t pwm;
+    } __attribute__((packed));
+  } rate;
 };
 
 void handle_fan_control_command(DGUS_VP_Variable &var, void *val_ptr);
 
 void handle_set_fan_rate(DGUS_VP_Variable &var, void *val_ptr);
 
+void handle_send_fan_rate(DGUS_VP_Variable &var);
+
 void handle_flow_control_command(DGUS_VP_Variable &var, void *val_ptr);
 
 void handle_set_flow_rate(DGUS_VP_Variable &var, void *val_ptr);
+
+void handle_send_flow_rate(DGUS_VP_Variable &var);
 
 } // namespace speedrates
 } // namespace dgus_origin

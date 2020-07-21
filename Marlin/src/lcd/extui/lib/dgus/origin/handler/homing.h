@@ -43,7 +43,7 @@ union CachedState {
     uint8_t do_home_b : 1;
     uint8_t do_home_c : 1;
     uint8_t do_raise_before_home : 1;
-    uint8_t _unused : 1;
+    uint8_t do_sync_z : 1;
     uint8_t cannot_move : 1;
     uint8_t is_homed_x : 1;
     uint8_t is_homed_y : 1;

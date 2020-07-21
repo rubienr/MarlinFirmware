@@ -25,6 +25,10 @@
 #include "../../../../../../gcode/queue.h"
 #include "../../DGUSDisplay.h"
 
+#if ENABLED(PRINTCOUNTER)
+#include "../../module/printcounter.h"
+#endif
+
 namespace dgus_origin {
 namespace eeprom {
 
