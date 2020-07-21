@@ -496,12 +496,8 @@
   #define  DEFAULT_Kp 19.41
   #define  DEFAULT_Ki 1.38
   #define  DEFAULT_Kd 68.38
-  // Kp: 9.11 Ki: 0.36 Kd: 57.03
-  //#define  DEFAULT_Kp  9.11
-  //#define  DEFAULT_Ki  0.36
-  //#define  DEFAULT_Kd 57.03
 
-// Ultimaker
+  // Ultimaker
   //#define DEFAULT_Kp 22.2
   //#define DEFAULT_Ki 1.08
   //#define DEFAULT_Kd 114
@@ -844,7 +840,7 @@
  *   http://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.05 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.025 // (mm) Distance from real junction edge
   //#define JUNCTION_DEVIATION_MM 0.2 // (mm) Distance from real junction edge
 #endif
 
