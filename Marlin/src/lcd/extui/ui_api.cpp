@@ -830,6 +830,7 @@ namespace ExtUI {
           TERN_(ABL_BILINEAR_SUBDIVISION, bed_level_virt_interpolate());
         }
       }
+      float getMeshFadeHeight() { return planner.z_fade_height; };
     #endif
   #endif
 
