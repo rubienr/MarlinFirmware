@@ -31,9 +31,15 @@
 #if HAS_DGUS_LCD
 
 #include "ui_api.h"
-#include "lib/dgus/DGUSDisplay.h"
-#include "lib/dgus/DGUSDisplayDef.h"
-#include "lib/dgus/DGUSScreenHandler.h"
+
+#if ENABLED(DGUS_NG)
+  #include "extui/lib/dgus_ng/dgus.h"
+  using namespace dgus;
+#else
+  #include "extui/lib/dgus/DGUSDisplay.h"
+  #include "extui/lib/dgus/DGUSDisplayDef.h"
+  #include "extui/lib/dgus/DGUSScreenHandler.h"
+#endif
 
 extern const char NUL_STR[];
 
