@@ -1385,10 +1385,11 @@
 // Additional options for DGUS / DWIN displays
 //
 #if HAS_DGUS_LCD
-  //#define DEBUG_DGUSLCD                 // Enable DGUS display messages
   #define DGUS_SERIAL_PORT 3
   #define DGUS_BAUDRATE 115200
 
+  #define DGUS_NG                           // Enable refactored DGUS implementation. Currently only "origin" is supported.
+  //#define DEBUG_DGUSLCD                   // Enable DGUS display messages
   #if ENABLED(SPEAKER)                      // DGUS display must be in music player mode.
     #define DGUS_MUSIC_TONE_ID       131    // Music player mode, uint8_t: ID of audio file
     #define DGUS_MUSIC_TONE_SEGMENTS   1    // Music player mode, uint8_t: segments of audio file
