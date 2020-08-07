@@ -1,0 +1,1 @@
+private/clion-init.sh
