@@ -24,6 +24,8 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
+#if DISABLED(DGUS_NG)
+
 #if HAS_DGUS_LCD
 
 #if HOTENDS > 2
@@ -271,3 +273,5 @@ bool populate_VPVar(const uint16_t VP, DGUS_VP_Variable * const ramcopy) {
 }
 
 #endif // HAS_DGUS_LCD
+
+#endif // DISABLED(DGUS_NG)

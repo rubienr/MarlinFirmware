@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#if DISABLED(DGUS_NG)
+
 #include "DGUSDisplay.h"
 #include "DGUSVPVariable.h"
 
@@ -230,3 +232,5 @@ private:
 };
 
 extern DGUSScreenHandler ScreenHandler;
+
+#endif // DISABLED(DGUS_NG)

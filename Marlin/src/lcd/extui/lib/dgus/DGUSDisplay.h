@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#if DISABLED(DGUS_NG)
+
 /* DGUS implementation written by coldtobi in 2019 for Marlin */
 
 #include "../../../../inc/MarlinConfigPre.h"
@@ -115,3 +117,5 @@ extern const DGUS_VP_Variable* DGUSLCD_FindVPVar(const uint16_t vp);
 
 /// Helper to populate a DGUS_VP_Variable for a given VP. Return false if not found.
 extern bool populate_VPVar(const uint16_t VP, DGUS_VP_Variable * const ramcopy);
+
+#endif // DISABLED(DGUS_NG)
