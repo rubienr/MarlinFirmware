@@ -120,8 +120,16 @@ void handle_filament_move(DGUS_VP_Variable &var, void *val_ptr) {
 #if ENABLED(DEBUG_DGUSLCD)
   DEBUG_ECHOLNPGM("handle_filament_move");
 #endif
+  const uint8_t previous_extruder_id{cached_state.load_unload.extruder_id};
   static_assert(EXTRUDERS > 0, "Minimal one extruder neded.");
   *static_cast<uint16_t *>(var.memadr) = dgus::swap16(*static_cast<uint16_t *>(val_ptr));
+  const uint8_t current_extruder_id{cached_state.load_unload.extruder_id};
+
+  if (previous_extruder_id != current_extruder_id) {
+    char buf[8];
+    sprintf_P(buf, PSTR("T %d"), current_extruder_id);
+    GCodeQueue::enqueue_one_now(buf);
+  }
 
   handle_filament_load_unload();
   handle_filament_extrude_retract();
