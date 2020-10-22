@@ -54,7 +54,7 @@ void handle_homing_command(DGUS_VP_Variable &var, void *val_ptr) {
   char r{' '}, x{' '}, y{' '}, z{' '};
 
   if (cached_state.do_sync_z) {
-    GCodeQueue::enqueue_now_P(PSTR("G34"));
+    GCodeQueue::enqueue_now_P(PSTR("G34 E0"));
     cached_state.do_sync_z = 0;
     return;
   }
