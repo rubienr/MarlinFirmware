@@ -57,42 +57,42 @@
 // Limit Switches
 //
 #ifdef X_STALL_SENSITIVITY
-  #define X_STOP_PIN                  X_DIAG_PIN
+  #define X_STOP_PIN                        X_DIAG_PIN
   #if X_HOME_DIR < 0
     #ifndef X_MAX_PIN
-      #define X_MAX_PIN                       PE15  // E0
+      #define X_MAX_PIN                     PE15  // E0
     #endif
   #else
     #ifndef X_MIN_PIN
-      #define X_MIN_PIN                       PE15  // E0
+      #define X_MIN_PIN                     PE15  // E0
     #endif
   #endif
 #else
   #ifndef X_MIN_PIN
-    #define X_MIN_PIN                         PB10  // X-
+    #define X_MIN_PIN                       PB10  // X-
   #endif
   #ifndef X_MAX_PIN
-    #define X_MAX_PIN                         PE15  // E0
+    #define X_MAX_PIN                       PE15  // E0
   #endif
 #endif
 
 #ifdef Y_STALL_SENSITIVITY
-  #define Y_STOP_PIN                  Y_DIAG_PIN
+  #define Y_STOP_PIN                        Y_DIAG_PIN
   #if Y_HOME_DIR < 0
     #ifndef Y_MAX_PIN
-      #define Y_MAX_PIN                       PE10  // E1
+      #define Y_MAX_PIN                     PE10  // E1
     #endif
   #else
     #ifndef Y_MIN_PIN
-      #define Y_MIN_PIN                       PE10  // E1
+      #define Y_MIN_PIN                     PE10  // E1
     #endif
   #endif
 #else
   #ifndef Y_MIN_PIN
-    #define Y_MIN_PIN                         PE12  // Y-
+    #define Y_MIN_PIN                       PE12  // Y-
   #endif
   #ifndef Y_MAX_PIN
-    #define Y_MAX_PIN                         PE10  // E1
+    #define Y_MAX_PIN                       PE10  // E1
   #endif
 #endif
 
@@ -109,10 +109,10 @@
   #endif
 #else
   #ifndef Z_MIN_PIN
-    #define Z_MIN_PIN                         PG8   // Z-
+    #define Z_MIN_PIN                       PG8   // Z-
   #endif
   #ifndef Z_MAX_PIN
-    #define Z_MAX_PIN                         PG5   // E2
+    #define Z_MAX_PIN                       PG5   // E2
   #endif
 #endif
 
@@ -253,14 +253,15 @@
 //
 #define HEATER_0_PIN                        PB1   // Heater0
 #define HEATER_1_PIN                        PD14  // Heater1
-#define HEATER_2_PIN                        PB0   // Heater1
+//#define HEATER_2_PIN                        PB0   // Heater2
 #define HEATER_BED_PIN                      PD12  // Hotbed
 #define FAN_PIN                             PC8   // Fan0
 #define FAN1_PIN                            PE5   // Fan1
-#define FAN2_PIN                            PE6
+#define FAN2_PIN                            PE6   // Fan2
+#define FAN3_PIN                            PB0   // Fan3
 
 #ifndef E0_AUTO_FAN_PIN
-  #define E0_AUTO_FAN_PIN               FAN1_PIN
+  #define E0_AUTO_FAN_PIN                   FAN1_PIN
 #endif
 
 //
@@ -268,7 +269,7 @@
 //
 
 #ifndef SDCARD_CONNECTION
-  #define SDCARD_CONNECTION                  LCD
+  #define SDCARD_CONNECTION                 LCD
 #endif
 
 //
@@ -410,8 +411,8 @@
  *          -----
  *            W1
  */
-#define ESP_WIFI_MODULE_COM                    6  // Must also set either SERIAL_PORT or SERIAL_PORT_2 to this
-#define ESP_WIFI_MODULE_BAUDRATE        BAUDRATE  // Must use same BAUDRATE as SERIAL_PORT & SERIAL_PORT_2
+#define ESP_WIFI_MODULE_COM                 6         // Must also set either SERIAL_PORT or SERIAL_PORT_2 to this
+#define ESP_WIFI_MODULE_BAUDRATE            BAUDRATE  // Must use same BAUDRATE as SERIAL_PORT & SERIAL_PORT_2
 #define ESP_WIFI_MODULE_RESET_PIN           PG0
 #define ESP_WIFI_MODULE_ENABLE_PIN          PG1
 #define ESP_WIFI_MODULE_GPIO0_PIN           PF14
