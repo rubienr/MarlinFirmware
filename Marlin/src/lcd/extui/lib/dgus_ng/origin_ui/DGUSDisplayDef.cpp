@@ -252,6 +252,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
 #endif // ENABLED(DGUS_ORIGIN_TEMPERATURES)
 
 // hotends - enabled PID temp
+// TODO rubienr
 #if HOTENDS_XXX
 #if ENABLED(PIDTEMP)
 #define HOTENDS_VPHELPER(N)                                            \
@@ -319,7 +320,8 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM {
       VPHELPER(VP_E0_BED_PREHEAT, nullptr, &dgus::DGUSScreenVariableHandler::HandlePreheat, nullptr),
 #endif
 
-#if HAS_HEATED_BED
+// TODO rubienr
+#if HAS_HEATED_BED_XXX
 
 #if ENABLED(PIDTEMPBED)
       VPHELPER(VP_BED_PID_P,
