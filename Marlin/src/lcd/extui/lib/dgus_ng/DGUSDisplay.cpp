@@ -853,7 +853,7 @@ void DGUSScreenVariableHandler::HandleManualExtrude(DGUS_VP_Variable &var, void 
 #if HOTENDS >= 2
     case to_uint8_t(dgus::memory_layout::MoveE::E1):
       target_extruder = ExtUI::extruder_t::E1;
-      break
+      break;
 #endif
           default : return;
   }
@@ -1080,7 +1080,7 @@ void DGUSScreenVariableHandler::HandleStepPerMMExtruderChanged(DGUS_VP_Variable 
       break;
 #endif
 #if HOTENDS >= 2
-    case VP_E1_STEP_PER_MM:
+    case to_address(dgus::memory_layout::StepsPerMm::E1):
       extruder = ExtUI::extruder_t::E1;
       break;
 #endif
@@ -1159,12 +1159,13 @@ void DGUSScreenVariableHandler::HandlePIDAutotune(DGUS_VP_Variable &var, void *v
       break;
 #endif
 #if HOTENDS >= 2
-    case VP_PID_AUTOTUNE_E1:
+    case to_address(dgus::memory_layout::PidAutotune::E1):
       sprintf(buf, "M303 E%d C5 S210 U1", ExtUI::extruder_t::E1);
       break;
 #endif
 #endif
-#if ENABLED(PIDTEMPBED)
+// TODO rubienr
+#if ENABLED(PIDTEMPBED_XXX)
     case VP_PID_AUTOTUNE_BED:
       sprintf(buf, "M303 E-1 C5 S70 U1");
       break;
