@@ -22,6 +22,8 @@
 
 #include "../../../../inc/MarlinConfigPre.h"
 
+#if DISABLED(DGUS_NG)
+
 #if HAS_DGUS_LCD
 
 #include "DGUSScreenHandler.h"
@@ -1138,3 +1140,5 @@ void DGUSDisplay::RequestScreen(DGUSLCD_Screens screen) {
 }
 
 #endif // HAS_DGUS_LCD
+
+#endif // DISABLED(DGUS_NG)
