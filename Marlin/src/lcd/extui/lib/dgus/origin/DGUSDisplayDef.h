@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#if DISABLED(DGUS_NG)
+
 enum DGUSLCD_Screens : uint8_t {
   DGUSLCD_SCREEN_BOOT = 0,
   DGUSLCD_SCREEN_MAIN = 10,
@@ -278,3 +280,5 @@ constexpr uint16_t SP_T_E0_Set = 0x5010;
 constexpr uint16_t SP_T_E1_Is = 0x5020;
 constexpr uint16_t SP_T_Bed_Is = 0x5030;
 constexpr uint16_t SP_T_Bed_Set = 0x5040;
+
+#endif // DISABLED(DGUS_NG)

@@ -24,6 +24,8 @@
 
 #include "../../../../../inc/MarlinConfigPre.h"
 
+#if DISABLED(DGUS_NG)
+
 #if ENABLED(DGUS_LCD_UI_ORIGIN)
 
 #include "../DGUSDisplayDef.h"
@@ -308,3 +310,5 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
 };
 
 #endif // DGUS_LCD_UI_ORIGIN
+
+#endif // DISABLED(DGUS_NG)

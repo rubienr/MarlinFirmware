@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#if DISABLED(DGUS_NG)
+
 #include <stdint.h>
 
 /**
@@ -47,3 +49,5 @@ struct DGUS_VP_Variable {
     return *this;
   }
 };
+
+#endif // DISABLED(DGUS_NG)

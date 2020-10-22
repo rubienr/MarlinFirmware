@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#if DISABLED(DGUS_NG)
+
 /* DGUS implementation written by coldtobi in 2019 for Marlin */
 
 #include "DGUSVPVariable.h"
@@ -52,3 +54,5 @@ extern const struct DGUS_VP_Variable ListOfVP[];
 #elif ENABLED(DGUS_LCD_UI_HIPRECY)
   #include "hiprecy/DGUSDisplayDef.h"
 #endif
+
+#endif // DISABLED(DGUS_NG)
