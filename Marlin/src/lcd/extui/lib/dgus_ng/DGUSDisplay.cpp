@@ -97,7 +97,7 @@ uint8_t DGUSDisplay::rx_datagram_len = 0;
 bool DGUSDisplay::Initialized = false;
 bool DGUSDisplay::no_reentrance = false;
 
-#define dgusserial DGUS_SERIAL
+#define dgusserial LCD_SERIAL
 
 uint16_t swap16(const uint16_t value) {
   // clang-format off
@@ -1508,20 +1508,12 @@ void DGUSDisplay::loop() {
 }
 
 void DGUSDisplay::InitDisplay() {
-  dgusserial.begin(DGUS_BAUDRATE);
-
-  if (true
-#if ENABLED(POWER_LOSS_RECOVERY)
-      && !recovery.valid()
+#ifndef LCD_BAUDRATE
+  #define LCD_BAUDRATE 115200
 #endif
-  )
-    RequestScreen(
-#if ENABLED(SHOW_BOOTSCREEN)
-        DGUSLCD_SCREEN_BOOT
-#else
-        DGUSLCD_SCREEN_MAIN
-#endif
-    );
+  LCD_SERIAL.begin(LCD_BAUDRATE);
+  if (TERN1(POWER_LOSS_RECOVERY, !recovery.valid()))
+    RequestScreen(TERN(SHOW_BOOTSCREEN, DGUSLCD_SCREEN_BOOT, DGUSLCD_SCREEN_MAIN));
 }
 
 void DGUSDisplay::WriteVariable(uint16_t adr, const void *values, uint8_t valueslen, bool isstr) {
@@ -1717,7 +1709,7 @@ void DGUSDisplay::ProcessRx() {
   }
 }
 
-size_t DGUSDisplay::GetFreeTxBuffer() { return DGUS_SERIAL_GET_TX_BUFFER_FREE(); }
+size_t DGUSDisplay::GetFreeTxBuffer() { return SERIAL_GET_TX_BUFFER_FREE(); }
 
 void DGUSDisplay::WriteHeader(uint16_t adr, uint8_t cmd, uint8_t payloadlen) {
   dgusserial.write(DGUS_HEADER1);

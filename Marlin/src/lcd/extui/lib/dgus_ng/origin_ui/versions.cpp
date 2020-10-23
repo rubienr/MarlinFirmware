@@ -27,10 +27,10 @@
 namespace dgus_origin {
 namespace versions {
 
-const UiVersion ui_version{.version = {.major = 3, .minor = 1, .patch = 2, ._unused = 0}};
+const UiVersion ui_version{.version = {.major = 1, .minor = 0, .patch = 1, ._unused = 0}};
 
 #ifndef DGUS_FLAVOUR
-#define DGUS_FLAVOUR "DGUS Origin"
+#define DGUS_FLAVOUR "DGUS"
 #endif
 
 const UiFlavor ui_flavor PROGMEM{DGUS_FLAVOUR};

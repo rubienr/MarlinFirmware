@@ -38,10 +38,11 @@ extern CachedState cached_state;
 namespace {
 
 void update_homing_status_flags() {
-  cached_state.is_homed_x = (axes_need_homing(static_cast<uint8_t>(_BV(AxisEnum::X_AXIS))) != 0) ? 0 : 1;
-  cached_state.is_homed_y = (axes_need_homing(static_cast<uint8_t>(_BV(AxisEnum::Y_AXIS))) != 0) ? 0 : 1;
-  cached_state.is_homed_z = (axes_need_homing(static_cast<uint8_t>(_BV(AxisEnum::Z_AXIS))) != 0) ? 0 : 1;
-  cached_state.is_homed_all = (axes_need_homing() != 0) ? 0 : 1;
+  cached_state.is_homed_x = (axes_should_home(static_cast<uint8_t>(_BV(AxisEnum::X_AXIS))) == 0) ? 1 : 0;
+  cached_state.is_homed_y = (axes_should_home(static_cast<uint8_t>(_BV(AxisEnum::Y_AXIS))) == 0) ? 1 : 0;
+  cached_state.is_homed_z = (axes_should_home(static_cast<uint8_t>(_BV(AxisEnum::Z_AXIS))) == 0) ? 1 : 0;
+  cached_state.is_homed_all =
+      cached_state.is_homed_x != 0 && cached_state.is_homed_y != 0 && cached_state.is_homed_z != 0;
 }
 
 } // namespace
