@@ -139,6 +139,7 @@
   #define SERVO2_PIN      PF8  // Extension 1
   #define SUICIDE_PIN_INVERTING false
   #define FLASH_EEPROM_EMULATION
+  #define BEEPER_PIN      PG4  // hotfix to enable M300 so that sound can beplayed by display
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -1771,7 +1772,7 @@
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.
  */
-//#define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: SPI SPEED
@@ -2244,7 +2245,7 @@
 //#define EXTENSIBLE_UI
 
 #if ENABLED(EXTENSIBLE_UI)
-  //#define EXTUI_LOCAL_BEEPER // Enables use of local Beeper pin with external display
+  #define EXTUI_LOCAL_BEEPER // Enables use of local Beeper pin with external display
 #endif
 
 //=============================================================================

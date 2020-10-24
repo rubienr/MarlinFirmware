@@ -1276,7 +1276,7 @@
   /**
    * Auto-report SdCard status with M27 S<seconds>
    */
-  //#define AUTO_REPORT_SD_STATUS
+  #define AUTO_REPORT_SD_STATUS
 
   /**
    * Support for USB thumb drives using an Arduino USB Host Shield or
@@ -1327,7 +1327,7 @@
   #endif
 
   // Add an optimized binary file transfer mode, initiated with 'M28 B1'
-  //#define BINARY_FILE_TRANSFER
+  #define BINARY_FILE_TRANSFER
 
   /**
    * Set this option to one of the following (or the board's defaults apply):
@@ -1339,7 +1339,7 @@
    * :[ 'LCD', 'ONBOARD', 'CUSTOM_CABLE' ]
    */
   //#define SDCARD_CONNECTION LCD
-
+#define SDCARD_CONNECTION ONBOARD
 #endif // SDSUPPORT
 
 /**
@@ -1448,12 +1448,21 @@
   #define DGUS_NG                           // Enable refactored DGUS implementation. Currently only "origin" is supported.
   //#define DEBUG_DGUSLCD                   // Enable DGUS display messages
   #if ENABLED(SPEAKER)                      // DGUS display must be in music player mode.
-    #define DGUS_MUSIC_TONE_ID       131    // Music player mode, uint8_t: ID of audio file
-    #define DGUS_MUSIC_TONE_SEGMENTS   1    // Music player mode, uint8_t: segments of audio file
-    #define DGUS_MUSIC_TONE_VOLUME  0x40    // Music player mode, uint8_t: volume, 0x40 = 100%
+
+    #define DGUS_MUSIC_INFO_TONE_ID       131    // Music player mode, uint8_t: ID of audio file
+    #define DGUS_MUSIC_INFO_TONE_SEGMENTS   1    // Music player mode, uint8_t: segments of audio file to play
+    #define DGUS_MUSIC_INFO_TONE_VOLUME  0x40    // Music player mode, uint8_t: volume, 0x40 = 100%
+
+    #define DGUS_MUSIC_FAIL_TONE_ID       132    // Music player mode, uint8_t: ID of audio file
+    #define DGUS_MUSIC_FAIL_TONE_SEGMENTS   2    // Music player mode, uint8_t: segments of audio file to play
+    #define DGUS_MUSIC_FAIL_TONE_VOLUME  0x40    // Music player mode, uint8_t: volume, 0x40 = 100%
+
   #else                                     // Dgus display must be in buzzer mode.
-    #define DGUS_BUZZER_TONE_DURATION 10    // Buzzer mode, uint8_t: tone duration in 8ms steps
-    #define DGUS_BUZZER_TONE_VOLUME 0x40    // Buzzer mode, uint8_t: volume, 0x40 = 100%
+    #define DGUS_BUZZER_INFO_TONE_DURATION 100    // Buzzer mode, uint8_t: tone duration in ms
+    #define DGUS_BUZZER_INFO_TONE_VOLUME   0x40   // Buzzer mode, uint8_t: volume, 0x40 = 100%
+
+    #define DGUS_BUZZER_FAIL_TONE_DURATION 200    // Buzzer mode, uint8_t: tone duration in ms
+    #define DGUS_BUZZER_FAIL_TONE_VOLUME   0x40   // Buzzer mode, uint8_t: volume, 0x40 = 100%
   #endif
 
   #if EITHER(DGUS_LCD_UI_FYSETC, DGUS_LCD_UI_HIPRECY)

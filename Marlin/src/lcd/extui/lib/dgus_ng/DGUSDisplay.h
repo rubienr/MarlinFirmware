@@ -314,17 +314,17 @@ static void HandleHeaterControl(DGUS_VP_Variable &var, void *val_ptr);*/
    * @param sections_count total amount of sections occupied of audio file
    * @param volume 1/64 steps, 0x40 is 100%
    */
-  static void playToneSpeaker(uint8_t start_section = DGUS_MUSIC_TONE_ID,
-                              uint8_t sections_count = DGUS_MUSIC_TONE_SEGMENTS,
-                              uint8_t volume = DGUS_MUSIC_TONE_VOLUME);
+  static void playToneSpeaker(uint8_t start_section = DGUS_MUSIC_INFO_TONE_ID,
+                              uint8_t sections_count = DGUS_MUSIC_INFO_TONE_SEGMENTS,
+                              uint8_t volume = DGUS_MUSIC_INFO_TONE_VOLUME);
 #else
   /**
    * Beeps if display is in buzzer mode.
    * @param time_times_8ms
    * @param volume 1/64 steps, 0x40 is 100%
    */
-  static void playToneBuzzer(uint8_t time_times_8ms = DGUS_BUZZER_TONE_DURATION,
-                             uint8_t volume = DGUS_BUZZER_TONE_VOLUME);
+  static void playToneBuzzer(uint8_t duration_ms = DGUS_BUZZER_INFO_TONE_DURATION,
+                             uint8_t volume = DGUS_BUZZER_INFO_TONE_VOLUME);
 #endif
 
   // Helpers to convert and transfer data to the display.

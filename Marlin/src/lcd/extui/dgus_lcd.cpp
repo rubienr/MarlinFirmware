@@ -43,6 +43,26 @@
 
 extern const char NUL_STR[];
 
+namespace {
+
+  void playToneError() {
+  #if ENABLED(SPEAKER)
+    ScreenHandler.playToneSpeaker(DGUS_MUSIC_FAIL_TONE_ID, DGUS_MUSIC_FAIL_TONE_SEGMENTS, DGUS_MUSIC_FAIL_TONE_VOLUME);
+  #else
+    ScreenHandler.playToneBuzzer(DGUS_BUZZER_FAIL_TONE_DURATION, DGUS_BUZZER_FAIL_TONE_VOLUME);
+  #endif
+  }
+
+  void playToneInfo() {
+  #if ENABLED(SPEAKER)
+    ScreenHandler.playToneSpeaker(DGUS_MUSIC_INFO_TONE_ID, DGUS_MUSIC_INFO_TONE_SEGMENTS, DGUS_MUSIC_INFO_TONE_VOLUME);
+  #else
+    ScreenHandler.playToneBuzzer(DGUS_BUZZER_INFO_TONE_DURATION, DGUS_BUZZER_INFO_TONE_VOLUME);
+  #endif
+  }
+
+} // namespace
+
 namespace ExtUI {
 
   void onStartup() {
@@ -53,22 +73,33 @@ namespace ExtUI {
   void onIdle() { ScreenHandler.loop(); }
 
   void onPrinterKilled(PGM_P const error, PGM_P const component) {
+    playToneError();
     ScreenHandler.sendinfoscreen(GET_TEXT(MSG_HALTED), error, NUL_STR, GET_TEXT(MSG_PLEASE_RESET), true, true, true, true);
     ScreenHandler.GotoScreen(DGUSLCD_SCREEN_KILL);
     while (!ScreenHandler.loop());  // Wait while anything is left to be sent
   }
 
-  void onMediaInserted() { TERN_(SDSUPPORT, ScreenHandler.SDCardInserted()); }
-  void onMediaError()    { TERN_(SDSUPPORT, ScreenHandler.SDCardError()); }
-  void onMediaRemoved()  { TERN_(SDSUPPORT, ScreenHandler.SDCardRemoved()); }
+  void onMediaInserted() {
+    TERN_(SDSUPPORT, playToneInfo());
+    TERN_(SDSUPPORT, ScreenHandler.SDCardInserted());
+  }
+  void onMediaError()    {
+    TERN_(SDSUPPORT, ScreenHandler.SDCardError());
+    TERN_(SDSUPPORT, playToneError());
+  }
+  void onMediaRemoved()  {
+    TERN_(SDSUPPORT, playToneInfo());
+    TERN_(SDSUPPORT, ScreenHandler.SDCardRemoved());
+  }
 
-  void onPlayTone(const uint16_t frequency, const uint16_t duration) {}
+  void onPlayTone(const uint16_t frequency, const uint16_t duration) { playToneInfo(); }
   void onPrintTimerStarted() {}
   void onPrintTimerPaused() {}
   void onPrintTimerStopped() {}
   void onFilamentRunout(const extruder_t extruder) {}
 
   void onUserConfirmRequired(const char * const msg) {
+    playToneInfo();
     if (msg) {
       ScreenHandler.sendinfoscreen(PSTR("Please confirm."), nullptr, msg, nullptr, true, true, false, true);
       ScreenHandler.SetupConfirmAction(ExtUI::setUserConfirmed);
