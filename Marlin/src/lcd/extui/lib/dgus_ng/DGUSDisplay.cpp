@@ -316,13 +316,16 @@ void DGUSScreenVariableHandler::playToneSpeaker(uint8_t start_section, uint8_t s
   DGUSDisplay::write_variable(0xa0, &audio_command, 4);
 }
 #else
-void DGUSScreenVariableHandler::playToneBuzzer(uint8_t time_times_8ms, uint8_t volume) {
+void DGUSScreenVariableHandler::playToneBuzzer(uint8_t duration_ms, uint8_t volume) {
   struct {
     uint8_t _pad;
     uint8_t buzz_time_times_8ms;
     uint8_t volume;
     uint8_t playback_status;
-  } audio_command{._pad = 0, .buzz_time_times_8ms = time_times_8ms, .volume = volume, .playback_status = 0x02};
+  } audio_command {
+    ._pad = 0, .buzz_time_times_8ms = (duration_ms > 0 ? (duration_ms + 8) : 0) / 8;
+    , .volume = volume, .playback_status = 0x02
+  };
   DGUSDisplay::WriteVariable(0xa0, &audio_command, 4);
 }
 #endif
@@ -855,7 +858,8 @@ void DGUSScreenVariableHandler::HandleManualExtrude(DGUS_VP_Variable &var, void 
       target_extruder = ExtUI::extruder_t::E1;
       break;
 #endif
-          default : return;
+    default:
+      return;
   }
 
   target += ExtUI::getAxisPosition_mm(target_extruder);
@@ -1509,7 +1513,7 @@ void DGUSDisplay::loop() {
 
 void DGUSDisplay::InitDisplay() {
 #ifndef LCD_BAUDRATE
-  #define LCD_BAUDRATE 115200
+#define LCD_BAUDRATE 115200
 #endif
   LCD_SERIAL.begin(LCD_BAUDRATE);
   if (TERN1(POWER_LOSS_RECOVERY, !recovery.valid()))
