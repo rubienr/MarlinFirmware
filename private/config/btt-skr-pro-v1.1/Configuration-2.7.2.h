@@ -773,7 +773,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 30, 1500 }
+#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 30, 20 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -786,7 +786,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 5000, 5000, 100, 15000 }
+#define DEFAULT_MAX_ACCELERATION      { 5000, 5000, 100, 3000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -802,7 +802,7 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION   15000    // E acceleration for retracts
+#define DEFAULT_RETRACT_ACCELERATION   1000    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION    2000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
@@ -830,7 +830,7 @@
 #if ENABLED(CLASSIC_JERK)
   #define DEFAULT_EJERK    5    // May be used by Linear Advance
 #else
-  #define DEFAULT_EJERK    1  // May be used by Linear Advance
+  #define DEFAULT_EJERK    0.1 //1  // May be used by Linear Advance
 #endif
 
 /**
@@ -1019,7 +1019,7 @@
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 5
+#define PROBING_MARGIN 7
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_SPEED (500*60)
@@ -1064,7 +1064,6 @@
 #define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
 
 // For M851 give a range for adjusting the Z probe offset
-// TODO rubienr: should be +- 4 mm
 #define Z_PROBE_OFFSET_RANGE_MIN -4
 #define Z_PROBE_OFFSET_RANGE_MAX -1
 
@@ -1151,19 +1150,45 @@
 
 // @section machine
 
-// The size of the print bed
-// TODO rubienr: corresponds to max x/y axis travel, not to bed size
-#define X_BED_SIZE 369
-#define Y_BED_SIZE 370 // +28 => axis total length
+// Axis vs. real bed geometry (tool 0) vs. virtual bed placement of Marlin:
+// Assume we have a non centered bed that does not completely overlap with the axis travel (is out of possible travel),
+// and we want the front left corner to be the origin.
+// => We must specify a smaller width/length geometry that fits within the axis geometry.
+// A consequence of this is that the automatic calculated UBL mesh boundary will loose a few reachable mesh points.
+// In that case the last columt near max_x are lost.
+//
+//                              real bed     ↙(394,390)
+//
+//                           +←──────377──────→+ real bed width
+//                           +←───369──→+       396 = X_MAX_POS - X_MIN_POS = max possible bed width
+// y_max_pos=390 → +         ┌──────────┬──────┐
+//                 ↑         │  Marlin  │ real ↑
+//                 ┆         │          │      │ ← bed_y_max_pos=370
+//                 ┆         ↑ computed │ bed 370
+//               y-axis     370         │      │
+//                 ┆         ↓   bed    │      ↓
+//                 ┆         └──────────┴──────┘
+//                 ↓  (0,0)↗
+//  y_min_pos=-8 → +           +←┄┄┄x-axis┄┄┄┄→+
+//                             ↑ x_min_pos=25 ↑ x_max_pos=394
+//             bed_min_pos=0 ↑          ↑ x_bed_max_pos=377
+
+#define X_BED_SIZE 369 // maximum bed size allowed withing x-travel
+#define Y_BED_SIZE 370 // real bed size
+
+// real bed positions
+#define X_BED_MIN_POS 25
+#define Y_BED_MIN_POS 0
+#define X_BED_MAX_POS 377
+#define Y_BED_MAX_POS 370
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-// TODO rubienr (x,y)=(0,0) corresponds to bed corner
 #define X_MIN_POS  25
 #define Y_MIN_POS -8
 #define Z_MIN_POS  0
-#define X_MAX_POS  X_BED_SIZE + X_MIN_POS
-#define Y_MAX_POS  Y_BED_SIZE + 28 + Y_MIN_POS
-#define Z_MAX_POS  425        + Z_MIN_POS
+#define X_MAX_POS  394
+#define Y_MAX_POS  390
+#define Z_MAX_POS  432
 
 /**
  * Software Endstops
@@ -1345,9 +1370,9 @@
 
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
-  #define MESH_INSET       15       // Set Mesh bounds as an inset region of the bed
-  #define GRID_MAX_POINTS_X 7       // Don't use more than 15 points per axis, implementation limited.
-  #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
+  #define MESH_INSET        7       // Set Mesh bounds as an inset region of the bed
+  #define GRID_MAX_POINTS_X 8       // Don't use more than 15 points per axis, implementation limited.
+  #define GRID_MAX_POINTS_Y 8
 
   //#define UBL_MESH_EDIT_MOVES_Z     // Sophisticated users prefer no movement of nozzle
   #define UBL_SAVE_ACTIVE_ON_M500   // Save the currently active mesh in the current slot on M500
