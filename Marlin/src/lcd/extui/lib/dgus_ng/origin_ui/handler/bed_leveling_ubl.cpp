@@ -74,7 +74,7 @@ void handle_request_flags() {
     cached_state.request_flags.disable_ubl = 0;
   }
 
-  // --- load mesh from slot ---
+  // --- load mesh from slot in EEPROM ---
 
   if (cached_state.request_flags.load_mesh) {
 #if ENABLED(DEBUG_DGUSLCD)
@@ -100,26 +100,25 @@ void handle_request_flags() {
 #endif // HAS_LEVELING
     cached_state.request_flags.load_mesh = 0;
 
-    // --- save mesh to slot ---
-
-    if (cached_state.request_flags.save_mesh) {
+    // --- save mesh to slot in EEPROM ---
+  }
+  if (cached_state.request_flags.save_mesh) {
 #if ENABLED(DEBUG_DGUSLCD)
-      DEBUG_ECHOLNPGM("handle_request_flags: save mesh");
+    DEBUG_ECHOLNPGM("handle_request_flags: save mesh");
 #endif
 
-      const uint8_t fade_height_mm_tenth = static_cast<uint8_t>(cached_state.fade_height_slot_number.fade_height);
-      const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_tenth / 10U);
-      const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_tenth % 10U);
-      char buf[20];
+    const uint8_t fade_height_mm_tenth = static_cast<uint8_t>(cached_state.fade_height_slot_number.fade_height);
+    const uint8_t fade_height_mm = static_cast<uint8_t>(fade_height_mm_tenth / 10U);
+    const uint8_t fade_height_mm_fraction = static_cast<uint8_t>(fade_height_mm_tenth % 10U);
+    char buf[20];
 
-      sprintf_P(buf, PSTR("M420 Z%d.%d"), fade_height_mm, fade_height_mm_fraction);
-      GCodeQueue::enqueue_one_now(buf);
+    sprintf_P(buf, PSTR("M420 Z%d.%d"), fade_height_mm, fade_height_mm_fraction);
+    GCodeQueue::enqueue_one_now(buf);
 
-      sprintf_P(buf, PSTR("G29 S%d"), cached_state.fade_height_slot_number.slot_number);
-      GCodeQueue::enqueue_one_now(buf);
+    sprintf_P(buf, PSTR("G29 S%d"), cached_state.fade_height_slot_number.slot_number);
+    GCodeQueue::enqueue_one_now(buf);
 
-      cached_state.request_flags.start_ubl = 0;
-    }
+    cached_state.request_flags.save_mesh = 0;
   }
 
   // --- z fade-height changed ---
@@ -145,7 +144,7 @@ void handle_request_flags() {
     DEBUG_ECHOLNPGM("handle_request_flags: slot selection changed");
 #endif
     cached_state.request_flags.slot_changed = 0;
-    cached_state.request_flags.load_mesh = 1;
+    //cached_state.request_flags.load_mesh = 1;
     handle_request_flags();
   }
 }
