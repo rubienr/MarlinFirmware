@@ -802,7 +802,7 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION   1000    // E acceleration for retracts
+#define DEFAULT_RETRACT_ACCELERATION    100    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION    2000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
@@ -841,7 +841,8 @@
  *   https://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.013 // (mm) Distance from real junction edge
+  //#define JUNCTION_DEVIATION_MM 0.013 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.020 // (mm) Distance from real junction edge
   #define JD_HANDLE_SMALL_SEGMENTS    // Use curvature estimation instead of just the junction angle
                                       // for small segments (< 1mm) with large junction angles (> 135°).
 #endif
@@ -1329,7 +1330,7 @@
     #define MESH_TEST_LAYER_HEIGHT   0.2  // (mm) Default layer height for the G26 Mesh Validation Tool.
     #define MESH_TEST_HOTEND_TEMP  210    // (°C) Default nozzle temperature for the G26 Mesh Validation Tool.
     #define MESH_TEST_BED_TEMP      50    // (°C) Default bed temperature for the G26 Mesh Validation Tool.
-    #define G26_XY_FEEDRATE      20000    // (mm/s) Feedrate for XY Moves for the G26 Mesh Validation Tool.
+    #define G26_XY_FEEDRATE        100    // (mm/s) Feedrate for XY Moves for the G26 Mesh Validation Tool.
     #define G26_RETRACT_MULTIPLIER   1.0  // G26 Q (retraction) used by default between mesh test elements.
   #endif
 
