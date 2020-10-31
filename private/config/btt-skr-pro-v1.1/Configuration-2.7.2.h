@@ -130,9 +130,10 @@
   #define MOTHERBOARD BOARD_BTT_SKR_PRO_V1_1
   #define X_MAX_PIN       PB10 // use X- pin
   #define Y_MAX_PIN       PE12 // use Y- pin
+  #define Z_MAX_PIN       PG5  // use Y- pin
   #define FIL_RUNOUT_PIN  PE15 // E0 aka X+ pin
   #define FIL_RUNOUT2_PIN PE10 // E1 aka Y+ pin
-  #define FIL_RUNOUT3_PIN PB5  // E2 aka Z+ pin
+  //#define FIL_RUNOUT3_PIN PB5  // E2 aka Z+ pin
   #define PS_ON_PIN       PD0  // Extension 2
   #define CASE_LIGHT_PIN  PE4  // Extension 2
   #define SERVO1_PIN      PC9  // Extension 1
@@ -639,7 +640,7 @@
 #define USE_ZMIN_PLUG
 #define USE_XMAX_PLUG
 #define USE_YMAX_PLUG
-//#define USE_ZMAX_PLUG
+#define USE_ZMAX_PLUG
 
 // Enable pullup for all endstops to prevent a floating state
 #define ENDSTOPPULLUPS
@@ -726,10 +727,10 @@
  * :[2,3,4,5,6,7]
  */
 // TODO rubienr: 100nF parallel to switch is too less -> test with additional 100nF on the board 
-#define ENDSTOP_NOISE_THRESHOLD 2
+//#define ENDSTOP_NOISE_THRESHOLD 2
 
 // Check for stuck or disconnected endstops during homing moves.
-//#define DETECT_BROKEN_ENDSTOP
+#define DETECT_BROKEN_ENDSTOP
 
 //=============================================================================
 //============================== Movement Settings ============================
@@ -802,7 +803,7 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION    100    // E acceleration for retracts
+#define DEFAULT_RETRACT_ACCELERATION    500    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION    2000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
