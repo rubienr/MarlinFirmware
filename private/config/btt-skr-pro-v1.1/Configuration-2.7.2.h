@@ -1030,7 +1030,7 @@
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 4)
+#define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 3)
 
 /**
  * Multiple Probing
@@ -1041,8 +1041,8 @@
  * A total of 2 does fast/slow probes with a weighted average.
  * A total of 3 or more adds more slow probes, taking the average.
  */
-#define MULTIPLE_PROBING 2
-//#define EXTRA_PROBING    1
+#define MULTIPLE_PROBING 3
+#define EXTRA_PROBING    1
 
 /**
  * Z probes require clearance when deploying, stowing, and moving between
@@ -1070,7 +1070,7 @@
 #define Z_PROBE_OFFSET_RANGE_MAX -1
 
 // Enable the M48 repeatability test to test probe accuracy
-//#define Z_MIN_PROBE_REPEATABILITY_TEST
+#define Z_MIN_PROBE_REPEATABILITY_TEST
 
 // Before deploy/stow pause for user confirmation
 //#define PAUSE_BEFORE_DEPLOY_STOW
@@ -1142,7 +1142,7 @@
 //#define Z_HOMING_HEIGHT  10     // (mm) Minimal Z height before homing (G28) for Z clearance above the bed, clamps, ...
                                   // Be sure to have this much clearance over your Z_MAX_POS to prevent grinding.
 
-#define Z_AFTER_HOMING   17       // (mm) Height to move to after homing Z
+#define Z_AFTER_HOMING   15       // (mm) Height to move to after homing Z
 
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
@@ -1151,44 +1151,14 @@
 #define Z_HOME_DIR -1
 
 // @section machine
-
-// Axis vs. real bed geometry (tool 0) vs. virtual bed placement of Marlin:
-// Assume we have a non centered bed that does not completely overlap with the axis travel (is out of possible travel),
-// and we want the front left corner to be the origin.
-// => We must specify a smaller width/length geometry that fits within the axis geometry.
-// A consequence of this is that the automatic calculated UBL mesh boundary will loose a few reachable mesh points.
-// In that case the last columt near max_x are lost.
-//
-//                              real bed     ↙(394,390)
-//
-//                           +←──────377──────→+ real bed width
-//                           +←───369──→+       396 = X_MAX_POS - X_MIN_POS = max possible bed width
-// y_max_pos=390 → +         ┌──────────┬──────┐
-//                 ↑         │  Marlin  │ real ↑
-//                 ┆         │          │      │ ← bed_y_max_pos=370
-//                 ┆         ↑ computed │ bed 370
-//               y-axis     370         │      │
-//                 ┆         ↓   bed    │      ↓
-//                 ┆         └──────────┴──────┘
-//                 ↓  (0,0)↗
-//  y_min_pos=-8 → +           +←┄┄┄x-axis┄┄┄┄→+
-//                             ↑ x_min_pos=25 ↑ x_max_pos=394
-//             bed_min_pos=0 ↑          ↑ x_bed_max_pos=377
-
-#define X_BED_SIZE 369 // maximum bed size allowed withing x-travel
-#define Y_BED_SIZE 370 // real bed size
-
-// real bed positions
-#define X_BED_MIN_POS 25
-#define Y_BED_MIN_POS 0
-#define X_BED_MAX_POS 377
-#define Y_BED_MAX_POS 370
+#define X_BED_SIZE 377.0
+#define Y_BED_SIZE 370.0
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS  25
+#define X_MIN_POS  2
 #define Y_MIN_POS -8
 #define Z_MIN_POS  0
-#define X_MAX_POS  394
+#define X_MAX_POS  410
 #define Y_MAX_POS  390
 #define Z_MAX_POS  432
 
@@ -1308,7 +1278,7 @@
  * Turn on with the command 'M111 S32'.
  * NOTE: Requires a lot of PROGMEM!
  */
-//#define DEBUG_LEVELING_FEATURE
+#define DEBUG_LEVELING_FEATURE
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR, AUTO_BED_LEVELING_UBL)
   // Gradually reduce leveling correction until a set height is reached,
@@ -1372,7 +1342,7 @@
 
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
-  #define MESH_INSET        7       // Set Mesh bounds as an inset region of the bed
+  #define MESH_INSET        0       // Set Mesh bounds as an inset region of the bed
   #define GRID_MAX_POINTS_X 8       // Don't use more than 15 points per axis, implementation limited.
   #define GRID_MAX_POINTS_Y 8
 
@@ -1563,12 +1533,12 @@
 // Preheat Constants
 #define PREHEAT_1_LABEL       "Stdby"
 #define PREHEAT_1_TEMP_HOTEND 175
-#define PREHEAT_1_TEMP_BED     50
+#define PREHEAT_1_TEMP_BED     60
 #define PREHEAT_1_FAN_SPEED   255 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL       "Print"
 #define PREHEAT_2_TEMP_HOTEND 210
-#define PREHEAT_2_TEMP_BED     50
+#define PREHEAT_2_TEMP_BED     60
 #define PREHEAT_2_FAN_SPEED   255 // Value from 0 to 255
 
 /**
@@ -1799,7 +1769,7 @@
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.
  */
-#define SDSUPPORT
+//#define SDSUPPORT
 
 /**
  * SD CARD: SPI SPEED
@@ -2486,7 +2456,7 @@
 // (ms) Delay  before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
 // If the servo can't reach the requested position, increase it.
-#define SERVO_DELAY { 300, 300, 300 }
+#define SERVO_DELAY { 150, 150, 150 } // 0 - BLTouch, 1 - first nozzle , 2 - seond nozzle
 
 // Only power servos during movement, otherwise leave off to prevent jitter
 #define DEACTIVATE_SERVOS_AFTER_MOVE
