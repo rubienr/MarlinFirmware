@@ -128,8 +128,8 @@
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
   #define MOTHERBOARD BOARD_BTT_SKR_PRO_V1_1
-  #define X_MAX_PIN       PB10 // use X- pin
-  #define Y_MAX_PIN       PE12 // use Y- pin
+  //#define X_MAX_PIN       PB10 // use X- pin; disabled for sensorless homing feature with TMC2130
+  //#define Y_MAX_PIN       PE12 // use Y- pin; disabled for sensorless homing feature with TMC2130
   #define Z_MAX_PIN       PG5  // use Y- pin
   #define FIL_RUNOUT_PIN  PE15 // E0 aka X+ pin
   #define FIL_RUNOUT2_PIN PE10 // E1 aka Y+ pin
@@ -345,7 +345,7 @@
   #define PSU_ACTIVE_STATE HIGH      // Set 'LOW' for ATX, 'HIGH' for X-Box
 
   #define PSU_DEFAULT_OFF          // Keep power off until enabled directly with M80
-  #define PSU_POWERUP_DELAY 5000   // (ms) Delay for the PSU to warm up to full power
+  #define PSU_POWERUP_DELAY 2000   // (ms) Delay for the PSU to warm up to full power
 
   #define AUTO_POWER_CONTROL       // Enable automatic control of the PS_ON pin
   #if ENABLED(AUTO_POWER_CONTROL)
@@ -635,10 +635,10 @@
 // Specify here all the endstop connectors that are connected to any endstop or probe.
 // Almost all printers will be using one per axis. Probes will use one or more of the
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
-//#define USE_XMIN_PLUG
+#define USE_XMIN_PLUG
 //#define USE_YMIN_PLUG
 #define USE_ZMIN_PLUG
-#define USE_XMAX_PLUG
+//#define USE_XMAX_PLUG
 #define USE_YMAX_PLUG
 #define USE_ZMAX_PLUG
 
@@ -693,16 +693,16 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-//#define X_DRIVER_TYPE  A4988
-//#define Y_DRIVER_TYPE  A4988
-//#define Z_DRIVER_TYPE  A4988
+#define X_DRIVER_TYPE  TMC2130
+#define Y_DRIVER_TYPE  TMC2130
+#define Z_DRIVER_TYPE  TMC2130
 //#define X2_DRIVER_TYPE A4988
 //#define Y2_DRIVER_TYPE A4988
-//#define Z2_DRIVER_TYPE A4988
+#define Z2_DRIVER_TYPE TMC2130
 //#define Z3_DRIVER_TYPE A4988
 //#define Z4_DRIVER_TYPE A4988
-//#define E0_DRIVER_TYPE A4988
-//#define E1_DRIVER_TYPE A4988
+#define E0_DRIVER_TYPE TMC2130
+//#define E1_DRIVER_TYPE TMC2130
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
@@ -762,19 +762,29 @@
 // circumference    c = πd
 //
 // X/Y steps example: steps per revolution s=200, microstepping m=16, effective gear circumference c=40.00
-//   sm/c =  80.0
-// Z steps example: steps per revolution s=200, microstepping m=16, effective spindle thread distance d= 4.00
-//   sm/d    = 80
+//   sm/c = 80.0
+// Z steps example: steps per revolution s=200, microstepping m=16, effective spindle thread distance d=4.00
+//   sm/d = 800.0
 // E steps example: steps per revolution s=200, microstepping m=16, effective gear diameter d= 7.22
 //   sm/(πd) = 144.1
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 800, 125 }
+
+#define MY_X_MICROSTEPS 8
+#define MY_Y_MICROSTEPS 8
+#define MY_Z_MICROSTEPS 8
+#define MY_E_MICROSTEPS 8
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { \
+    ((200.0*MY_X_MICROSTEPS)/40.0), \
+    ((200.0*MY_Y_MICROSTEPS)/40.0),        \
+    ((200.0*MY_Z_MICROSTEPS)/4.0),         \
+    (((200.0*MY_E_MICROSTEPS)/(3.1412 * 7.22)) * 0.886) } // TODO: 0.886 experimental extrusion factor
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 30, 20 }
+//#define DEFAULT_MAX_FEEDRATE        { 1500, 1500, 30, 20 } // A4988
+#define DEFAULT_MAX_FEEDRATE          { 400, 2400, 20, 20 }  // TMC2130
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -787,7 +797,8 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 5000, 5000, 100, 3000 }
+//#define DEFAULT_MAX_ACCELERATION    { 5000, 5000, 100, 3000 } // A4988
+#define DEFAULT_MAX_ACCELERATION      { 2000, 2000, 50, 3000 }  // TMC2130
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -803,8 +814,10 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION    500    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION    2000    // X, Y, Z acceleration for travel (non printing) moves
+//#define DEFAULT_RETRACT_ACCELERATION  500    // TODO A4988;   E acceleration for retracts
+#define DEFAULT_RETRACT_ACCELERATION     50    // TODO TMC2130; E acceleration for retracts
+//#define DEFAULT_TRAVEL_ACCELERATION  2000    // TODO A4988;   X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_TRAVEL_ACCELERATION    2500    // TODO TMC2130; X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -1017,7 +1030,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.00 }
+#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.06 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1112,21 +1125,22 @@
 // @section extruder
 
 #define DISABLE_E false             // Disable the extruder when not stepping
-#define DISABLE_INACTIVE_EXTRUDER   // Keep only the active extruder enabled
+// TODO rubienr: recheck DISABLE_INACTIVE_EXTRUDER
+//#define DISABLE_INACTIVE_EXTRUDER   // Keep only the active extruder enabled
 
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR false
-#define INVERT_Y_DIR true
-#define INVERT_Z_DIR true
+#define INVERT_X_DIR true
+#define INVERT_Y_DIR false
+#define INVERT_Z_DIR false
 
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR true
+#define INVERT_E0_DIR false
 #define INVERT_E1_DIR false
-#define INVERT_E2_DIR true
+#define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
 #define INVERT_E4_DIR false
 #define INVERT_E5_DIR false
@@ -1146,7 +1160,7 @@
 
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
-#define X_HOME_DIR  1
+#define X_HOME_DIR -1
 #define Y_HOME_DIR  1
 #define Z_HOME_DIR -1
 
