@@ -1,0 +1,55 @@
+Language: Cpp
+IndentWidth: 2
+ColumnLimit: 120
+UseTab: Never
+Standard: Latest
+UseCRLF: false
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterExternBlock: false
+  AfterObjCDeclaration: true
+  AfterFunction: false
+  AfterCaseLabel: false
+  AfterClass:  false
+  AfterStruct: false
+  AfterUnion: false
+  AfterEnum: false
+  AfterControlStatement: false
+  AfterNamespace: false
+  BeforeElse: false
+
+IndentCaseBlocks: false
+IndentCaseLabels: true
+# IndentPPDirectives enable artistic style once it is working so that macros are aligned as follows
+#void myFunction() {
+#  if (myCondition == 0) {
+#    #ifdef PETER_PARKER
+#      slingWeb(100);
+#    #else
+#      findPhoneBooth();
+#    #endif
+#  }
+#}
+IndentPPDirectives: None
+
+
+PointerAlignment: Right
+ReflowComments: true
+
+CompactNamespaces: false
+FixNamespaceComments: true
+
+SpaceAfterCStyleCast: false
+SpacesInCStyleCastParentheses: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+
+AlignTrailingComments: true
+AlignEscapedNewlines: Left
+
+BinPackArguments: false
+BinPackParameters: false
+
+SortIncludes: false
