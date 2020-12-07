@@ -1,1 +1,1 @@
-../private/config/btt-skr-pro-v1.1/Configuration_adv-2.7.2.h
+../private/config/btt-skr-pro-v1.1/Configuration_adv-2.0.7.2.h
