@@ -335,6 +335,7 @@
   #define PSU_POWERUP_DELAY 2000   // (ms) Delay for the PSU to warm up to full power
 
   //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
+  #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
   //#define PSU_POWEROFF_GCODE "M355 S0"  // G-code to run before power-off (e.g., case light off)
 
   #define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
@@ -697,7 +698,7 @@
 //#define Z3_DRIVER_TYPE A4988
 //#define Z4_DRIVER_TYPE A4988
 #define E0_DRIVER_TYPE TMC2130
-//#define E1_DRIVER_TYPE TMC2130
+#define E1_DRIVER_TYPE TMC2130
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
@@ -762,14 +763,14 @@
 // E steps example: steps per revolution s=200, microstepping m=16, effective gear diameter d= 7.22
 //   sm/(πd) = 144.1
 
-#define MY_X_MICROSTEPS 8
-#define MY_Y_MICROSTEPS 8
-#define MY_Z_MICROSTEPS 8
-#define MY_E_MICROSTEPS 8
+#define MY_X_MICROSTEPS 16
+#define MY_Y_MICROSTEPS 16
+#define MY_Z_MICROSTEPS 16
+#define MY_E_MICROSTEPS 32
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { \
-    ((200.0*MY_X_MICROSTEPS)/40.0), \
-    ((200.0*MY_Y_MICROSTEPS)/40.0),        \
-    ((200.0*MY_Z_MICROSTEPS)/4.0),         \
+    ((200.0*MY_X_MICROSTEPS)/40.0),     \
+    ((200.0*MY_Y_MICROSTEPS)/40.0),     \
+    ((200.0*MY_Z_MICROSTEPS)/4.0),      \
     (((200.0*MY_E_MICROSTEPS)/(3.1412 * 7.22)) * 0.886) } // TODO: 0.886 experimental extrusion factor
 
 /**
@@ -777,8 +778,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-//#define DEFAULT_MAX_FEEDRATE        { 1500, 1500, 30, 20 } // A4988
-#define DEFAULT_MAX_FEEDRATE          { 400, 2400, 20, 20 }  // TMC2130
+#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -791,8 +791,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-//#define DEFAULT_MAX_ACCELERATION    { 5000, 5000, 100, 3000 } // A4988
-#define DEFAULT_MAX_ACCELERATION      { 2000, 2000, 50, 3000 }  // TMC2130
+#define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -808,10 +807,8 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
-//#define DEFAULT_RETRACT_ACCELERATION  500    // TODO A4988;   E acceleration for retracts
-#define DEFAULT_RETRACT_ACCELERATION     50    // TODO TMC2130; E acceleration for retracts
-//#define DEFAULT_TRAVEL_ACCELERATION  2000    // TODO A4988;   X, Y, Z acceleration for travel (non printing) moves
-#define DEFAULT_TRAVEL_ACCELERATION    2500    // TODO TMC2130; X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_RETRACT_ACCELERATION     50    // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION    1500    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -1024,11 +1021,11 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.06 }
+#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.2 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 7
+#define PROBING_MARGIN 10
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_SPEED (500*60)
@@ -1166,8 +1163,8 @@
 #define X_MIN_POS  2
 #define Y_MIN_POS -8
 #define Z_MIN_POS  0
-#define X_MAX_POS  410
-#define Y_MAX_POS  390
+#define X_MAX_POS  411
+#define Y_MAX_POS  398
 #define Z_MAX_POS  432
 
 /**
@@ -1825,7 +1822,7 @@
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.
  */
-//#define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: SPI SPEED
@@ -1842,7 +1839,7 @@
  *
  * Use CRC checks and retries on the SD communication.
  */
-//#define SD_CHECK_AND_RETRY
+#define SD_CHECK_AND_RETRY
 
 /**
  * LCD Menu Items
