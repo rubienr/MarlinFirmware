@@ -790,10 +790,14 @@
     // Amplification factor. Used to scale the correction step up or down in case
     // the stepper (spindle) position is farther out than the test point.
 <<<<<<< HEAD
+<<<<<<< HEAD
     #define Z_STEPPER_ALIGN_AMP 0.8       // Use a value > 1.0 NOTE: This may cause instability!
 =======
     #define Z_STEPPER_ALIGN_AMP 1.0       // Use a value > 1.0 NOTE: This may cause instability!
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+    #define Z_STEPPER_ALIGN_AMP 0.8       // Use a value > 1.0 NOTE: This may cause instability!
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
   #endif
 
   // On a 300mm bed a 5% grade would give a misalignment of ~1.5cm
@@ -1201,14 +1205,18 @@
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
   //#define SD_DETECT_STATE HIGH
 
-  //#define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
+  #define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
   //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   #define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
 =======
   //#define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  #define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
@@ -1389,10 +1397,14 @@
    * :[ 'LCD', 'ONBOARD', 'CUSTOM_CABLE' ]
    */
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define SDCARD_CONNECTION ONBOARD
 =======
   //#define SDCARD_CONNECTION LCD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  #define SDCARD_CONNECTION ONBOARD
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 #endif // SDSUPPORT
 
@@ -1760,6 +1772,7 @@
   // the next inner row/column starts exactly at the PROBING_MARGIN.
   #define MY_MESH_POINT_DISTANCE_X ((X_BED_SIZE - 2 * PROBING_MARGIN) / (GRID_MAX_POINTS_X - (1 + 2)))
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define MY_MESH_POINT_DISTANCE_Y ((Y_BED_SIZE - 1 * PROBING_MARGIN - 48) / (GRID_MAX_POINTS_Y - (1 + 2)))
 
   #define MESH_MIN_X (0.0 + PROBING_MARGIN - MY_MESH_POINT_DISTANCE_X + 1)
@@ -1770,6 +1783,12 @@
   #define MESH_MIN_X (0.0 + PROBING_MARGIN - MY_MESH_POINT_DISTANCE_X + 1)
   #define MESH_MIN_Y (40.0 - MY_MESH_POINT_DISTANCE_Y) // cannot measure below Y < 40
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  #define MY_MESH_POINT_DISTANCE_Y ((Y_BED_SIZE - 1 * PROBING_MARGIN - 48) / (GRID_MAX_POINTS_Y - (1 + 2)))
+
+  #define MESH_MIN_X (0.0 + PROBING_MARGIN - MY_MESH_POINT_DISTANCE_X + 1)
+  #define MESH_MIN_Y (48.0 - MY_MESH_POINT_DISTANCE_Y) // cannot measure below Y < 40
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
   #define MESH_MAX_X (X_BED_SIZE - PROBING_MARGIN + MY_MESH_POINT_DISTANCE_X - 1)
   #define MESH_MAX_Y (Y_BED_SIZE - PROBING_MARGIN + MY_MESH_POINT_DISTANCE_Y - 1)
 #endif
@@ -1957,10 +1976,14 @@
 // The value of BLOCK_BUFFER_SIZE must be a power of 2 (e.g. 8, 16, 32)
 #if BOTH(SDSUPPORT, DIRECT_STEPPING)
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define BLOCK_BUFFER_SIZE  64
 =======
   #define BLOCK_BUFFER_SIZE  8
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  #define BLOCK_BUFFER_SIZE  64
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 #elif ENABLED(SDSUPPORT)
   #define BLOCK_BUFFER_SIZE 64
 #else
@@ -1997,10 +2020,14 @@
 
 // Add M575 G-code to change the baud rate
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define BAUD_RATE_GCODE
 =======
 //#define BAUD_RATE_GCODE
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define BAUD_RATE_GCODE
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 #if ENABLED(SDSUPPORT)
   // Enable this option to collect and display the maximum
@@ -2356,14 +2383,18 @@
    * Interpolate microsteps to 256
    * Override for each driver with <driver>_INTERPOLATE settings below
    */
-  #define INTERPOLATE      true
+  #define INTERPOLATE      false
 
   #if AXIS_IS_TMC(X)
+<<<<<<< HEAD
 <<<<<<< HEAD
     #define X_CURRENT       1000  // (mA) RMS current. Multiply by 1.414 for peak current.
 =======
     #define X_CURRENT       1100  // (mA) RMS current. Multiply by 1.414 for peak current.
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+    #define X_CURRENT       1000  // (mA) RMS current. Multiply by 1.414 for peak current.
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
     #define X_CURRENT_HOME   400  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS    MY_X_MICROSTEPS    // 0..256
     #define X_RSENSE          0.11
@@ -2373,10 +2404,14 @@
 
   #if AXIS_IS_TMC(X2)
 <<<<<<< HEAD
+<<<<<<< HEAD
     #define X2_CURRENT      1000
 =======
     #define X2_CURRENT      1100
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+    #define X2_CURRENT      1000
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
     #define X2_CURRENT_HOME  400
     #define X2_MICROSTEPS   MY_X_MICROSTEPS
     #define X2_RSENSE         0.11
@@ -2440,10 +2475,14 @@
 
   #if AXIS_IS_TMC(E0)
 <<<<<<< HEAD
+<<<<<<< HEAD
     #define E0_CURRENT     1000
 =======
     #define E0_CURRENT      800
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+    #define E0_CURRENT     1000
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
     #define E0_MICROSTEPS   MY_E_MICROSTEPS
     #define E0_RSENSE         0.11
     #define E0_CHAIN_POS     -1
@@ -2452,10 +2491,14 @@
 
   #if AXIS_IS_TMC(E1)
 <<<<<<< HEAD
+<<<<<<< HEAD
     #define E1_CURRENT     1000
 =======
     #define E1_CURRENT      800
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+    #define E1_CURRENT     1000
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
     #define E1_MICROSTEPS   MY_E_MICROSTEPS
     #define E1_RSENSE         0.11
     #define E1_CHAIN_POS     -1
@@ -2585,10 +2628,14 @@
   #define STEALTHCHOP_XY
   #define STEALTHCHOP_Z
 <<<<<<< HEAD
+<<<<<<< HEAD
   //#define STEALTHCHOP_E
 =======
   #define STEALTHCHOP_E
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  //#define STEALTHCHOP_E
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
   /**
    * Optimize spreadCycle chopper parameters by using predefined parameter sets
@@ -2656,6 +2703,9 @@
   #define HYBRID_THRESHOLD
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
   #define X_HYBRID_THRESHOLD    1000 // 100  // [mm/s]
   #define X2_HYBRID_THRESHOLD   1000 // 100
   #define Y_HYBRID_THRESHOLD     500 // 100
@@ -2672,6 +2722,7 @@
   #define E5_HYBRID_THRESHOLD      1
   #define E6_HYBRID_THRESHOLD      1
   #define E7_HYBRID_THRESHOLD      1
+<<<<<<< HEAD
 =======
   #define X_HYBRID_THRESHOLD     100  // [mm/s]
   #define X2_HYBRID_THRESHOLD    100
@@ -2690,6 +2741,8 @@
   #define E6_HYBRID_THRESHOLD     30
   #define E7_HYBRID_THRESHOLD     30
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
   /**
    * Use StallGuard to home / probe X, Y, Z.
@@ -2728,7 +2781,7 @@
 =======
     #define X_STALL_SENSITIVITY  3
     //#define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
-    #define Y_STALL_SENSITIVITY  8
+    #define Y_STALL_SENSITIVITY  9
     //#define Y2_STALL_SENSITIVITY Y_STALL_SENSITIVITY
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
     //#define Z_STALL_SENSITIVITY  8
@@ -2750,10 +2803,14 @@
    * Values from 0..1023, -1 to disable homing phase for that axis.
    */
 <<<<<<< HEAD
+<<<<<<< HEAD
    #define TMC_HOME_PHASE { 896, 896, -1 }
 =======
    #define TMC_HOME_PHASE { 896, 896, 896 }
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+   #define TMC_HOME_PHASE { 896, 896, -1 }
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
   /**
    * Beta feature!
@@ -3300,10 +3357,14 @@
 #define EXTENDED_CAPABILITIES_REPORT
 #if ENABLED(EXTENDED_CAPABILITIES_REPORT)
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define M115_GEOMETRY_REPORT
 =======
   //#define M115_GEOMETRY_REPORT
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  #define M115_GEOMETRY_REPORT
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 #endif
 
 /**
