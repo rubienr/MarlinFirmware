@@ -58,6 +58,7 @@
 //===========================================================================
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // For a Delta printer, start with one of the configuration files in the config/examples/delta directory
 // from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
 =======
@@ -68,11 +69,16 @@
 // For a Delta printer start with one of the configuration files in the
 // config/examples/delta directory and customize for your machine.
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+// For a Delta printer, start with one of the configuration files in the config/examples/delta directory
+// from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
+>>>>>>> 8d45e68014... config version update
 //
 
 //===========================================================================
 //============================= SCARA Printer ===============================
 //===========================================================================
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 // For a SCARA printer, start with one of the configuration files in the config/examples/SCARA directory
@@ -85,6 +91,10 @@
 // For a SCARA printer start with the configuration files in
 // config/examples/SCARA and customize for your machine.
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+// For a SCARA printer, start with one of the configuration files in the config/examples/SCARA directory
+// from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
+>>>>>>> 8d45e68014... config version update
 //
 
 // @section info
@@ -356,6 +366,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
 =======
   //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
@@ -369,6 +380,8 @@
 <<<<<<< HEAD
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 =======
+=======
+>>>>>>> 8d45e68014... config version update
   #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
 >>>>>>> 9423cf984a... refined stepper/driver settings; enabled more SD features
   //#define PSU_POWEROFF_GCODE "M355 S0"  // G-code to run before power-off (e.g., case light off)
@@ -585,10 +598,14 @@
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8d45e68014... config version update
   // auto tune result of M303 E-1 S60 C10
   #define DEFAULT_bedKp 124.63
   #define DEFAULT_bedKi 17.12
   #define DEFAULT_bedKd 604.87
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
@@ -600,11 +617,14 @@
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+>>>>>>> 8d45e68014... config version update
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
 
 #if EITHER(PIDTEMP, PIDTEMPBED)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   #define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
@@ -614,6 +634,9 @@
 =======
   //#define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+  #define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
+>>>>>>> 8d45e68014... config version update
   //#define PID_OPENLOOP          // Puts PID in open loop. M104/M140 sets the output power from 0 to PID_MAX
   //#define SLOW_PWM_HEATERS      // PWM with very low frequency (roughly 0.125Hz=8s) and minimum state time of approximately 1s useful for heaters driven by a relay
   #define PID_FUNCTIONAL_RANGE 10 // If the temperature difference between the target temperature and the actual temperature
@@ -864,6 +887,7 @@
 #define MY_X_MICROSTEPS 16
 #define MY_Y_MICROSTEPS 16
 #define MY_Z_MICROSTEPS 16
+<<<<<<< HEAD
 #define MY_E_MICROSTEPS 32
 <<<<<<< HEAD
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
@@ -876,12 +900,21 @@
 =======
 =======
 >>>>>>> 9423cf984a... refined stepper/driver settings; enabled more SD features
+=======
+#define MY_E_MICROSTEPS 64
+#define MY_E_EFFECTIVE_COGWHEEL_DIAMETER 7.22
+
+>>>>>>> 8d45e68014... config version update
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { \
     ((200.0*MY_X_MICROSTEPS)/40.0),     \
     ((200.0*MY_Y_MICROSTEPS)/40.0),     \
     ((200.0*MY_Z_MICROSTEPS)/4.0),      \
+<<<<<<< HEAD
     (((200.0*MY_E_MICROSTEPS)/(3.1412 * 7.22)) * 0.886) } // TODO: 0.886 experimental extrusion factor
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+    ((200.0*MY_E_MICROSTEPS)/(3.1416 * MY_E_EFFECTIVE_COGWHEEL_DIAMETER)) }
+>>>>>>> 8d45e68014... config version update
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -905,6 +938,7 @@
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
 #define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
+<<<<<<< HEAD
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 =======
 //#define DEFAULT_MAX_FEEDRATE        { 1500, 1500, 30, 20 } // A4988
@@ -913,6 +947,10 @@
 =======
 #define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
 >>>>>>> 9423cf984a... refined stepper/driver settings; enabled more SD features
+=======
+// TODO rubienr - y stalls wo. s-curve acc.
+// #define DEFAULT_MAX_FEEDRATE          { 1200, 1200, 18, 20 }
+>>>>>>> 8d45e68014... config version update
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -938,6 +976,7 @@
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
 #define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
+<<<<<<< HEAD
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 =======
 //#define DEFAULT_MAX_ACCELERATION    { 5000, 5000, 100, 3000 } // A4988
@@ -946,6 +985,10 @@
 =======
 #define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
 >>>>>>> 9423cf984a... refined stepper/driver settings; enabled more SD features
+=======
+// TODO rubienr - y stalls wo s-curve acc.
+//#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 150, 300 }
+>>>>>>> 8d45e68014... config version update
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -1016,6 +1059,7 @@
 #if ENABLED(CLASSIC_JERK)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define DEFAULT_EJERK    5.0  // May be used by Linear Advance
 =======
   #define DEFAULT_EJERK    5    // May be used by Linear Advance
@@ -1023,6 +1067,9 @@
 =======
   #define DEFAULT_EJERK    5    // May be used by Linear Advance
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+  #define DEFAULT_EJERK    5.0  // May be used by Linear Advance
+>>>>>>> 8d45e68014... config version update
 #else
   #define DEFAULT_EJERK    0.1 //1  // May be used by Linear Advance
 #endif
@@ -1185,6 +1232,7 @@
  *
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
  * X and Y offset
  *   Use a caliper or ruler to measure the distance from the tip of
  *   the Nozzle to the center-point of the Probe in the X and Y axes.
@@ -1203,13 +1251,30 @@
 =======
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
  * - Use a caliper or ruler to measure the distance from the tip of
+=======
+ * X and Y offset
+ *   Use a caliper or ruler to measure the distance from the tip of
+>>>>>>> 8d45e68014... config version update
  *   the Nozzle to the center-point of the Probe in the X and Y axes.
+ * 
+ * Z offset
  * - For the Z offset use your best known value and adjust at runtime.
+<<<<<<< HEAD
  * - Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
 <<<<<<< HEAD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+ * - Common probes trigger below the nozzle and have negative values for Z offset.
+ * - Probes triggering above the nozzle height are uncommon but do exist. When using
+ *   probes such as this, carefully set Z_CLEARANCE_DEPLOY_PROBE and Z_CLEARANCE_BETWEEN_PROBES
+ *   to avoid collisions during probing.
+ * 
+ * Tune and Adjust
+ * -  Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
+ * -  PROBE_OFFSET_WIZARD (configuration_adv.h) can be used for setting the Z offset.
+>>>>>>> 8d45e68014... config version update
  *
  * Assuming the typical work area orientation:
  *  - Probe to RIGHT of the Nozzle has a Positive X offset
@@ -1233,6 +1298,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1267,6 +1333,9 @@
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 =======
 #define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.2 }
+=======
+#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.12 } // -2.05 to -2.125
+>>>>>>> 8d45e68014... config version update
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -2134,6 +2203,7 @@
 //#define SPI_SPEED SPI_QUARTER_SPEED
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define SPI_SPEED SPI_EIGHTH_SPEED
 =======
 //#define SPI_SPEED SPI_EIGHTH_SPEED
@@ -2141,12 +2211,16 @@
 =======
 //#define SPI_SPEED SPI_EIGHTH_SPEED
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+#define SPI_SPEED SPI_EIGHTH_SPEED
+>>>>>>> 8d45e68014... config version update
 
 /**
  * SD CARD: ENABLE CRC
  *
  * Use CRC checks and retries on the SD communication.
  */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 #define SD_CHECK_AND_RETRY
@@ -2156,6 +2230,9 @@
 =======
 #define SD_CHECK_AND_RETRY
 >>>>>>> 9423cf984a... refined stepper/driver settings; enabled more SD features
+=======
+//#define SD_CHECK_AND_RETRY
+>>>>>>> 8d45e68014... config version update
 
 /**
  * LCD Menu Items

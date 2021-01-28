@@ -666,6 +666,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define QUICK_HOME                            // If G28 contains XY do a diagonal move first
 =======
 #define QUICK_HOME                          // If G28 contains XY do a diagonal move first
@@ -673,6 +674,9 @@
 =======
 #define QUICK_HOME                          // If G28 contains XY do a diagonal move first
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+#define QUICK_HOME                            // If G28 contains XY do a diagonal move first
+>>>>>>> 8d45e68014... config version update
 //#define HOME_Y_BEFORE_X                     // If G28 contains XY home Y before X
 //#define HOME_Z_FIRST                        // Home Z first. Requires a Z-MIN endstop (not a probe).
 //#define CODEPENDENT_XY_HOMING               // If X/Y can't home without homing Y/X first
@@ -874,6 +878,7 @@
  */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define DEFAULT_STEPPER_DEACTIVE_TIME (60*10)
 =======
 #define DEFAULT_STEPPER_DEACTIVE_TIME (60*5)
@@ -881,6 +886,9 @@
 =======
 #define DEFAULT_STEPPER_DEACTIVE_TIME (60*5)
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+#define DEFAULT_STEPPER_DEACTIVE_TIME (60*10)
+>>>>>>> 8d45e68014... config version update
 #define DISABLE_INACTIVE_X true
 #define DISABLE_INACTIVE_Y true
 #define DISABLE_INACTIVE_Z false  // Set 'false' if the nozzle could fall onto your printed part!
@@ -1129,6 +1137,7 @@
       // Enable to init the Probe Z-Offset when starting the Wizard.
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       // Use a height slightly above the estimated nozzle-to-probe Z offset.
       // For example, with an offset of -5, consider a starting height of -4.
 =======
@@ -1137,6 +1146,10 @@
 =======
       // Use the estimated nozzle-to-probe Z offset, plus a little more.
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+      // Use a height slightly above the estimated nozzle-to-probe Z offset.
+      // For example, with an offset of -5, consider a starting height of -4.
+>>>>>>> 8d45e68014... config version update
       //
       //#define PROBE_OFFSET_WIZARD_START_Z -4.0
 
@@ -1235,6 +1248,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
   //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
 
@@ -1255,6 +1269,9 @@
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 =======
   #define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
+=======
+  //#define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
+>>>>>>> 8d45e68014... config version update
   //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
 
   #define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
@@ -2176,6 +2193,7 @@
     #define MIN_AUTORETRACT 0.1           // (mm) Don't convert E moves under this length
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     #define MAX_AUTORETRACT 6.0           // (mm) Don't convert E moves over this length
   #endif
   #define RETRACT_LENGTH 0.8              // (mm) Default retract length (positive value)
@@ -2190,19 +2208,27 @@
 =======
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
     #define MAX_AUTORETRACT 10.0          // (mm) Don't convert E moves over this length
+=======
+    #define MAX_AUTORETRACT 6.0           // (mm) Don't convert E moves over this length
+>>>>>>> 8d45e68014... config version update
   #endif
-  #define RETRACT_LENGTH 1                 // (mm) Default retract length (positive value)
-  #define RETRACT_LENGTH_SWAP 17          // (mm) Default swap retract length (positive value)
+  #define RETRACT_LENGTH 0.8              // (mm) Default retract length (positive value)
+  #define RETRACT_LENGTH_SWAP 6           // (mm) Default swap retract length (positive value)
   #define RETRACT_FEEDRATE 20             // (mm/s) Default feedrate for retracting
   #define RETRACT_ZRAISE 0                // (mm) Default retract Z-raise
-  #define RETRACT_RECOVER_LENGTH 0.25     // (mm) Default additional recover length (added to retract length on recover)
+  #define RETRACT_RECOVER_LENGTH 0.25      // (mm) Default additional recover length (added to retract length on recover)
   #define RETRACT_RECOVER_LENGTH_SWAP 0   // (mm) Default additional swap recover length (added to retract length on recover from toolchange)
+<<<<<<< HEAD
   #define RETRACT_RECOVER_FEEDRATE 8      // (mm/s) Default feedrate for recovering from retraction
   #define RETRACT_RECOVER_FEEDRATE_SWAP 8 // (mm/s) Default feedrate for recovering from swap retraction
 <<<<<<< HEAD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+  #define RETRACT_RECOVER_FEEDRATE 20     // (mm/s) Default feedrate for recovering from retraction
+  #define RETRACT_RECOVER_FEEDRATE_SWAP 20 // (mm/s) Default feedrate for recovering from swap retraction
+>>>>>>> 8d45e68014... config version update
   #if ENABLED(MIXING_EXTRUDER)
     //#define RETRACT_SYNC_MIXING         // Retract and restore all mixing steppers simultaneously
   #endif
@@ -2470,6 +2496,7 @@
    */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define INTERPOLATE      false
 
   #if AXIS_IS_TMC(X)
@@ -2490,6 +2517,9 @@
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 =======
   #define INTERPOLATE      false
+=======
+  #define INTERPOLATE      true
+>>>>>>> 8d45e68014... config version update
 
   #if AXIS_IS_TMC(X)
     #define X_CURRENT       1000  // (mA) RMS current. Multiply by 1.414 for peak current.
@@ -2785,12 +2815,15 @@
    */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
  // TODO rubienr
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
  // TODO rubienr
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+>>>>>>> 8d45e68014... config version update
   #define CHOPPER_TIMING CHOPPER_DEFAULT_24V        // All axes (override below)
   //#define CHOPPER_TIMING_X  CHOPPER_DEFAULT_12V   // For X Axes (override below)
   //#define CHOPPER_TIMING_X2 CHOPPER_DEFAULT_12V
@@ -2922,10 +2955,14 @@
     // TMC2209: 0...255. TMC2130: -64...63
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8d45e68014... config version update
     #define X_STALL_SENSITIVITY  5
     #define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
     #define Y_STALL_SENSITIVITY  11
     #define Y2_STALL_SENSITIVITY Y_STALL_SENSITIVITY
+<<<<<<< HEAD
 =======
     #define X_STALL_SENSITIVITY  3
     //#define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
@@ -2938,6 +2975,8 @@
     #define Y_STALL_SENSITIVITY  9
     //#define Y2_STALL_SENSITIVITY Y_STALL_SENSITIVITY
 >>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
+=======
+>>>>>>> 8d45e68014... config version update
     //#define Z_STALL_SENSITIVITY  8
     //#define Z2_STALL_SENSITIVITY Z_STALL_SENSITIVITY
     //#define Z3_STALL_SENSITIVITY Z_STALL_SENSITIVITY
