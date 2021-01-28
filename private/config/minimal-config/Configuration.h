@@ -382,6 +382,7 @@
 =======
   //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
   #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
@@ -398,6 +399,9 @@
 =======
   //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
   //#define PSU_POWEROFF_GCODE "M355 S0"  // G-code to run before power-off (e.g., case light off)
 
   #define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
@@ -806,6 +810,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define E1_DRIVER_TYPE TMC2130
 =======
 //#define E1_DRIVER_TYPE TMC2130
@@ -822,6 +827,9 @@
 =======
 //#define E1_DRIVER_TYPE TMC2130
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define E1_DRIVER_TYPE TMC2130
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
@@ -891,6 +899,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define MY_X_MICROSTEPS 16
 #define MY_Y_MICROSTEPS 16
 #define MY_Z_MICROSTEPS 16
@@ -948,10 +957,16 @@
     ((200.0*MY_E_MICROSTEPS)/(3.1416 * MY_E_EFFECTIVE_COGWHEEL_DIAMETER)) }
 >>>>>>> 8d45e68014... config version update
 =======
+=======
+#define MY_X_MICROSTEPS 16
+#define MY_Y_MICROSTEPS 16
+#define MY_Z_MICROSTEPS 16
+#define MY_E_MICROSTEPS 32
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { \
-    ((200.0*MY_X_MICROSTEPS)/40.0), \
-    ((200.0*MY_Y_MICROSTEPS)/40.0),        \
-    ((200.0*MY_Z_MICROSTEPS)/4.0),         \
+    ((200.0*MY_X_MICROSTEPS)/40.0),     \
+    ((200.0*MY_Y_MICROSTEPS)/40.0),     \
+    ((200.0*MY_Z_MICROSTEPS)/4.0),      \
     (((200.0*MY_E_MICROSTEPS)/(3.1412 * 7.22)) * 0.886) } // TODO: 0.886 experimental extrusion factor
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 
@@ -960,6 +975,7 @@
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -995,6 +1011,9 @@
 //#define DEFAULT_MAX_FEEDRATE        { 1500, 1500, 30, 20 } // A4988
 #define DEFAULT_MAX_FEEDRATE          { 400, 2400, 20, 20 }  // TMC2130
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -1007,6 +1026,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1038,6 +1058,9 @@
 //#define DEFAULT_MAX_ACCELERATION    { 5000, 5000, 100, 3000 } // A4988
 #define DEFAULT_MAX_ACCELERATION      { 2000, 2000, 50, 3000 }  // TMC2130
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -1053,6 +1076,7 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1088,6 +1112,10 @@
 >>>>>>> 9423cf984a... refined stepper/driver settings; enabled more SD features
 =======
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define DEFAULT_RETRACT_ACCELERATION     50    // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION    1500    // X, Y, Z acceleration for travel (non printing) moves
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 /**
  * Default Jerk limits (mm/s)
@@ -1371,6 +1399,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.12 } // -2.05 to -2.125
 =======
 #define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.15 }
@@ -1413,6 +1442,13 @@
 >>>>>>> 9423cf984a... refined stepper/driver settings; enabled more SD features
 =======
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.2 }
+
+// Most probes should stay away from the edges of the bed, but
+// with NOZZLE_AS_PROBE this can be negative for a wider probing area.
+#define PROBING_MARGIN 10
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_SPEED (500*60)
@@ -1555,6 +1591,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define X_MAX_POS  411
 #define Y_MAX_POS  398
 =======
@@ -1577,6 +1614,10 @@
 #define X_MAX_POS  410
 #define Y_MAX_POS  390
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define X_MAX_POS  411
+#define Y_MAX_POS  398
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 #define Z_MAX_POS  432
 
 /**
@@ -2263,6 +2304,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define SDSUPPORT
 =======
 //#define SDSUPPORT
@@ -2279,6 +2321,9 @@
 =======
 //#define SDSUPPORT
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define SDSUPPORT
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 /**
  * SD CARD: SPI SPEED
@@ -2315,6 +2360,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define SD_CHECK_AND_RETRY
 =======
 //#define SD_CHECK_AND_RETRY
@@ -2328,6 +2374,9 @@
 =======
 //#define SD_CHECK_AND_RETRY
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define SD_CHECK_AND_RETRY
+>>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 /**
  * LCD Menu Items
