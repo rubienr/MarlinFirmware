@@ -57,17 +57,23 @@
 //============================= DELTA Printer ===============================
 //===========================================================================
 <<<<<<< HEAD
+<<<<<<< HEAD
 // For a Delta printer, start with one of the configuration files in the config/examples/delta directory
 // from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
 =======
 // For a Delta printer start with one of the configuration files in the
 // config/examples/delta directory and customize for your machine.
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+// For a Delta printer start with one of the configuration files in the
+// config/examples/delta directory and customize for your machine.
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 //
 
 //===========================================================================
 //============================= SCARA Printer ===============================
 //===========================================================================
+<<<<<<< HEAD
 <<<<<<< HEAD
 // For a SCARA printer, start with one of the configuration files in the config/examples/SCARA directory
 // from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
@@ -75,6 +81,10 @@
 // For a SCARA printer start with the configuration files in
 // config/examples/SCARA and customize for your machine.
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+// For a SCARA printer start with the configuration files in
+// config/examples/SCARA and customize for your machine.
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 //
 
 // @section info
@@ -345,6 +355,7 @@
   #define PSU_POWERUP_DELAY 2000   // (ms) Delay for the PSU to warm up to full power
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
 =======
   //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
@@ -353,6 +364,9 @@
 =======
   #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+  //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
   //#define PSU_POWEROFF_GCODE "M355 S0"  // G-code to run before power-off (e.g., case light off)
 
   #define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
@@ -566,26 +580,36 @@
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
 <<<<<<< HEAD
+<<<<<<< HEAD
   // auto tune result of M303 E-1 S60 C10
   #define DEFAULT_bedKp 124.63
   #define DEFAULT_bedKi 17.12
   #define DEFAULT_bedKd 604.87
 =======
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
   // Creality Ender-5 Plus, auto tune result of: M303 E-1 S60 C10
   #define DEFAULT_bedKp 161.74
   #define DEFAULT_bedKi 21.06
   #define DEFAULT_bedKd 828.06
+<<<<<<< HEAD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
 
 #if EITHER(PIDTEMP, PIDTEMPBED)
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
 =======
   //#define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  //#define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
   //#define PID_OPENLOOP          // Puts PID in open loop. M104/M140 sets the output power from 0 to PID_MAX
   //#define SLOW_PWM_HEATERS      // PWM with very low frequency (roughly 0.125Hz=8s) and minimum state time of approximately 1s useful for heaters driven by a relay
   #define PID_FUNCTIONAL_RANGE 10 // If the temperature difference between the target temperature and the actual temperature
@@ -728,6 +752,7 @@
 #define E0_DRIVER_TYPE TMC2130
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define E1_DRIVER_TYPE TMC2130
 =======
 //#define E1_DRIVER_TYPE TMC2130
@@ -735,6 +760,9 @@
 =======
 #define E1_DRIVER_TYPE TMC2130
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+//#define E1_DRIVER_TYPE TMC2130
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
@@ -801,6 +829,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define MY_X_MICROSTEPS 16
 #define MY_Y_MICROSTEPS 16
 #define MY_Z_MICROSTEPS 16
@@ -813,10 +842,13 @@
     ((200.0*MY_Z_MICROSTEPS)/4.0),      \
     ((200.0*MY_E_MICROSTEPS)/(3.1416 * MY_E_EFFECTIVE_COGWHEEL_DIAMETER)) }
 =======
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 #define MY_X_MICROSTEPS 8
 #define MY_Y_MICROSTEPS 8
 #define MY_Z_MICROSTEPS 8
 #define MY_E_MICROSTEPS 8
+<<<<<<< HEAD
 =======
 #define MY_X_MICROSTEPS 16
 #define MY_Y_MICROSTEPS 16
@@ -829,12 +861,20 @@
     ((200.0*MY_Z_MICROSTEPS)/4.0),      \
     (((200.0*MY_E_MICROSTEPS)/(3.1412 * 7.22)) * 0.886) } // TODO: 0.886 experimental extrusion factor
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { \
+    ((200.0*MY_X_MICROSTEPS)/40.0), \
+    ((200.0*MY_Y_MICROSTEPS)/40.0),        \
+    ((200.0*MY_Z_MICROSTEPS)/4.0),         \
+    (((200.0*MY_E_MICROSTEPS)/(3.1412 * 7.22)) * 0.886) } // TODO: 0.886 experimental extrusion factor
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -851,6 +891,10 @@
 =======
 #define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+//#define DEFAULT_MAX_FEEDRATE        { 1500, 1500, 30, 20 } // A4988
+#define DEFAULT_MAX_FEEDRATE          { 400, 2400, 20, 20 }  // TMC2130
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -865,6 +909,7 @@
  */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
 // TODO rubienr - y stalls wo s-curve acc.
 //#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 150, 300 }
@@ -875,6 +920,10 @@
 =======
 #define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+//#define DEFAULT_MAX_ACCELERATION    { 5000, 5000, 100, 3000 } // A4988
+#define DEFAULT_MAX_ACCELERATION      { 2000, 2000, 50, 3000 }  // TMC2130
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -893,13 +942,17 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define DEFAULT_RETRACT_ACCELERATION     50    // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION    1500    // X, Y, Z acceleration for travel (non printing) moves
 =======
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 //#define DEFAULT_RETRACT_ACCELERATION  500    // TODO A4988;   E acceleration for retracts
 #define DEFAULT_RETRACT_ACCELERATION     50    // TODO TMC2130; E acceleration for retracts
 //#define DEFAULT_TRAVEL_ACCELERATION  2000    // TODO A4988;   X, Y, Z acceleration for travel (non printing) moves
 #define DEFAULT_TRAVEL_ACCELERATION    2500    // TODO TMC2130; X, Y, Z acceleration for travel (non printing) moves
+<<<<<<< HEAD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
 #define DEFAULT_RETRACT_ACCELERATION     50    // E acceleration for retracts
@@ -908,6 +961,8 @@
 >>>>>>> 3026c699c8... added new configuration for btt skr pro + btt tft + switching nozzle
 #define DEFAULT_TRAVEL_ACCELERATION    1500    // X, Y, Z acceleration for travel (non printing) moves
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 /**
  * Default Jerk limits (mm/s)
@@ -933,10 +988,14 @@
 
 #if ENABLED(CLASSIC_JERK)
 <<<<<<< HEAD
+<<<<<<< HEAD
   #define DEFAULT_EJERK    5.0  // May be used by Linear Advance
 =======
   #define DEFAULT_EJERK    5    // May be used by Linear Advance
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+  #define DEFAULT_EJERK    5    // May be used by Linear Advance
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 #else
   #define DEFAULT_EJERK    0.1 //1  // May be used by Linear Advance
 #endif
@@ -1098,6 +1157,7 @@
  * Nozzle-to-Probe offsets { X, Y, Z }
  *
 <<<<<<< HEAD
+<<<<<<< HEAD
  * X and Y offset
  *   Use a caliper or ruler to measure the distance from the tip of
  *   the Nozzle to the center-point of the Probe in the X and Y axes.
@@ -1113,11 +1173,16 @@
  * -  Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
  * -  PROBE_OFFSET_WIZARD (configuration_adv.h) can be used for setting the Z offset.
 =======
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
  * - Use a caliper or ruler to measure the distance from the tip of
  *   the Nozzle to the center-point of the Probe in the X and Y axes.
  * - For the Z offset use your best known value and adjust at runtime.
  * - Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
+<<<<<<< HEAD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
  *
  * Assuming the typical work area orientation:
  *  - Probe to RIGHT of the Nozzle has a Positive X offset
@@ -1144,6 +1209,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.12 } // -2.05 to -2.125
 =======
 #define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.15 }
@@ -1153,11 +1219,14 @@
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
 #define PROBING_MARGIN 10
 =======
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 #define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.06 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
 #define PROBING_MARGIN 7
+<<<<<<< HEAD
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 =======
 #define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.2 }
@@ -1166,6 +1235,8 @@
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
 #define PROBING_MARGIN 10
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_SPEED (500*60)
@@ -1305,6 +1376,7 @@
 #define Z_MIN_POS  0
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define X_MAX_POS  411
 #define Y_MAX_POS  398
 =======
@@ -1315,6 +1387,10 @@
 #define X_MAX_POS  411
 #define Y_MAX_POS  398
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+#define X_MAX_POS  410
+#define Y_MAX_POS  390
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 #define Z_MAX_POS  432
 
 /**
@@ -1462,6 +1538,7 @@
 //#define MESH_BED_LEVELING
 
 /**
+<<<<<<< HEAD
  * Normally G28 leaves leveling disabled on completion. Enable one of
  * these options to restore the prior leveling state or to always enable
  * leveling immediately after G28.
@@ -1477,6 +1554,12 @@
   #define LEVELING_NOZZLE_TEMP 120
   #define LEVELING_BED_TEMP     50
 #endif
+=======
+ * Normally G28 leaves leveling disabled on completion. Enable
+ * this option to have G28 restore the prior leveling state.
+ */
+#define RESTORE_LEVELING_AFTER_G28
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 /**
  * Enable detailed logging of G28, G29, M48, etc.
@@ -1985,6 +2068,7 @@
  */
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define SDSUPPORT
 =======
 //#define SDSUPPORT
@@ -1992,6 +2076,9 @@
 =======
 #define SDSUPPORT
 >>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+=======
+//#define SDSUPPORT
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 /**
  * SD CARD: SPI SPEED
@@ -2002,17 +2089,25 @@
 //#define SPI_SPEED SPI_HALF_SPEED
 //#define SPI_SPEED SPI_QUARTER_SPEED
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define SPI_SPEED SPI_EIGHTH_SPEED
 =======
 //#define SPI_SPEED SPI_EIGHTH_SPEED
 >>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+=======
+//#define SPI_SPEED SPI_EIGHTH_SPEED
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 /**
  * SD CARD: ENABLE CRC
  *
  * Use CRC checks and retries on the SD communication.
  */
+<<<<<<< HEAD
 #define SD_CHECK_AND_RETRY
+=======
+//#define SD_CHECK_AND_RETRY
+>>>>>>> 63e928bc75... rebased onto bugfix-2.0.x
 
 /**
  * LCD Menu Items
