@@ -397,7 +397,7 @@
  */
 #define USE_CONTROLLER_FAN
 #if ENABLED(USE_CONTROLLER_FAN)
-  #define CONTROLLER_FAN_PIN PE6        // Set a custom pin for the controller fan
+  #define CONTROLLER_FAN_PIN FAN3_PIN    // Set a custom pin for the controller fan
   //#define CONTROLLER_FAN_USE_Z_ONLY    // With this option only the Z axis is considered
   //#define CONTROLLER_FAN_IGNORE_Z      // Ignore Z stepper. Useful when stepper timeout is disabled.
   #define CONTROLLERFAN_SPEED_MIN    100 // (0-255) Minimum speed. (If set below this value the fan is turned off.)
@@ -474,8 +474,8 @@
  * Multiple extruders can be assigned to the same pin in which case
  * the fan will turn on when any selected extruder is above the threshold.
  */
-#define E0_AUTO_FAN_PIN PE5
-#define E1_AUTO_FAN_PIN PE5
+#define E0_AUTO_FAN_PIN FAN2_PIN
+#define E1_AUTO_FAN_PIN FAN2_PIN
 #define E2_AUTO_FAN_PIN -1
 #define E3_AUTO_FAN_PIN -1
 #define E4_AUTO_FAN_PIN -1
@@ -659,16 +659,12 @@
 // TODO rubienr: A4988
 //#define HOMING_BUMP_MM      { 5, 5, 2 }       // (mm) Backoff from endstops after first bump
 // TODO rubienr: TMC2130
-#define HOMING_BUMP_MM      { 0, 0, 2 }       // (mm) Backoff from endstops after first bump
-#define HOMING_BUMP_DIVISOR { 2, 2, 4 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
+#define HOMING_BUMP_MM      { 0, 0, 1 }       // (mm) Backoff from endstops after first bump
+#define HOMING_BUMP_DIVISOR { 2, 2, 15 }       // Re-Bump Speed Divisor (Divides the Homing Feedrate)
 
 //#define HOMING_BACKOFF_POST_MM { 2, 2, 2 }  // (mm) Backoff from endstops after homing
 
-<<<<<<< HEAD
 #define QUICK_HOME                            // If G28 contains XY do a diagonal move first
-=======
-#define QUICK_HOME                          // If G28 contains XY do a diagonal move first
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 //#define HOME_Y_BEFORE_X                     // If G28 contains XY home Y before X
 //#define HOME_Z_FIRST                        // Home Z first. Requires a Z-MIN endstop (not a probe).
 //#define CODEPENDENT_XY_HOMING               // If X/Y can't home without homing Y/X first
@@ -789,15 +785,7 @@
   #else
     // Amplification factor. Used to scale the correction step up or down in case
     // the stepper (spindle) position is farther out than the test point.
-<<<<<<< HEAD
-<<<<<<< HEAD
     #define Z_STEPPER_ALIGN_AMP 0.8       // Use a value > 1.0 NOTE: This may cause instability!
-=======
-    #define Z_STEPPER_ALIGN_AMP 1.0       // Use a value > 1.0 NOTE: This may cause instability!
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-    #define Z_STEPPER_ALIGN_AMP 0.8       // Use a value > 1.0 NOTE: This may cause instability!
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
   #endif
 
   // On a 300mm bed a 5% grade would give a misalignment of ~1.5cm
@@ -860,11 +848,7 @@
  * Set DISABLE_INACTIVE_? 'true' to shut down axis steppers after an idle period.
  * The Deactive Time can be overridden with M18 and M84. Set to 0 for No Timeout.
  */
-<<<<<<< HEAD
 #define DEFAULT_STEPPER_DEACTIVE_TIME (60*10)
-=======
-#define DEFAULT_STEPPER_DEACTIVE_TIME (60*5)
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 #define DISABLE_INACTIVE_X true
 #define DISABLE_INACTIVE_Y true
 #define DISABLE_INACTIVE_Z false  // Set 'false' if the nozzle could fall onto your printed part!
@@ -1103,12 +1087,8 @@
     #if ENABLED(PROBE_OFFSET_WIZARD)
       //
       // Enable to init the Probe Z-Offset when starting the Wizard.
-<<<<<<< HEAD
       // Use a height slightly above the estimated nozzle-to-probe Z offset.
       // For example, with an offset of -5, consider a starting height of -4.
-=======
-      // Use the estimated nozzle-to-probe Z offset, plus a little more.
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
       //
       //#define PROBE_OFFSET_WIZARD_START_Z -4.0
 
@@ -1205,18 +1185,10 @@
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
   //#define SD_DETECT_STATE HIGH
 
-  #define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
+  //#define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
   //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
   #define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
-=======
-  //#define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-  #define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
@@ -1309,7 +1281,7 @@
   //#define UTF_FILENAME_SUPPORT
 
   // This allows hosts to request long names for files and folders with M33
-  //#define LONG_FILENAME_HOST_SUPPORT
+  #define LONG_FILENAME_HOST_SUPPORT
 
   // Enable this option to scroll long filenames in the SD card menu
   //#define SCROLL_LONG_FILENAMES
@@ -1396,15 +1368,7 @@
    *
    * :[ 'LCD', 'ONBOARD', 'CUSTOM_CABLE' ]
    */
-<<<<<<< HEAD
-<<<<<<< HEAD
   #define SDCARD_CONNECTION ONBOARD
-=======
-  //#define SDCARD_CONNECTION LCD
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-  #define SDCARD_CONNECTION ONBOARD
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 #endif // SDSUPPORT
 
@@ -1719,9 +1683,9 @@
 #define LIN_ADVANCE
 #if ENABLED(LIN_ADVANCE)
   //#define EXTRA_LIN_ADVANCE_K // Enable for second linear advance constants
-  #define LIN_ADVANCE_K 0.175    // Unit: mm compression per 1mm/s extruder speed
-  #define LA_DEBUG            // If enabled, this will generate debug information output over USB.
-  #define EXPERIMENTAL_SCURVE // Enable this option to permit S-Curve Acceleration
+  #define LIN_ADVANCE_K 0.1     // Unit: mm compression per 1mm/s extruder speed
+  #define LA_DEBUG              // If enabled, this will generate debug information output over USB.
+  #define EXPERIMENTAL_SCURVE   // Enable this option to permit S-Curve Acceleration
 #endif
 
 // @section leveling
@@ -1771,24 +1735,10 @@
   // Idea: define mesh boundary so that the outer most columns/rows cannot be probed but
   // the next inner row/column starts exactly at the PROBING_MARGIN.
   #define MY_MESH_POINT_DISTANCE_X ((X_BED_SIZE - 2 * PROBING_MARGIN) / (GRID_MAX_POINTS_X - (1 + 2)))
-<<<<<<< HEAD
-<<<<<<< HEAD
   #define MY_MESH_POINT_DISTANCE_Y ((Y_BED_SIZE - 1 * PROBING_MARGIN - 48) / (GRID_MAX_POINTS_Y - (1 + 2)))
 
   #define MESH_MIN_X (0.0 + PROBING_MARGIN - MY_MESH_POINT_DISTANCE_X + 1)
-  #define MESH_MIN_Y (48.0 - MY_MESH_POINT_DISTANCE_Y) // cannot measure below Y < 40
-=======
-  #define MY_MESH_POINT_DISTANCE_Y ((Y_BED_SIZE - 1 * PROBING_MARGIN - 40)/ (GRID_MAX_POINTS_Y - (1 + 2)))
-
-  #define MESH_MIN_X (0.0 + PROBING_MARGIN - MY_MESH_POINT_DISTANCE_X + 1)
-  #define MESH_MIN_Y (40.0 - MY_MESH_POINT_DISTANCE_Y) // cannot measure below Y < 40
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-  #define MY_MESH_POINT_DISTANCE_Y ((Y_BED_SIZE - 1 * PROBING_MARGIN - 48) / (GRID_MAX_POINTS_Y - (1 + 2)))
-
-  #define MESH_MIN_X (0.0 + PROBING_MARGIN - MY_MESH_POINT_DISTANCE_X + 1)
-  #define MESH_MIN_Y (48.0 - MY_MESH_POINT_DISTANCE_Y) // cannot measure below Y < 40
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+  #define MESH_MIN_Y (32.0 - MY_MESH_POINT_DISTANCE_Y) // cannot measure below Y < 32
   #define MESH_MAX_X (X_BED_SIZE - PROBING_MARGIN + MY_MESH_POINT_DISTANCE_X - 1)
   #define MESH_MAX_Y (Y_BED_SIZE - PROBING_MARGIN + MY_MESH_POINT_DISTANCE_Y - 1)
 #endif
@@ -1975,15 +1925,7 @@
 // The number of linear moves that can be in the planner at once.
 // The value of BLOCK_BUFFER_SIZE must be a power of 2 (e.g. 8, 16, 32)
 #if BOTH(SDSUPPORT, DIRECT_STEPPING)
-<<<<<<< HEAD
-<<<<<<< HEAD
   #define BLOCK_BUFFER_SIZE  64
-=======
-  #define BLOCK_BUFFER_SIZE  8
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-  #define BLOCK_BUFFER_SIZE  64
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 #elif ENABLED(SDSUPPORT)
   #define BLOCK_BUFFER_SIZE 64
 #else
@@ -2019,15 +1961,7 @@
 #endif
 
 // Add M575 G-code to change the baud rate
-<<<<<<< HEAD
-<<<<<<< HEAD
 #define BAUD_RATE_GCODE
-=======
-//#define BAUD_RATE_GCODE
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define BAUD_RATE_GCODE
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 #if ENABLED(SDSUPPORT)
   // Enable this option to collect and display the maximum
@@ -2063,7 +1997,7 @@
 //#define SERIAL_OVERRUN_PROTECTION
 
 // For serial echo, the number of digits after the decimal point
-//#define SERIAL_FLOAT_PRECISION 4
+#define SERIAL_FLOAT_PRECISION 4
 
 // @section extras
 
@@ -2094,30 +2028,17 @@
 #if ENABLED(FWRETRACT)
   #define FWRETRACT_AUTORETRACT           // Override slicer retractions
   #if ENABLED(FWRETRACT_AUTORETRACT)
-    #define MIN_AUTORETRACT 0.1           // (mm) Don't convert E moves under this length
-<<<<<<< HEAD
-    #define MAX_AUTORETRACT 6.0           // (mm) Don't convert E moves over this length
+    #define MIN_AUTORETRACT 0.5           // (mm) Don't convert E moves under this length
+    #define MAX_AUTORETRACT 5.0           // (mm) Don't convert E moves over this length
   #endif
-  #define RETRACT_LENGTH 0.8              // (mm) Default retract length (positive value)
-  #define RETRACT_LENGTH_SWAP 6           // (mm) Default swap retract length (positive value)
+  #define RETRACT_LENGTH 2                // (mm) Default retract length (positive value)
+  #define RETRACT_LENGTH_SWAP 20          // (mm) Default swap retract length (positive value)
   #define RETRACT_FEEDRATE 20             // (mm/s) Default feedrate for retracting
   #define RETRACT_ZRAISE 0                // (mm) Default retract Z-raise
-  #define RETRACT_RECOVER_LENGTH 0.25      // (mm) Default additional recover length (added to retract length on recover)
-  #define RETRACT_RECOVER_LENGTH_SWAP 0   // (mm) Default additional swap recover length (added to retract length on recover from toolchange)
-  #define RETRACT_RECOVER_FEEDRATE 20     // (mm/s) Default feedrate for recovering from retraction
-  #define RETRACT_RECOVER_FEEDRATE_SWAP 20 // (mm/s) Default feedrate for recovering from swap retraction
-=======
-    #define MAX_AUTORETRACT 10.0          // (mm) Don't convert E moves over this length
-  #endif
-  #define RETRACT_LENGTH 1                 // (mm) Default retract length (positive value)
-  #define RETRACT_LENGTH_SWAP 17          // (mm) Default swap retract length (positive value)
-  #define RETRACT_FEEDRATE 20             // (mm/s) Default feedrate for retracting
-  #define RETRACT_ZRAISE 0                // (mm) Default retract Z-raise
-  #define RETRACT_RECOVER_LENGTH 0.25     // (mm) Default additional recover length (added to retract length on recover)
-  #define RETRACT_RECOVER_LENGTH_SWAP 0   // (mm) Default additional swap recover length (added to retract length on recover from toolchange)
-  #define RETRACT_RECOVER_FEEDRATE 8      // (mm/s) Default feedrate for recovering from retraction
-  #define RETRACT_RECOVER_FEEDRATE_SWAP 8 // (mm/s) Default feedrate for recovering from swap retraction
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
+  #define RETRACT_RECOVER_LENGTH 0.1      // 0.1 -> about 0.25mm³ - (mm) Default additional recover length (added to retract length on recover)
+  #define RETRACT_RECOVER_LENGTH_SWAP 0.125 // 0.125 -> about 0.3mm³ - (mm) Default additional swap recover length (added to retract length on recover from toolchange)
+  #define RETRACT_RECOVER_FEEDRATE 150    // (mm/s) Default feedrate for recovering from retraction
+  #define RETRACT_RECOVER_FEEDRATE_SWAP 120 // (mm/s) Default feedrate for recovering from swap retraction
   #if ENABLED(MIXING_EXTRUDER)
     //#define RETRACT_SYNC_MIXING         // Retract and restore all mixing steppers simultaneously
   #endif
@@ -2131,7 +2052,7 @@
   // Z raise distance for tool-change, as needed for some extruders
   #define TOOLCHANGE_ZRAISE                 2 // (mm)
   //#define TOOLCHANGE_ZRAISE_BEFORE_RETRACT  // Apply raise before swap retraction (if enabled)
-  //#define TOOLCHANGE_NO_RETURN              // Never return to previous position on tool-change
+  #define TOOLCHANGE_NO_RETURN              // Never return to previous position on tool-change
   #if ENABLED(TOOLCHANGE_NO_RETURN)
     //#define EVENT_GCODE_AFTER_TOOLCHANGE "G12X"   // Extra G-code to run after tool-change
   #endif
@@ -2143,10 +2064,10 @@
   //#define TOOLCHANGE_FILAMENT_SWAP
   #if ENABLED(TOOLCHANGE_FILAMENT_SWAP)
     // Load / Unload
-    #define TOOLCHANGE_FS_LENGTH              12  // (mm) Load / Unload length
-    #define TOOLCHANGE_FS_EXTRA_RESUME_LENGTH  0  // (mm) Extra length for better restart, fine tune by LCD/Gcode)
-    #define TOOLCHANGE_FS_RETRACT_SPEED   (50*60) // (mm/min) (Unloading)
-    #define TOOLCHANGE_FS_UNRETRACT_SPEED (25*60) // (mm/min) (On SINGLENOZZLE or Bowden loading must be slowed down)
+    #define TOOLCHANGE_FS_LENGTH              20  // (mm) Load / Unload length
+    #define TOOLCHANGE_FS_EXTRA_RESUME_LENGTH 0.125 // (mm) Extra length for better restart, fine tune by LCD/Gcode)
+    #define TOOLCHANGE_FS_RETRACT_SPEED   (20*60) // (mm/min) (Unloading)
+    #define TOOLCHANGE_FS_UNRETRACT_SPEED (20*60) // (mm/min) (On SINGLENOZZLE or Bowden loading must be slowed down)
 
     // Longer prime to clean out a SINGLENOZZLE
     #define TOOLCHANGE_FS_EXTRA_PRIME          0  // (mm) Extra priming length
@@ -2156,7 +2077,7 @@
     // Cool after prime to reduce stringing
     #define TOOLCHANGE_FS_FAN                 -1  // Fan index or -1 to skip
     #define TOOLCHANGE_FS_FAN_SPEED          255  // 0-255
-    #define TOOLCHANGE_FS_FAN_TIME            10  // (seconds)
+    #define TOOLCHANGE_FS_FAN_TIME            5  // (seconds)
 
     // Swap uninitialized extruder with TOOLCHANGE_FS_PRIME_SPEED for all lengths (recover + prime)
     // (May break filament if not retracted beforehand.)
@@ -2205,43 +2126,43 @@
  */
 #define ADVANCED_PAUSE_FEATURE
 #if ENABLED(ADVANCED_PAUSE_FEATURE)
-  #define PAUSE_PARK_RETRACT_FEEDRATE         60  // (mm/s) Initial retract feedrate.
-  #define PAUSE_PARK_RETRACT_LENGTH            2  // (mm) Initial retract.
+  #define PAUSE_PARK_RETRACT_FEEDRATE         20  // (mm/s) Initial retract feedrate.
+  #define PAUSE_PARK_RETRACT_LENGTH            3  // (mm) Initial retract.
                                                   // This short retract is done immediately, before parking the nozzle.
-  #define FILAMENT_CHANGE_UNLOAD_FEEDRATE    150  // (mm/s) Unload filament feedrate. This can be pretty fast.
-  #define FILAMENT_CHANGE_UNLOAD_ACCEL       150  // (mm/s^2) Lower acceleration may allow a faster feedrate.
-  #define FILAMENT_CHANGE_UNLOAD_LENGTH       50  // (mm) The length of filament for a complete unload.
+  #define FILAMENT_CHANGE_UNLOAD_FEEDRATE    250  // (mm/s) Unload filament feedrate. This can be pretty fast.
+  #define FILAMENT_CHANGE_UNLOAD_ACCEL       100  // (mm/s^2) Lower acceleration may allow a faster feedrate.
+  #define FILAMENT_CHANGE_UNLOAD_LENGTH       75  // (mm) The length of filament for a complete unload.
                                                   //   For Bowden, the full length of the tube and nozzle.
                                                   //   For direct drive, the full length of the nozzle.
                                                   //   Set to 0 for manual unloading.
   #define FILAMENT_CHANGE_SLOW_LOAD_FEEDRATE   6  // (mm/s) Slow move when starting load.
   #define FILAMENT_CHANGE_SLOW_LOAD_LENGTH     0  // (mm) Slow length, to allow time to insert material.
                                                   // 0 to disable start loading and skip to fast load only
-  #define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE 150  // (mm/s) Load filament feedrate. This can be pretty fast.
-  #define FILAMENT_CHANGE_FAST_LOAD_ACCEL    150  // (mm/s^2) Lower acceleration may allow a faster feedrate.
-  #define FILAMENT_CHANGE_FAST_LOAD_LENGTH    65  // (mm) Load length of filament, from extruder gear to nozzle.
+  #define FILAMENT_CHANGE_FAST_LOAD_FEEDRATE  50  // (mm/s) Load filament feedrate. This can be pretty fast.
+  #define FILAMENT_CHANGE_FAST_LOAD_ACCEL     50  // (mm/s^2) Lower acceleration may allow a faster feedrate.
+  #define FILAMENT_CHANGE_FAST_LOAD_LENGTH    80  // (mm) Load length of filament, from extruder gear to nozzle.
                                                   //   For Bowden, the full length of the tube and nozzle.
                                                   //   For direct drive, the full length of the nozzle.
   //#define ADVANCED_PAUSE_CONTINUOUS_PURGE       // Purge continuously up to the purge length until interrupted.
   #define ADVANCED_PAUSE_PURGE_FEEDRATE        3  // (mm/s) Extrude feedrate (after loading). Should be slower than load feedrate.
-  #define ADVANCED_PAUSE_PURGE_LENGTH         15  // (mm) Length to extrude after loading.
+  #define ADVANCED_PAUSE_PURGE_LENGTH          5  // (mm) Length to extrude after loading.
                                                   //   Set to 0 for manual extrusion.
                                                   //   Filament can be extruded repeatedly from the Filament Change menu
                                                   //   until extrusion is consistent, and to purge old filament.
-  #define ADVANCED_PAUSE_RESUME_PRIME          0  // (mm) Extra distance to prime nozzle after returning from park.
+  #define ADVANCED_PAUSE_RESUME_PRIME         0   // (mm) Extra distance to prime nozzle after returning from park.
   //#define ADVANCED_PAUSE_FANS_PAUSE             // Turn off print-cooling fans while the machine is paused.
 
                                                   // Filament Unload does a Retract, Delay, and Purge first:
-  #define FILAMENT_UNLOAD_PURGE_RETRACT       13  // (mm) Unload initial retract length.
+  #define FILAMENT_UNLOAD_PURGE_RETRACT       17  // (mm) Unload initial retract length.
   #define FILAMENT_UNLOAD_PURGE_DELAY       5000  // (ms) Delay for the filament to cool after retract.
-  #define FILAMENT_UNLOAD_PURGE_LENGTH         8  // (mm) An unretract is done, then this length is purged.
-  #define FILAMENT_UNLOAD_PURGE_FEEDRATE      25  // (mm/s) feedrate to purge before unload
+  #define FILAMENT_UNLOAD_PURGE_LENGTH        20  // (mm) An unretract is done, then this length is purged.
+  #define FILAMENT_UNLOAD_PURGE_FEEDRATE       5  // (mm/s) feedrate to purge before unload
 
   #define PAUSE_PARK_NOZZLE_TIMEOUT           45  // (seconds) Time limit before the nozzle is turned off for safety.
   #define FILAMENT_CHANGE_ALERT_BEEPS         10  // Number of alert beeps to play when a response is needed.
   #define PAUSE_PARK_NO_STEPPER_TIMEOUT           // Enable for XYZ steppers to stay powered on during filament change.
 
-  //#define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
+  #define PARK_HEAD_ON_PAUSE                    // Park the nozzle during pause and filament change.
   //#define HOME_BEFORE_FILAMENT_CHANGE           // If needed, home before parking for filament change
 
   #define FILAMENT_LOAD_UNLOAD_GCODES           // Add M701/M702 Load/Unload G-codes, plus Load/Unload in the LCD Prepare menu.
@@ -2376,26 +2297,17 @@
  */
 #if HAS_TRINAMIC_CONFIG
 
-  // TODO rubienr: 1.0 -> 0.5 after thermal testing is finished
-  #define HOLD_MULTIPLIER    1.0 //0.5  // Scales down the holding current from run current
+  #define HOLD_MULTIPLIER    1.0  // Scales down the holding current from run current
 
   /**
    * Interpolate microsteps to 256
    * Override for each driver with <driver>_INTERPOLATE settings below
    */
-  #define INTERPOLATE      false
+  #define INTERPOLATE      true
 
   #if AXIS_IS_TMC(X)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    #define X_CURRENT       1000  // (mA) RMS current. Multiply by 1.414 for peak current.
-=======
-    #define X_CURRENT       1100  // (mA) RMS current. Multiply by 1.414 for peak current.
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-    #define X_CURRENT       1000  // (mA) RMS current. Multiply by 1.414 for peak current.
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
-    #define X_CURRENT_HOME   400  // (mA) RMS current for sensorless homing
+    #define X_CURRENT       1350  // (mA) RMS current. Multiply by 1.414 for peak current.
+    #define X_CURRENT_HOME  1000  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS    MY_X_MICROSTEPS    // 0..256
     #define X_RSENSE          0.11
     #define X_CHAIN_POS      -1        // -1..0: Not chained. 1: MCU MOSI connected. 2: Next in chain, ...
@@ -2403,16 +2315,8 @@
   #endif
 
   #if AXIS_IS_TMC(X2)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    #define X2_CURRENT      1000
-=======
-    #define X2_CURRENT      1100
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-    #define X2_CURRENT      1000
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
-    #define X2_CURRENT_HOME  400
+    #define X2_CURRENT      1350
+    #define X2_CURRENT_HOME 1200
     #define X2_MICROSTEPS   MY_X_MICROSTEPS
     #define X2_RSENSE         0.11
     #define X2_CHAIN_POS     -1
@@ -2420,8 +2324,8 @@
   #endif
 
   #if AXIS_IS_TMC(Y)
-    #define Y_CURRENT       1000
-    #define Y_CURRENT_HOME   400
+    #define Y_CURRENT       1400
+    #define Y_CURRENT_HOME  800
     #define Y_MICROSTEPS    MY_Y_MICROSTEPS
     #define Y_RSENSE          0.11
     #define Y_CHAIN_POS      -1
@@ -2429,8 +2333,8 @@
   #endif
 
   #if AXIS_IS_TMC(Y2)
-    #define Y2_CURRENT      1000
-    #define Y2_CURRENT_HOME  400
+    #define Y2_CURRENT      1400
+    #define Y2_CURRENT_HOME 1200
     #define Y2_MICROSTEPS   MY_Y_MICROSTEPS
     #define Y2_RSENSE         0.11
     #define Y2_CHAIN_POS     -1
@@ -2439,7 +2343,7 @@
 
   #if AXIS_IS_TMC(Z)
     #define Z_CURRENT       800
-    #define Z_CURRENT_HOME  400
+    #define Z_CURRENT_HOME  800
     #define Z_MICROSTEPS    MY_Z_MICROSTEPS
     #define Z_RSENSE          0.11
     #define Z_CHAIN_POS      -1
@@ -2448,7 +2352,7 @@
 
   #if AXIS_IS_TMC(Z2)
     #define Z2_CURRENT      800
-    #define Z2_CURRENT_HOME 400
+    #define Z2_CURRENT_HOME 800
     #define Z2_MICROSTEPS   MY_Z_MICROSTEPS
     #define Z2_RSENSE         0.11
     #define Z2_CHAIN_POS     -1
@@ -2457,7 +2361,7 @@
 
   #if AXIS_IS_TMC(Z3)
     #define Z3_CURRENT      800
-    #define Z3_CURRENT_HOME 400
+    #define Z3_CURRENT_HOME 800
     #define Z3_MICROSTEPS   MY_Z_MICROSTEPS
     #define Z3_RSENSE         0.11
     #define Z3_CHAIN_POS     -1
@@ -2466,7 +2370,7 @@
 
   #if AXIS_IS_TMC(Z4)
     #define Z4_CURRENT      800
-    #define Z4_CURRENT_HOME 400
+    #define Z4_CURRENT_HOME 800
     #define Z4_MICROSTEPS   MY_Z_MICROSTEPS
     #define Z4_RSENSE         0.11
     #define Z4_CHAIN_POS     -1
@@ -2474,15 +2378,7 @@
   #endif
 
   #if AXIS_IS_TMC(E0)
-<<<<<<< HEAD
-<<<<<<< HEAD
     #define E0_CURRENT     1000
-=======
-    #define E0_CURRENT      800
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-    #define E0_CURRENT     1000
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
     #define E0_MICROSTEPS   MY_E_MICROSTEPS
     #define E0_RSENSE         0.11
     #define E0_CHAIN_POS     -1
@@ -2490,15 +2386,7 @@
   #endif
 
   #if AXIS_IS_TMC(E1)
-<<<<<<< HEAD
-<<<<<<< HEAD
     #define E1_CURRENT     1000
-=======
-    #define E1_CURRENT      800
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-    #define E1_CURRENT     1000
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
     #define E1_MICROSTEPS   MY_E_MICROSTEPS
     #define E1_RSENSE         0.11
     #define E1_CHAIN_POS     -1
@@ -2627,15 +2515,7 @@
    */
   #define STEALTHCHOP_XY
   #define STEALTHCHOP_Z
-<<<<<<< HEAD
-<<<<<<< HEAD
   //#define STEALTHCHOP_E
-=======
-  #define STEALTHCHOP_E
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-  //#define STEALTHCHOP_E
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
   /**
    * Optimize spreadCycle chopper parameters by using predefined parameter sets
@@ -2652,10 +2532,6 @@
    * Define your own with:
    * { <off_time[1..15]>, <hysteresis_end[-3..12]>, hysteresis_start[1..8] }
    */
-<<<<<<< HEAD
-=======
- // TODO rubienr
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
   #define CHOPPER_TIMING CHOPPER_DEFAULT_24V        // All axes (override below)
   //#define CHOPPER_TIMING_X  CHOPPER_DEFAULT_12V   // For X Axes (override below)
   //#define CHOPPER_TIMING_X2 CHOPPER_DEFAULT_12V
@@ -2702,14 +2578,10 @@
    */
   #define HYBRID_THRESHOLD
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
   #define X_HYBRID_THRESHOLD    1000 // 100  // [mm/s]
   #define X2_HYBRID_THRESHOLD   1000 // 100
-  #define Y_HYBRID_THRESHOLD     500 // 100
-  #define Y2_HYBRID_THRESHOLD    500 // 100
+  #define Y_HYBRID_THRESHOLD       1 // 500 // 100
+  #define Y2_HYBRID_THRESHOLD      1 // 500 // 100
   #define Z_HYBRID_THRESHOLD     400 //   3
   #define Z2_HYBRID_THRESHOLD    400 //   3
   #define Z3_HYBRID_THRESHOLD    400 //   3
@@ -2722,27 +2594,6 @@
   #define E5_HYBRID_THRESHOLD      1
   #define E6_HYBRID_THRESHOLD      1
   #define E7_HYBRID_THRESHOLD      1
-<<<<<<< HEAD
-=======
-  #define X_HYBRID_THRESHOLD     100  // [mm/s]
-  #define X2_HYBRID_THRESHOLD    100
-  #define Y_HYBRID_THRESHOLD     100
-  #define Y2_HYBRID_THRESHOLD    100
-  #define Z_HYBRID_THRESHOLD       3
-  #define Z2_HYBRID_THRESHOLD      3
-  #define Z3_HYBRID_THRESHOLD      3
-  #define Z4_HYBRID_THRESHOLD      3
-  #define E0_HYBRID_THRESHOLD     30
-  #define E1_HYBRID_THRESHOLD     30
-  #define E2_HYBRID_THRESHOLD     30
-  #define E3_HYBRID_THRESHOLD     30
-  #define E4_HYBRID_THRESHOLD     30
-  #define E5_HYBRID_THRESHOLD     30
-  #define E6_HYBRID_THRESHOLD     30
-  #define E7_HYBRID_THRESHOLD     30
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
   /**
    * Use StallGuard to home / probe X, Y, Z.
@@ -2773,17 +2624,10 @@
 
   #if EITHER(SENSORLESS_HOMING, SENSORLESS_PROBING)
     // TMC2209: 0...255. TMC2130: -64...63
-<<<<<<< HEAD
-    #define X_STALL_SENSITIVITY  5
+    #define X_STALL_SENSITIVITY  5 // note: better sensitivity at lower feed rate (150mm/s is too much, 35mm/s is okay)
     #define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
-    #define Y_STALL_SENSITIVITY  11
+    #define Y_STALL_SENSITIVITY  6 // note: better sensitivity at lower feed rate
     #define Y2_STALL_SENSITIVITY Y_STALL_SENSITIVITY
-=======
-    #define X_STALL_SENSITIVITY  3
-    //#define X2_STALL_SENSITIVITY X_STALL_SENSITIVITY
-    #define Y_STALL_SENSITIVITY  9
-    //#define Y2_STALL_SENSITIVITY Y_STALL_SENSITIVITY
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
     //#define Z_STALL_SENSITIVITY  8
     //#define Z2_STALL_SENSITIVITY Z_STALL_SENSITIVITY
     //#define Z3_STALL_SENSITIVITY Z_STALL_SENSITIVITY
@@ -2802,15 +2646,7 @@
    *
    * Values from 0..1023, -1 to disable homing phase for that axis.
    */
-<<<<<<< HEAD
-<<<<<<< HEAD
-   #define TMC_HOME_PHASE { 896, 896, -1 }
-=======
-   #define TMC_HOME_PHASE { 896, 896, 896 }
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-   #define TMC_HOME_PHASE { 896, 896, -1 }
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+   #define TMC_HOME_PHASE { 128, 896, -1 }
 
   /**
    * Beta feature!
@@ -3356,15 +3192,7 @@
  */
 #define EXTENDED_CAPABILITIES_REPORT
 #if ENABLED(EXTENDED_CAPABILITIES_REPORT)
-<<<<<<< HEAD
-<<<<<<< HEAD
   #define M115_GEOMETRY_REPORT
-=======
-  //#define M115_GEOMETRY_REPORT
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-  #define M115_GEOMETRY_REPORT
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 #endif
 
 /**
@@ -3412,11 +3240,11 @@
 //#define NO_WORKSPACE_OFFSETS
 
 // Extra options for the M114 "Current Position" report
-//#define M114_DETAIL         // Use 'M114` for details to check planner calculations
+#define M114_DETAIL         // Use 'M114` for details to check planner calculations
 //#define M114_REALTIME       // Real current position based on forward kinematics
 //#define M114_LEGACY         // M114 used to synchronize on every call. Enable if needed.
 
-//#define REPORT_FAN_CHANGE   // Report the new fan speed when changed by M106 (and others)
+#define REPORT_FAN_CHANGE   // Report the new fan speed when changed by M106 (and others)
 
 /**
  * Set the number of proportional font spaces required to fill up a typical character space.
@@ -3460,7 +3288,35 @@
  *
  * Execute certain G-code commands immediately after power-on.
  */
-//#define STARTUP_COMMANDS "M17 Z"
+
+/**
+ * ; M810/M811 - prime nozzle <N>
+ * T<N>                 ; tool N
+ * G90                  ; absolute positioning
+ * G0  F7000            ;
+ * G0  Z15              ; safe Z
+ * G0  X<xx> Y-1.5 F500 ; go to cut position T0 at X55, T1 at X5
+ * G0  Z1               ;
+ * M813                 ; prime, blob and cut
+ * G92 E<xx>            ; reset extruder position
+ *
+ * ; M812 - prime T1, T0
+ * M811                 ; prime T1
+ * G10 S1               ; swap retract
+ * M810                 ; prime T0
+ *
+ * ; M813 - prime, blob, cut
+ * G91                  ; relative positioning
+ * G1  E15 F500         ; initial extrude
+ * G0  Y5               ; go to blob position
+ * G1  E7 F200          ; make a blob
+ * G1  Y20 E5 F200      ; cut
+ * G90                  ; absolute positioning
+ */
+
+#define STARTUP_COMMANDS "\
+  M810 G90|G0 F7000|G0 Z15|T0|G0 X204 Y-1.5|G0 Z0.5|G91|G11|G1 E15 F500|G0 Y5|G1 E7 F200|G1 Y20 Z-0.3 E5 F200|G10 S1|G90|G92 E0|G0 F7000\n\
+  M811 G90|G0 F7000|G0 Z15|T1|G0 X166 Y-1.5|G0 Z0.5|G91|G11|G1 E15 F500|G0 Y5|G1 E7 F200|G1 Y20 Z-0.3 E5 F200|G10 S1|G90|G92 E0|G0 F7000\n"
 
 /**
  * G-code Macros
@@ -3468,10 +3324,10 @@
  * Add G-codes M810-M819 to define and run G-code macros.
  * Macros are not saved to EEPROM.
  */
-//#define GCODE_MACROS
+#define GCODE_MACROS
 #if ENABLED(GCODE_MACROS)
-  #define GCODE_MACROS_SLOTS       5  // Up to 10 may be used
-  #define GCODE_MACROS_SLOT_SIZE  50  // Maximum length of a single macro
+  #define GCODE_MACROS_SLOTS      4  // Up to 10 may be used
+  #define GCODE_MACROS_SLOT_SIZE 150  // Maximum length of a single macro
 #endif
 
 /**

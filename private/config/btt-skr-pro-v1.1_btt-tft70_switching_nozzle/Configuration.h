@@ -56,25 +56,15 @@
 //===========================================================================
 //============================= DELTA Printer ===============================
 //===========================================================================
-<<<<<<< HEAD
 // For a Delta printer, start with one of the configuration files in the config/examples/delta directory
 // from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
-=======
-// For a Delta printer start with one of the configuration files in the
-// config/examples/delta directory and customize for your machine.
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 //
 
 //===========================================================================
 //============================= SCARA Printer ===============================
 //===========================================================================
-<<<<<<< HEAD
 // For a SCARA printer, start with one of the configuration files in the config/examples/SCARA directory
 // from https://github.com/MarlinFirmware/Configurations/branches/all and customize for your machine.
-=======
-// For a SCARA printer start with the configuration files in
-// config/examples/SCARA and customize for your machine.
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 //
 
 // @section info
@@ -120,7 +110,7 @@
  * Currently Ethernet (-2) is only supported on Teensy 4.1 boards.
  * :[-2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-//#define SERIAL_PORT_2 -1
+#define SERIAL_PORT_2 1
 
 /**
  * This setting determines the communication speed of the printer.
@@ -141,6 +131,7 @@
   #define MOTHERBOARD BOARD_BTT_SKR_PRO_V1_1
   //#define X_MAX_PIN       PB10 // use X- pin; disabled for sensorless homing feature with TMC2130
   //#define Y_MAX_PIN       PE12 // use Y- pin; disabled for sensorless homing feature with TMC2130
+  #define FAN3_PIN        PB0
   #define Z_MAX_PIN       PG5  // use Y- pin
   #define FIL_RUNOUT_PIN  PE15 // E0 aka X+ pin
   #define FIL_RUNOUT2_PIN PE10 // E1 aka Y+ pin
@@ -151,7 +142,6 @@
   #define SERVO2_PIN      PF8  // Extension 1
   #define SUICIDE_PIN_INVERTING false
   #define FLASH_EEPROM_EMULATION
-  //#define BEEPER_PIN      PG4  // hotfix to enable M300 so that sound can beplayed by display
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
@@ -209,8 +199,8 @@
 #define SWITCHING_NOZZLE
 #if ENABLED(SWITCHING_NOZZLE)
   #define SWITCHING_NOZZLE_SERVO_NR 1
-  #define SWITCHING_NOZZLE_E1_SERVO_NR 2          // If two servos are used, the index of the second
-  #define SWITCHING_NOZZLE_SERVO_ANGLES { 0, 90 }   // Angles for E0, E1 (single servo) or lowered/raised (dual servo)
+  #define SWITCHING_NOZZLE_E1_SERVO_NR 2            // If two servos are used, the index of the second
+  #define SWITCHING_NOZZLE_SERVO_ANGLES { 140, 55 } // Angles for E0, E1 (single servo) or lowered/raised (dual servo)
 #endif
 
 /**
@@ -323,7 +313,7 @@
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
 // The offset has to be X=0, Y=0 for the extruder 0 hotend (default extruder).
 // For the other hotends it is their distance from the extruder 0 hotend.
-#define HOTEND_OFFSET_X { 0.0, -37.95 } // (mm) relative X-offset for each nozzle
+#define HOTEND_OFFSET_X { 0.0, -41.0 } // (mm) relative X-offset for each nozzle
 #define HOTEND_OFFSET_Y { 0.0, 0.00 }  // (mm) relative Y-offset for each nozzle
 #define HOTEND_OFFSET_Z { 0.0, 0.00 }  // (mm) relative Z-offset for each nozzle
 
@@ -344,15 +334,7 @@
   #define PSU_DEFAULT_OFF          // Keep power off until enabled directly with M80
   #define PSU_POWERUP_DELAY 2000   // (ms) Delay for the PSU to warm up to full power
 
-<<<<<<< HEAD
   #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
-=======
-  //#define PSU_POWERUP_GCODE  "M355 S1"  // G-code to run after power-on (e.g., case light on)
-<<<<<<< HEAD
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-  #define PSU_POWERUP_GCODE  "M501"  // G-code to run after power-on (e.g., case light on)
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
   //#define PSU_POWEROFF_GCODE "M355 S0"  // G-code to run before power-off (e.g., case light off)
 
   #define AUTO_POWER_CONTROL      // Enable automatic control of the PS_ON pin
@@ -364,7 +346,7 @@
     #define AUTO_POWER_E_TEMP          50 // (°C) Turn on PSU if any extruder is over this temperature
     //#define AUTO_POWER_CHAMBER_TEMP  30 // (°C) Turn on PSU if the chamber is over this temperature
     #define POWER_TIMEOUT             600 // (s) Turn off power if the machine is idle for this duration
-    #define POWER_OFF_DELAY            60 // (s) Delay of poweroff after M81 command. Useful to let fans run for extra time.
+    #define POWER_OFF_DELAY             0 // (s) Delay of poweroff after M81 command. Useful to let fans run for extra time.
   #endif
 #endif
 
@@ -513,15 +495,15 @@
 #if ENABLED(PIDTEMP)
   //#define PID_EDIT_MENU         // Add PID editing to the "Advanced Settings" menu. (~700 bytes of PROGMEM)
   //#define PID_AUTOTUNE_MENU     // Add PID auto-tuning to the "Advanced Settings" menu. (~250 bytes of PROGMEM)
-  //#define PID_PARAMS_PER_HOTEND // Uses separate PID parameters for each extruder (useful for mismatched extruders)
+  #define PID_PARAMS_PER_HOTEND // Uses separate PID parameters for each extruder (useful for mismatched extruders)
                                   // Set/get with gcode: M301 E[extruder number, 0-2]
 
   #if ENABLED(PID_PARAMS_PER_HOTEND)
     // Specify between 1 and HOTENDS values per array.
     // If fewer than EXTRUDER values are provided, the last element will be repeated.
-    #define DEFAULT_Kp_LIST {  22.20,  22.20 }
-    #define DEFAULT_Ki_LIST {   1.08,   1.08 }
-    #define DEFAULT_Kd_LIST { 114.00, 114.00 }
+    #define DEFAULT_Kp_LIST {  29.49,  29.49 }
+    #define DEFAULT_Ki_LIST {   2.88,   2.88 }
+    #define DEFAULT_Kd_LIST { 75.50, 75.50 }
   #else
   // Creality Ender-5 Plus, auto tune result of: M303 E0 S225 C10
   #define DEFAULT_Kp 29.49
@@ -565,27 +547,16 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-<<<<<<< HEAD
   // auto tune result of M303 E-1 S60 C10
   #define DEFAULT_bedKp 124.63
   #define DEFAULT_bedKi 17.12
   #define DEFAULT_bedKd 604.87
-=======
-  // Creality Ender-5 Plus, auto tune result of: M303 E-1 S60 C10
-  #define DEFAULT_bedKp 161.74
-  #define DEFAULT_bedKi 21.06
-  #define DEFAULT_bedKd 828.06
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
 
 #if EITHER(PIDTEMP, PIDTEMPBED)
-<<<<<<< HEAD
   #define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
-=======
-  //#define PID_DEBUG             // Sends debug data to the serial port. Use 'M303 D' to toggle activation.
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
   //#define PID_OPENLOOP          // Puts PID in open loop. M104/M140 sets the output power from 0 to PID_MAX
   //#define SLOW_PWM_HEATERS      // PWM with very low frequency (roughly 0.125Hz=8s) and minimum state time of approximately 1s useful for heaters driven by a relay
   #define PID_FUNCTIONAL_RANGE 10 // If the temperature difference between the target temperature and the actual temperature
@@ -658,10 +629,10 @@
 // Almost all printers will be using one per axis. Probes will use one or more of the
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
 #define USE_XMIN_PLUG
-//#define USE_YMIN_PLUG
+#define USE_YMIN_PLUG
 #define USE_ZMIN_PLUG
 //#define USE_XMAX_PLUG
-#define USE_YMAX_PLUG
+//#define USE_YMAX_PLUG
 #define USE_ZMAX_PLUG
 
 // Enable pullup for all endstops to prevent a floating state
@@ -726,15 +697,7 @@
 //#define Z3_DRIVER_TYPE A4988
 //#define Z4_DRIVER_TYPE A4988
 #define E0_DRIVER_TYPE TMC2130
-<<<<<<< HEAD
-<<<<<<< HEAD
 #define E1_DRIVER_TYPE TMC2130
-=======
-//#define E1_DRIVER_TYPE TMC2130
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define E1_DRIVER_TYPE TMC2130
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
 //#define E4_DRIVER_TYPE A4988
@@ -799,12 +762,10 @@
 // E steps example: steps per revolution s=200, microstepping m=16, effective gear diameter d= 7.22
 //   sm/(πd) = 144.1
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 #define MY_X_MICROSTEPS 16
 #define MY_Y_MICROSTEPS 16
 #define MY_Z_MICROSTEPS 16
-#define MY_E_MICROSTEPS 64
+#define MY_E_MICROSTEPS 32
 #define MY_E_EFFECTIVE_COGWHEEL_DIAMETER 7.22
 
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { \
@@ -812,45 +773,16 @@
     ((200.0*MY_Y_MICROSTEPS)/40.0),     \
     ((200.0*MY_Z_MICROSTEPS)/4.0),      \
     ((200.0*MY_E_MICROSTEPS)/(3.1416 * MY_E_EFFECTIVE_COGWHEEL_DIAMETER)) }
-=======
-#define MY_X_MICROSTEPS 8
-#define MY_Y_MICROSTEPS 8
-#define MY_Z_MICROSTEPS 8
-#define MY_E_MICROSTEPS 8
-=======
-#define MY_X_MICROSTEPS 16
-#define MY_Y_MICROSTEPS 16
-#define MY_Z_MICROSTEPS 16
-#define MY_E_MICROSTEPS 32
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { \
-    ((200.0*MY_X_MICROSTEPS)/40.0),     \
-    ((200.0*MY_Y_MICROSTEPS)/40.0),     \
-    ((200.0*MY_Z_MICROSTEPS)/4.0),      \
-    (((200.0*MY_E_MICROSTEPS)/(3.1412 * 7.22)) * 0.886) } // TODO: 0.886 experimental extrusion factor
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
-=======
-#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 300 }
->>>>>>> 3026c699c8... added new configuration for btt skr pro + btt tft + switching nozzle
+//#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
+#define DEFAULT_MAX_FEEDRATE          { 500, 500, 18, 150 }
 // TODO rubienr - y stalls wo. s-curve acc.
 // #define DEFAULT_MAX_FEEDRATE          { 1200, 1200, 18, 20 }
-=======
-//#define DEFAULT_MAX_FEEDRATE        { 1500, 1500, 30, 20 } // A4988
-#define DEFAULT_MAX_FEEDRATE          { 400, 2400, 20, 20 }  // TMC2130
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -863,18 +795,9 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
-#define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
+#define DEFAULT_MAX_ACCELERATION      { 1500, 1500, 150, 300 }
 // TODO rubienr - y stalls wo s-curve acc.
 //#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 150, 300 }
-=======
-//#define DEFAULT_MAX_ACCELERATION    { 5000, 5000, 100, 3000 } // A4988
-#define DEFAULT_MAX_ACCELERATION      { 2000, 2000, 50, 3000 }  // TMC2130
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define DEFAULT_MAX_ACCELERATION      { 1500, 1200, 150, 300 }
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -890,24 +813,8 @@
  *   M204 T    Travel Acceleration
  */
 #define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 #define DEFAULT_RETRACT_ACCELERATION     50    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION    1500    // X, Y, Z acceleration for travel (non printing) moves
-=======
-//#define DEFAULT_RETRACT_ACCELERATION  500    // TODO A4988;   E acceleration for retracts
-#define DEFAULT_RETRACT_ACCELERATION     50    // TODO TMC2130; E acceleration for retracts
-//#define DEFAULT_TRAVEL_ACCELERATION  2000    // TODO A4988;   X, Y, Z acceleration for travel (non printing) moves
-#define DEFAULT_TRAVEL_ACCELERATION    2500    // TODO TMC2130; X, Y, Z acceleration for travel (non printing) moves
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define DEFAULT_RETRACT_ACCELERATION     50    // E acceleration for retracts
-=======
-#define DEFAULT_RETRACT_ACCELERATION     75    // E acceleration for retracts
->>>>>>> 3026c699c8... added new configuration for btt skr pro + btt tft + switching nozzle
-#define DEFAULT_TRAVEL_ACCELERATION    1500    // X, Y, Z acceleration for travel (non printing) moves
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+#define DEFAULT_TRAVEL_ACCELERATION    1000 // 1500    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -932,11 +839,7 @@
 #endif
 
 #if ENABLED(CLASSIC_JERK)
-<<<<<<< HEAD
   #define DEFAULT_EJERK    5.0  // May be used by Linear Advance
-=======
-  #define DEFAULT_EJERK    5    // May be used by Linear Advance
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 #else
   #define DEFAULT_EJERK    0.1 //1  // May be used by Linear Advance
 #endif
@@ -1097,7 +1000,6 @@
 /**
  * Nozzle-to-Probe offsets { X, Y, Z }
  *
-<<<<<<< HEAD
  * X and Y offset
  *   Use a caliper or ruler to measure the distance from the tip of
  *   the Nozzle to the center-point of the Probe in the X and Y axes.
@@ -1112,12 +1014,6 @@
  * Tune and Adjust
  * -  Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
  * -  PROBE_OFFSET_WIZARD (configuration_adv.h) can be used for setting the Z offset.
-=======
- * - Use a caliper or ruler to measure the distance from the tip of
- *   the Nozzle to the center-point of the Probe in the X and Y axes.
- * - For the Z offset use your best known value and adjust at runtime.
- * - Probe Offsets can be tuned at runtime with 'M851', LCD menus, babystepping, etc.
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
  *
  * Assuming the typical work area orientation:
  *  - Probe to RIGHT of the Nozzle has a Positive X offset
@@ -1141,40 +1037,20 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.12 } // -2.05 to -2.125
-=======
-#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.15 }
->>>>>>> 3026c699c8... added new configuration for btt skr pro + btt tft + switching nozzle
+#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.5 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
 #define PROBING_MARGIN 10
-=======
-#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.06 }
-
-// Most probes should stay away from the edges of the bed, but
-// with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 7
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define NOZZLE_TO_PROBE_OFFSET { -26.5, +47.5, -2.2 }
-
-// Most probes should stay away from the edges of the bed, but
-// with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 10
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 // X and Y axis travel speed (mm/min) between probes
-#define XY_PROBE_SPEED (500*60)
+#define XY_PROBE_SPEED (400*60)
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
+#define Z_PROBE_SPEED_FAST (15*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 3)
+#define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 5)
 
 /**
  * Multiple Probing
@@ -1270,7 +1146,7 @@
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
 #define INVERT_E0_DIR false
-#define INVERT_E1_DIR false
+#define INVERT_E1_DIR true
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
 #define INVERT_E4_DIR false
@@ -1292,7 +1168,7 @@
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
 #define X_HOME_DIR -1
-#define Y_HOME_DIR  1
+#define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
 
 // @section machine
@@ -1300,21 +1176,11 @@
 #define Y_BED_SIZE 370.0
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
-#define X_MIN_POS  2
-#define Y_MIN_POS -8
+#define X_MIN_POS -1
+#define Y_MIN_POS -24
 #define Z_MIN_POS  0
-<<<<<<< HEAD
-<<<<<<< HEAD
-#define X_MAX_POS  411
-#define Y_MAX_POS  398
-=======
-#define X_MAX_POS  410
-#define Y_MAX_POS  390
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define X_MAX_POS  411
-#define Y_MAX_POS  398
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
+#define X_MAX_POS  (420 - 1)
+#define Y_MAX_POS  (423 - 24)
 #define Z_MAX_POS  432
 
 /**
@@ -1466,7 +1332,7 @@
  * these options to restore the prior leveling state or to always enable
  * leveling immediately after G28.
  */
-#define RESTORE_LEVELING_AFTER_G28
+#define RESTORE_LEVELING_AFTER_G28 true
 //#define ENABLE_LEVELING_AFTER_G28
 
 /**
@@ -1636,8 +1502,7 @@
 #endif
 
 // Homing speeds (mm/min)
-#define HOMING_FEEDRATE_XY (90*60)
-#define HOMING_FEEDRATE_Z  (15*60)
+#define HOMING_FEEDRATE_MM_M { (35*60), (35*60), (15*60) }
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1770,7 +1635,7 @@
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z_raise }
-  #define NOZZLE_PARK_POINT { (X_MIN_POS + 10), (Y_MAX_POS - 10), 20 }
+  #define NOZZLE_PARK_POINT { (X_MAX_POS / 2), (Y_MIN_POS + 10), 20 }
   //#define NOZZLE_PARK_X_ONLY          // X move only is required to park
   //#define NOZZLE_PARK_Y_ONLY          // Y move only is required to park
   #define NOZZLE_PARK_Z_RAISE_MIN   2   // (mm) Always raise Z by at least this distance
@@ -1822,26 +1687,58 @@
   #define NOZZLE_CLEAN_STROKES  1
 
   // Default number of triangles
-  #define NOZZLE_CLEAN_TRIANGLES  12
+  #define NOZZLE_CLEAN_TRIANGLES  4
 
   // Specify positions for each tool as { { X, Y, Z }, { X, Y, Z } }
   // Dual hotend system may use { {  -20, (Y_BED_SIZE / 2), (Z_MIN_POS + 1) },  {  420, (Y_BED_SIZE / 2), (Z_MIN_POS + 1) }}
-  #define MY_NOZZLE_CLEAN_START_POINT_X_ANY_TOOL  80
-  #define MY_NOZZLE_CLEAN_START_POINT_Y_ANY_TOOL 375
-  #define MY_NOZZLE_CLEAN_DX_MM 28
-  #define MY_NOZZLE_CLEAN_DY_MM 15
 
-  #define MY_NOZZLE_CLEAN_START_POINT_ANY_TOOL {  MY_NOZZLE_CLEAN_START_POINT_X_ANY_TOOL, MY_NOZZLE_CLEAN_START_POINT_Y_ANY_TOOL, (Z_MIN_POS + 1) }
-  #define MY_NOZZLE_CLEAN_END_POINT_ANY_TOOL { ( MY_NOZZLE_CLEAN_START_POINT_X_ANY_TOOL + MY_NOZZLE_CLEAN_DX_MM ) , ( MY_NOZZLE_CLEAN_START_POINT_Y_ANY_TOOL + MY_NOZZLE_CLEAN_DY_MM) , (Z_MIN_POS + 1) }
-  #define NOZZLE_CLEAN_START_POINT { MY_NOZZLE_CLEAN_START_POINT_ANY_TOOL, MY_NOZZLE_CLEAN_START_POINT_ANY_TOOL }
-  #define NOZZLE_CLEAN_END_POINT   { MY_NOZZLE_CLEAN_END_POINT_ANY_TOOL, MY_NOZZLE_CLEAN_END_POINT_ANY_TOOL }
+  /**
+   *  * T1=(-30,0)       * T0=(408,0)
+   *        v DX              v DX
+   *  +----*----+        +----*----+
+   *  |         |        |         |
+   *  |         |  < DY  |         |  < DY
+   *  |    +    |        |    +    |
+   *  | center  |        | center  |
+   *  |  T0     |        |   T1    |
+   *  +---------+        +---------+
+   *  ^ origin
+   *  ^----offset x-----^
+   */
+
+  #define MY_NOZZLE_CLEAN_ORIGIN_X (-30.0 - 10.0)
+  #define MY_NOZZLE_CLEAN_ORIGIN_Y -23.0
+  #define MY_NOZZLE_CLEAN_Z (Z_MIN_POS + 1.0)
+  #define MY_NOZZLE_CLEAN_ORIGIN_OFFSET_X (438)
+  #define MY_NOZZLE_CLEAN_DX 20
+  #define MY_NOZZLE_CLEAN_DY 23.0
+
+  #define MY_NOZZLE_CLEAN_DIAMETRAL_X (MY_NOZZLE_CLEAN_ORIGIN_X + MY_NOZZLE_CLEAN_DX)
+  #define MY_NOZZLE_CLEAN_DIAMETRAL_Y (MY_NOZZLE_CLEAN_ORIGIN_Y + MY_NOZZLE_CLEAN_DY)
+  #define MY_NOZZLE_CLEAN_CENTER_X (MY_NOZZLE_CLEAN_ORIGIN_X + MY_NOZZLE_CLEAN_DX/2.0)
+  #define MY_NOZZLE_CLEAN_CENTER_Y (MY_NOZZLE_CLEAN_ORIGIN_Y + MY_NOZZLE_CLEAN_DY/2.0)
+
+  #define MY_NOZZLE_CLEAN_START_X MY_NOZZLE_CLEAN_ORIGIN_X
+  #define MY_NOZZLE_CLEAN_START_Y MY_NOZZLE_CLEAN_ORIGIN_Y
+  #define MY_NOZZLE_CLEAN_END_X MY_NOZZLE_CLEAN_DIAMETRAL_X
+  #define MY_NOZZLE_CLEAN_END_Y MY_NOZZLE_CLEAN_DIAMETRAL_Y
+
+  #define NOZZLE_CLEAN_START_POINT { \
+    {  MY_NOZZLE_CLEAN_START_X + MY_NOZZLE_CLEAN_ORIGIN_OFFSET_X, MY_NOZZLE_CLEAN_START_Y, MY_NOZZLE_CLEAN_Z }, \
+    {  MY_NOZZLE_CLEAN_START_X, MY_NOZZLE_CLEAN_START_Y, MY_NOZZLE_CLEAN_Z } }
+
+  #define NOZZLE_CLEAN_END_POINT   { \
+    {  MY_NOZZLE_CLEAN_END_X + MY_NOZZLE_CLEAN_ORIGIN_OFFSET_X,   MY_NOZZLE_CLEAN_END_Y,   MY_NOZZLE_CLEAN_Z }, \
+    {  MY_NOZZLE_CLEAN_END_X,   MY_NOZZLE_CLEAN_END_Y,   MY_NOZZLE_CLEAN_Z } }
 
   // Circular pattern radius
-  #define NOZZLE_CLEAN_CIRCLE_RADIUS 5
+  #define NOZZLE_CLEAN_CIRCLE_RADIUS 7
   // Circular pattern circle fragments number
   #define NOZZLE_CLEAN_CIRCLE_FN 10
   // Middle point of circle
-  #define NOZZLE_CLEAN_CIRCLE_MIDDLE NOZZLE_CLEAN_START_POINT
+  #define NOZZLE_CLEAN_CIRCLE_MIDDLE { \
+    { MY_NOZZLE_CLEAN_CENTER_X + MY_NOZZLE_CLEAN_ORIGIN_OFFSET_X, MY_NOZZLE_CLEAN_CENTER_Y, MY_NOZZLE_CLEAN_Z }, \
+    { MY_NOZZLE_CLEAN_CENTER_X, MY_NOZZLE_CLEAN_CENTER_Y, MY_NOZZLE_CLEAN_Z } }
 
   // Move the nozzle to the initial position after cleaning
   //#define NOZZLE_CLEAN_GOBACK
@@ -1855,15 +1752,12 @@
   // Explicit wipe G-code script applies to a G12 with no arguments.
   //#define WIPE_SEQUENCE_COMMANDS "G1 X-17 Y25 Z10 F4000\nG1 Z1\nM114\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 Z15\nM400\nG0 X-10.0 Y-9.0"
   #define WIPE_SEQUENCE_COMMANDS "\
-    G0 F30000\n\
-    T1\n\
-    G0 X75 Y375 \n\
+    G0 F3000\n\
+    G12 P2\n\
+    G12 P0 S4\n\
     G12 P1\n\
-    G0 Y375\n\
-    T0\n\
-    G0 X75\n\
-    G12 P1\n\
-    G0 Y375"
+    G12 P0 S4\n\
+    G12 P2\n"
 #endif
 
 /**
@@ -1983,15 +1877,7 @@
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.
  */
-<<<<<<< HEAD
-<<<<<<< HEAD
 #define SDSUPPORT
-=======
-//#define SDSUPPORT
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
-=======
-#define SDSUPPORT
->>>>>>> 0e584722fe... refined stepper/driver settings; enabled more SD features
 
 /**
  * SD CARD: SPI SPEED
@@ -2001,18 +1887,14 @@
  */
 //#define SPI_SPEED SPI_HALF_SPEED
 //#define SPI_SPEED SPI_QUARTER_SPEED
-<<<<<<< HEAD
 #define SPI_SPEED SPI_EIGHTH_SPEED
-=======
-//#define SPI_SPEED SPI_EIGHTH_SPEED
->>>>>>> 9b82a5cd76... personalized bugfix-2.0.x
 
 /**
  * SD CARD: ENABLE CRC
  *
  * Use CRC checks and retries on the SD communication.
  */
-#define SD_CHECK_AND_RETRY
+//#define SD_CHECK_AND_RETRY
 
 /**
  * LCD Menu Items
@@ -2020,7 +1902,7 @@
  * Disable all menus and only display the Status Screen, or
  * just remove some extraneous menu items to recover space.
  */
-#define NO_LCD_MENUS
+//#define NO_LCD_MENUS
 //#define SLIM_LCD_MENUS
 
 //
@@ -2083,7 +1965,7 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-#define SPEAKER
+//#define SPEAKER
 
 //
 // The duration and frequency for the UI feedback sound.
@@ -2092,8 +1974,8 @@
 // Note: Test audio output with the G-Code:
 //  M300 S<frequency Hz> P<duration ms>
 //
-//#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 2
-//#define LCD_FEEDBACK_FREQUENCY_HZ 5000
+#define LCD_FEEDBACK_FREQUENCY_DURATION_MS 2
+#define LCD_FEEDBACK_FREQUENCY_HZ 5000
 
 //=============================================================================
 //======================== LCD / Controller Selection =========================
@@ -2718,7 +2600,7 @@
 
   // Use a single NeoPixel LED for static (background) lighting
   #define NEOPIXEL_BKGD_LED_INDEX  26              // Index of the LED to use
-  #define NEOPIXEL_BKGD_COLOR { 255, 255, 255, 0 } // R, G, B, W
+  #define NEOPIXEL_BKGD_COLOR { 255, 255, 255, 255 } // R, G, B, W
 #endif
 
 /**
@@ -2754,4 +2636,4 @@
 #define DEACTIVATE_SERVOS_AFTER_MOVE
 
 // Edit servo angles with M281 and save to EEPROM with M500
-//#define EDITABLE_SERVO_ANGLES
+#define EDITABLE_SERVO_ANGLES
