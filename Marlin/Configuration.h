@@ -85,7 +85,7 @@
  */
 
 // Show the Marlin bootscreen on startup. ** ENABLE FOR PRODUCTION **
-#define SHOW_BOOTSCREEN
+//#define SHOW_BOOTSCREEN
 
 // Show the bitmap in Marlin/_Bootscreen.h on startup.
 //#define SHOW_CUSTOM_BOOTSCREEN
@@ -121,7 +121,7 @@
  *
  * :[2400, 9600, 19200, 38400, 57600, 115200, 250000, 500000, 1000000]
  */
-#define BAUDRATE 250000
+#define BAUDRATE 500000
 
 // Enable the Bluetooth serial interface on AT90USB devices
 //#define BLUETOOTH
@@ -135,11 +135,13 @@
   #define Z_MAX_PIN       PG5  // use Y- pin
   #define FIL_RUNOUT_PIN  PE15 // E0 aka X+ pin
   #define FIL_RUNOUT2_PIN PE10 // E1 aka Y+ pin
-  //#define FIL_RUNOUT3_PIN PB5  // E2 aka Z+ pin
+  //#define FIL_RUNOUT3_PIN PB5 // E2 aka Z+ pin
   #define PS_ON_PIN       PD0  // Extension 2
   #define CASE_LIGHT_PIN  PE4  // Extension 2
   #define SERVO1_PIN      PC9  // Extension 1
   #define SERVO2_PIN      PF8  // Extension 1
+  //#define TEMP_PROBE_PIN PF6 // BL-Touch temp pin
+  //#define TEMP_CHAMBER_PIN PF6 // custom sensor
   #define SUICIDE_PIN_INVERTING false
   #define FLASH_EEPROM_EMULATION
 #endif
@@ -431,7 +433,7 @@
 #define TEMP_SENSOR_7 0
 #define TEMP_SENSOR_BED 1
 #define TEMP_SENSOR_PROBE 0
-#define TEMP_SENSOR_CHAMBER 0
+//#define TEMP_SENSOR_CHAMBER 1
 
 // Dummy thermistor constant temperature readings, for use with 998 and 999
 #define DUMMY_THERMISTOR_998_VALUE  25
@@ -501,13 +503,13 @@
   #if ENABLED(PID_PARAMS_PER_HOTEND)
     // Specify between 1 and HOTENDS values per array.
     // If fewer than EXTRUDER values are provided, the last element will be repeated.
-    #define DEFAULT_Kp_LIST {  29.49,  29.49 }
-    #define DEFAULT_Ki_LIST {   2.88,   2.88 }
+    #define DEFAULT_Kp_LIST { 29.49, 29.49 }
+    #define DEFAULT_Ki_LIST {  2.88,  2.88 }
     #define DEFAULT_Kd_LIST { 75.50, 75.50 }
   #else
   // Creality Ender-5 Plus, auto tune result of: M303 E0 S225 C10
   #define DEFAULT_Kp 29.49
-  #define DEFAULT_Ki 2.88
+  #define DEFAULT_Ki  2.88
   #define DEFAULT_Kd 75.50
   #endif
 #endif // PIDTEMP
@@ -549,7 +551,7 @@
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
   // auto tune result of M303 E-1 S60 C10
   #define DEFAULT_bedKp 124.63
-  #define DEFAULT_bedKi 17.12
+  #define DEFAULT_bedKi  17.12
   #define DEFAULT_bedKd 604.87
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
@@ -771,7 +773,7 @@
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { \
     ((200.0*MY_X_MICROSTEPS)/40.0),     \
     ((200.0*MY_Y_MICROSTEPS)/40.0),     \
-    ((200.0*MY_Z_MICROSTEPS)/4.0),      \
+    ((200.0*MY_Z_MICROSTEPS)/2.0),      \
     ((200.0*MY_E_MICROSTEPS)/(3.1416 * MY_E_EFFECTIVE_COGWHEEL_DIAMETER)) }
 
 /**
@@ -780,7 +782,7 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 //#define DEFAULT_MAX_FEEDRATE          { 1500, 1500, 18, 20 }
-#define DEFAULT_MAX_FEEDRATE          { 500, 500, 18, 150 }
+#define DEFAULT_MAX_FEEDRATE          { 500, 500, 8, 150 }
 // TODO rubienr - y stalls wo. s-curve acc.
 // #define DEFAULT_MAX_FEEDRATE          { 1200, 1200, 18, 20 }
 
@@ -795,7 +797,7 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 1500, 1500, 150, 300 }
+#define DEFAULT_MAX_ACCELERATION      { 1500, 1500, 15, 35000 }
 // TODO rubienr - y stalls wo s-curve acc.
 //#define DEFAULT_MAX_ACCELERATION      { 1000, 1000, 150, 300 }
 
@@ -812,8 +814,8 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION           1000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION     50    // E acceleration for retracts
+#define DEFAULT_ACCELERATION           1000 // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  25000 // E acceleration for retracts
 #define DEFAULT_TRAVEL_ACCELERATION    1000 // 1500    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
@@ -1032,7 +1034,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.5 }
+#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.05 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1042,10 +1044,10 @@
 #define XY_PROBE_SPEED (400*60)
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_SPEED_FAST (15*60)
+#define Z_PROBE_SPEED_FAST (8*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 5)
+#define Z_PROBE_SPEED_SLOW (Z_PROBE_SPEED_FAST / 2)
 
 /**
  * Probe Activation Switch
@@ -1212,7 +1214,7 @@
 #define Z_MIN_POS  0
 #define X_MAX_POS  (420 - 1)
 #define Y_MAX_POS  (423 - 24)
-#define Z_MAX_POS  432
+#define Z_MAX_POS  431
 
 /**
  * Software Endstops
@@ -1449,8 +1451,8 @@
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
   #define MESH_INSET        0       // Set Mesh bounds as an inset region of the bed
-  #define GRID_MAX_POINTS_X 8       // Don't use more than 15 points per axis, implementation limited.
-  #define GRID_MAX_POINTS_Y 8
+  #define GRID_MAX_POINTS_X 9       // Don't use more than 15 points per axis, implementation limited.
+  #define GRID_MAX_POINTS_Y 9
 
   //#define UBL_MESH_EDIT_MOVES_Z     // Sophisticated users prefer no movement of nozzle
   #define UBL_SAVE_ACTIVE_ON_M500   // Save the currently active mesh in the current slot on M500
@@ -1553,7 +1555,7 @@
 #endif
 
 // Homing speeds (mm/min)
-#define HOMING_FEEDRATE_MM_M { (35*60), (35*60), (15*60) }
+#define HOMING_FEEDRATE_MM_M { (35*60), (35*60), (8*60) }
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1568,7 +1570,7 @@
  * Take the following steps to get the bed skew in the XY plane:
  *  1. Print a test square (e.g., https://www.thingiverse.com/thing:2563185)
  *  2. For XY_DIAG_AC measure the diagonal A to C
- *  3. For XY_DIAG_BD measure the diagonal B to D
+ *  3. For XY_DIAG_BD measure the dia gonal B to D
  *  4. For XY_SIDE_AD measure the edge A to D
  *
  * Marlin automatically computes skew factors from these measurements.
@@ -1757,11 +1759,11 @@
    *  ^----offset x-----^
    */
 
-  #define MY_NOZZLE_CLEAN_ORIGIN_X (-30.0 - 10.0)
+  #define MY_NOZZLE_CLEAN_ORIGIN_X (-30.0 - 9.0)
   #define MY_NOZZLE_CLEAN_ORIGIN_Y -23.0
   #define MY_NOZZLE_CLEAN_Z (Z_MIN_POS + 1.0)
   #define MY_NOZZLE_CLEAN_ORIGIN_OFFSET_X (438)
-  #define MY_NOZZLE_CLEAN_DX 20
+  #define MY_NOZZLE_CLEAN_DX (9.0 * 2)
   #define MY_NOZZLE_CLEAN_DY 23.0
 
   #define MY_NOZZLE_CLEAN_DIAMETRAL_X (MY_NOZZLE_CLEAN_ORIGIN_X + MY_NOZZLE_CLEAN_DX)
@@ -1783,7 +1785,7 @@
     {  MY_NOZZLE_CLEAN_END_X,   MY_NOZZLE_CLEAN_END_Y,   MY_NOZZLE_CLEAN_Z } }
 
   // Circular pattern radius
-  #define NOZZLE_CLEAN_CIRCLE_RADIUS 7
+  #define NOZZLE_CLEAN_CIRCLE_RADIUS 6
   // Circular pattern circle fragments number
   #define NOZZLE_CLEAN_CIRCLE_FN 10
   // Middle point of circle
@@ -1935,14 +1937,14 @@
  * SD Card support is disabled by default. If your controller has an SD slot,
  * you must uncomment the following option or it won't work.
  */
-//#define SDSUPPORT
+#define SDSUPPORT
 
 /**
  * SD CARD: ENABLE CRC
  *
  * Use CRC checks and retries on the SD communication.
  */
-//#define SD_CHECK_AND_RETRY
+#define SD_CHECK_AND_RETRY
 
 /**
  * LCD Menu Items

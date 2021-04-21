@@ -142,7 +142,7 @@
   #define CHAMBER_MAXTEMP            60
   #define TEMP_CHAMBER_HYSTERESIS     1   // (°C) Temperature proximity considered "close enough" to the target
   //#define CHAMBER_LIMIT_SWITCHING
-  //#define HEATER_CHAMBER_PIN       44   // Chamber heater on/off pin
+  //#define HEATER_CHAMBER_PIN        PD5 // unused dummy pin, 44   // Chamber heater on/off pin
   //#define HEATER_CHAMBER_INVERTING false
 
   //#define CHAMBER_FAN               // Enable a fan on the chamber
@@ -189,7 +189,7 @@
   #define THERMAL_PROTECTION_PERIOD 40        // Seconds
   #define THERMAL_PROTECTION_HYSTERESIS 4     // Degrees Celsius
 
-  #define ADAPTIVE_FAN_SLOWING              // Slow part cooling fan if temperature drops
+  //#define ADAPTIVE_FAN_SLOWING              // Slow part cooling fan if temperature drops
   #if BOTH(ADAPTIVE_FAN_SLOWING, PIDTEMP)
     //#define NO_FAN_SLOWING_IN_PID_TUNING    // Don't slow fan speed during M303
   #endif
@@ -793,7 +793,7 @@
   // On a 300mm bed a 5% grade would give a misalignment of ~1.5cm
   #define G34_MAX_GRADE              5    // (%) Maximum incline that G34 will handle
   #define Z_STEPPER_ALIGN_ITERATIONS 10   // Number of iterations to apply during alignment
-  #define Z_STEPPER_ALIGN_ACC        0.02 // Stop iterating early if the accuracy is better than this
+  #define Z_STEPPER_ALIGN_ACC        0.01 // Stop iterating early if the accuracy is better than this
   #define RESTORE_LEVELING_AFTER_G34      // Restore leveling after G34 is done?
   // After G34, re-home Z (G28 Z) or just calculate it from the last probe heights?
   // Re-homing might be more precise in reproducing the actual 'G28 Z' homing height, especially on an uneven bed.
@@ -1196,13 +1196,13 @@
    *
    * :['SPI_HALF_SPEED', 'SPI_QUARTER_SPEED', 'SPI_EIGHTH_SPEED']
    */
-  //#define SD_SPI_SPEED SPI_HALF_SPEED
+  #define SD_SPI_SPEED SPI_FULL_SPEED
 
   // The standard SD detect circuit reads LOW when media is inserted and HIGH when empty.
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
   //#define SD_DETECT_STATE HIGH
 
-  //#define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
+  #define SD_IGNORE_AT_STARTUP            // Don't mount the SD card when starting up
   //#define SDCARD_READONLY                 // Read-only SD card (to save over 2K of flash)
 
   #define GCODE_REPEAT_MARKERS            // Enable G-code M808 to set repeat markers and do looping
@@ -1210,7 +1210,7 @@
   #define SD_PROCEDURE_DEPTH 1              // Increase if you need more nested M32 calls
 
   #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
-  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
+  #define SD_FINISHED_RELEASECOMMAND "M84 XYE"  // Use "M84XYE" to keep Z enabled so your bed stays in place
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
   // Since the FAT gets out of order with usage, SDCARD_SORT_ALPHA is recommended.
@@ -1218,7 +1218,7 @@
 
   #define SD_MENU_CONFIRM_START             // Confirm the selected SD file before printing
 
-  //#define NO_SD_AUTOSTART                 // Remove auto#.g file support completely to save some Flash, SRAM
+  #define NO_SD_AUTOSTART                 // Remove auto#.g file support completely to save some Flash, SRAM
   //#define MENU_ADDAUTOSTART               // Add a menu option to run auto#.g files
 
   //#define BROWSE_MEDIA_ON_INSERT          // Open the file browser when media is inserted
@@ -1865,7 +1865,7 @@
 //
 #define ARC_SUPPORT                 // Disable this feature to save ~3226 bytes
 #if ENABLED(ARC_SUPPORT)
-  #define MM_PER_ARC_SEGMENT     0.5 // (mm) Length (or minimum length) of each arc segment
+  #define MM_PER_ARC_SEGMENT     0.25 // (mm) Length (or minimum length) of each arc segment
   //#define ARC_SEGMENTS_PER_R    1 // Max segment length, MM_PER = Min
   #define MIN_ARC_SEGMENTS       24 // Minimum number of segments in a complete circle
   //#define ARC_SEGMENTS_PER_SEC 50 // Use feedrate to choose segment length (with MM_PER_ARC_SEGMENT as the minimum)
@@ -1876,7 +1876,7 @@
 #endif
 
 // Support for G5 with XYZE destination and IJPQ offsets. Requires ~2666 bytes.
-//#define BEZIER_CURVE_SUPPORT
+#define BEZIER_CURVE_SUPPORT
 
 /**
  * Direct Stepping
@@ -2069,12 +2069,12 @@
   #endif
   #define RETRACT_LENGTH 2                // (mm) Default retract length (positive value)
   #define RETRACT_LENGTH_SWAP 20          // (mm) Default swap retract length (positive value)
-  #define RETRACT_FEEDRATE 20             // (mm/s) Default feedrate for retracting
+  #define RETRACT_FEEDRATE 150            // (mm/s) Default feedrate for retracting
   #define RETRACT_ZRAISE 0                // (mm) Default retract Z-raise
-  #define RETRACT_RECOVER_LENGTH 0.1      // 0.1 -> about 0.25mm³ - (mm) Default additional recover length (added to retract length on recover)
+  #define RETRACT_RECOVER_LENGTH 0        // 0.1 -> about 0.25mm³ - (mm) Default additional recover length (added to retract length on recover)
   #define RETRACT_RECOVER_LENGTH_SWAP 0.125 // 0.125 -> about 0.3mm³ - (mm) Default additional swap recover length (added to retract length on recover from toolchange)
   #define RETRACT_RECOVER_FEEDRATE 150    // (mm/s) Default feedrate for recovering from retraction
-  #define RETRACT_RECOVER_FEEDRATE_SWAP 120 // (mm/s) Default feedrate for recovering from swap retraction
+  #define RETRACT_RECOVER_FEEDRATE_SWAP 20 // (mm/s) Default feedrate for recovering from swap retraction
   #if ENABLED(MIXING_EXTRUDER)
     //#define RETRACT_SYNC_MIXING         // Retract and restore all mixing steppers simultaneously
   #endif
@@ -2333,7 +2333,7 @@
  */
 #if HAS_TRINAMIC_CONFIG
 
-  #define HOLD_MULTIPLIER    1.0  // Scales down the holding current from run current
+  #define HOLD_MULTIPLIER    0.65  // Scales down the holding current from run current
 
   /**
    * Interpolate microsteps to 256
@@ -2361,7 +2361,7 @@
 
   #if AXIS_IS_TMC(Y)
     #define Y_CURRENT       1400
-    #define Y_CURRENT_HOME  800
+    #define Y_CURRENT_HOME  1000
     #define Y_MICROSTEPS    MY_Y_MICROSTEPS
     #define Y_RSENSE          0.11
     #define Y_CHAIN_POS      -1
@@ -2378,7 +2378,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z)
-    #define Z_CURRENT       800
+    #define Z_CURRENT      1000
     #define Z_CURRENT_HOME  800
     #define Z_MICROSTEPS    MY_Z_MICROSTEPS
     #define Z_RSENSE          0.11
@@ -2387,7 +2387,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z2)
-    #define Z2_CURRENT      800
+    #define Z2_CURRENT     1000
     #define Z2_CURRENT_HOME 800
     #define Z2_MICROSTEPS   MY_Z_MICROSTEPS
     #define Z2_RSENSE         0.11
@@ -2414,7 +2414,7 @@
   #endif
 
   #if AXIS_IS_TMC(E0)
-    #define E0_CURRENT     1000
+    #define E0_CURRENT     1200
     #define E0_MICROSTEPS   MY_E_MICROSTEPS
     #define E0_RSENSE         0.11
     #define E0_CHAIN_POS     -1
@@ -2422,7 +2422,7 @@
   #endif
 
   #if AXIS_IS_TMC(E1)
-    #define E1_CURRENT     1000
+    #define E1_CURRENT     1200
     #define E1_MICROSTEPS   MY_E_MICROSTEPS
     #define E1_RSENSE         0.11
     #define E1_CHAIN_POS     -1
@@ -3358,8 +3358,8 @@
  */
 
 #define STARTUP_COMMANDS "\
-  M810 G90|G0 F7000|G0 Z15|T0|G0 X204 Y-1.5|G0 Z0.5|G91|G11|G1 E15 F500|G0 Y5|G1 E7 F200|G1 Y20 Z-0.3 E5 F200|G10 S1|G90|G92 E0|G0 F7000\n\
-  M811 G90|G0 F7000|G0 Z15|T1|G0 X166 Y-1.5|G0 Z0.5|G91|G11|G1 E15 F500|G0 Y5|G1 E7 F200|G1 Y20 Z-0.3 E5 F200|G10 S1|G90|G92 E0|G0 F7000\n"
+  M810 G90|G0 F7000|G0 Z15|T0|G0 X204 Y-1.5|G0 Z0.5|G11|G91|G1 E15 F500|G0 Y5|G1 E7 F200|G1 Y20 Z-0.3 E5 F200|G10 S1|G90|G0 F7000|G1 F7000\n\
+  M811 G90|G0 F7000|G0 Z15|T1|G0 X166 Y-1.5|G0 Z0.5|G11|G91|G1 E15 F500|G0 Y5|G1 E7 F200|G1 Y20 Z-0.3 E5 F200|G10 S1|G90|G0 F7000|G1 F7000\n"
 
 /**
  * G-code Macros
