@@ -1478,7 +1478,7 @@
   #if ENABLED(SET_INTERACTION_TIME)
     #define SHOW_INTERACTION_TIME         // Display time until next user interaction ('C' = filament change)
   #endif
-  //#define M73_REPORT                    // Report progress to host with 'M73'
+    #define M73_REPORT                    // Report progress to host with 'M73'
 #endif
 
 // LCD Print Progress options, multiple can be rotated depending on screen layout
