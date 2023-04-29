@@ -2723,8 +2723,8 @@
   #define INTERPOLATE      true
 
   #if AXIS_IS_TMC_CONFIG(X)
-    #define X_CURRENT       1350       // (mA) RMS current. Multiply by 1.414 for peak current.
-    #define X_CURRENT_HOME  1350       // (mA) RMS current for sensorless homing
+    #define X_CURRENT       1500       // (mA) RMS current. Multiply by 1.414 for peak current.
+    #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS    MY_X_MICROSTEPS // 0..256
     #define X_RSENSE          0.11     // Multiplied x1000 for TMC26X
     #define X_CHAIN_POS      -1        // -1..0: Not chained. 1: MCU MOSI connected. 2: Next in chain, ...
@@ -2743,9 +2743,9 @@
   #endif
 
   #if AXIS_IS_TMC_CONFIG(Y)
-    #define Y_CURRENT       1400
-    #define Y_CURRENT_HOME  1400
-    #define Y_MICROSTEPS    MY_Y_MICROSTEPS
+    #define Y_CURRENT      1900
+    #define Y_CURRENT_HOME Y_CURRENT
+    #define Y_MICROSTEPS   MY_Y_MICROSTEPS
     #define Y_RSENSE          0.11
     #define Y_CHAIN_POS      -1
     //#define Y_INTERPOLATE  true
@@ -2773,8 +2773,8 @@
   #endif
 
   #if AXIS_IS_TMC_CONFIG(Z2)
-    #define Z2_CURRENT      800
-    #define Z2_CURRENT_HOME Z_CURRENT_HOME
+    #define Z2_CURRENT      Z_CURRENT
+    #define Z2_CURRENT_HOME Z2_CURRENT
     #define Z2_MICROSTEPS   Z_MICROSTEPS
     #define Z2_RSENSE         0.11
     #define Z2_CHAIN_POS     -1
@@ -2863,7 +2863,7 @@
   #endif
 
   #if AXIS_IS_TMC_CONFIG(E0)
-    #define E0_CURRENT      1400
+    #define E0_CURRENT      1000
     #define E0_MICROSTEPS   MY_E_MICROSTEPS
     #define E0_RSENSE         0.11
     #define E0_CHAIN_POS     -1
@@ -2968,7 +2968,7 @@
    * The default SW SPI pins are defined the respective pins files,
    * but you can override or define them here.
    */
-  #define TMC_USE_SW_SPI
+  //#define TMC_USE_SW_SPI
   //#define TMC_SW_MOSI       -1
   //#define TMC_SW_MISO       -1
   //#define TMC_SW_SCK        -1
@@ -3091,7 +3091,7 @@
    * M912 - Clear stepper driver overtemperature pre-warn condition flag.
    * M122 - Report driver parameters (Requires TMC_DEBUG)
    */
-  #define MONITOR_DRIVER_STATUS
+// #define MONITOR_DRIVER_STATUS
 
   #if ENABLED(MONITOR_DRIVER_STATUS)
     #define CURRENT_STEP_DOWN     50  // [mA]
@@ -3108,9 +3108,6 @@
    * STEALTHCHOP_(XY|Z|E) must be enabled to use HYBRID_THRESHOLD.
    * M913 X/Y/Z/E to live tune the setting
    */
-  //TODO rubienr - check commits
-  // https://github.com/MarlinFirmware/Marlin/commit/253ee0c407120526b821c0f3251bda0afb69d934
-  // https://github.com/MarlinFirmware/Marlin/commit/bca4652c5e48415cf478da229a253a2106da3e59
   #define HYBRID_THRESHOLD
 
   #define X_HYBRID_THRESHOLD    1000  // [mm/s]
@@ -3127,8 +3124,8 @@
   #define U_HYBRID_THRESHOLD       3  // [mm/s]
   #define V_HYBRID_THRESHOLD       3
   #define W_HYBRID_THRESHOLD       3
-  #define E0_HYBRID_THRESHOLD     30
-  #define E1_HYBRID_THRESHOLD     30
+  #define E0_HYBRID_THRESHOLD     90
+  #define E1_HYBRID_THRESHOLD     E0_HYBRID_THRESHOLD
   #define E2_HYBRID_THRESHOLD     30
   #define E3_HYBRID_THRESHOLD     30
   #define E4_HYBRID_THRESHOLD     30
