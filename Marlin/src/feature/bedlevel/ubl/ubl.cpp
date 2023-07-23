@@ -53,7 +53,7 @@ void unified_bed_leveling::report_current_mesh() {
       SERIAL_ECHO_START();
       SERIAL_ECHOPGM("  M421 I", x, " J", y);
       SERIAL_ECHOLNPAIR_F_P(SP_Z_STR, z_values[x][y], 4);
-      serial_delay(75); // Prevent Printrun from exploding
+      serial_delay(75); // Prevent  from exploding
     }
 }
 
