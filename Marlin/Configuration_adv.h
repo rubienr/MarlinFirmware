@@ -2260,7 +2260,7 @@
   #if ENABLED(DISTINCT_E_FACTORS)
     #define ADVANCE_K { 0.10, 0.10 } // (mm) Compression length per 1mm/s extruder speed, per extruder
   #else
-    #define ADVANCE_K 0.10        // (mm) Compression length applying to all extruders
+    #define ADVANCE_K 0.08        // (mm) Compression length applying to all extruders
   #endif
   //#define ADVANCE_K_EXTRA       // Add a second linear advance constant, configurable with M900 L.
   //#define LA_DEBUG                // Print debug information to serial during operation. Disable for production use.
@@ -2659,19 +2659,19 @@
  */
 #define FWRETRACT
 #if ENABLED(FWRETRACT)
-  #define FWRETRACT_AUTORETRACT             // Override slicer retractions
+  // #define FWRETRACT_AUTORETRACT             // Override slicer retractions
   #if ENABLED(FWRETRACT_AUTORETRACT)
     #define MIN_AUTORETRACT             0.1 // (mm) Don't convert E moves under this length
     #define MAX_AUTORETRACT            10.0 // (mm) Don't convert E moves over this length
   #endif
-  #define RETRACT_LENGTH                1   // (mm) Default retract length (positive value)
+  #define RETRACT_LENGTH                0.8 // (mm) Default retract length (positive value)
   #define RETRACT_LENGTH_SWAP          20   // (mm) Default swap retract length (positive value)
   #define RETRACT_FEEDRATE             20   // (mm/s) Default feedrate for retracting
   #define RETRACT_ZRAISE                0   // (mm) Default retract Z-raise
   #define RETRACT_RECOVER_LENGTH        0   // (mm) Default additional recover length (added to retract length on recover)
                                             // 0.1   -> about 0.25mm³
                                             // 0.125 -> about 0.30mm³
-  #define RETRACT_RECOVER_LENGTH_SWAP 0.125 // (mm) Default additional swap recover length (added to retract length on recover from toolchange)
+  #define RETRACT_RECOVER_LENGTH_SWAP  0.0  // (mm) Default additional swap recover length (added to retract length on recover from toolchange)
   #define RETRACT_RECOVER_FEEDRATE     150  // (mm/s) Default feedrate for recovering from retraction
   #define RETRACT_RECOVER_FEEDRATE_SWAP 20  // (mm/s) Default feedrate for recovering from swap retraction
   #if ENABLED(MIXING_EXTRUDER)
@@ -2687,7 +2687,7 @@
   // Z raise distance for tool-change, as needed for some extruders
   #define TOOLCHANGE_ZRAISE                 2 // (mm)
   //#define TOOLCHANGE_ZRAISE_BEFORE_RETRACT  // Apply raise before swap retraction (if enabled)
-  #define TOOLCHANGE_NO_RETURN                // Never return to previous position on tool-change
+  // #define TOOLCHANGE_NO_RETURN             // Never return to previous position on tool-change
   #if ENABLED(TOOLCHANGE_NO_RETURN)
     //#define EVENT_GCODE_AFTER_TOOLCHANGE "G12X"   // Extra G-code to run after tool-change
   #endif
@@ -3874,17 +3874,44 @@
  *
  * Execute certain G-code commands immediately after power-on.
  */
-#define STARTUP_COMMANDS "\
-M810 G28 O|G90|G0 F7000|G0 Z15|T0|G0 X234 Y-1\n\
-M811 G28 O|G90|G0 F7000|G0 Z15|T1|G0 X186 Y-1\n\
-M812 G0 Z1|G11|G91|G1 E15 F500|G0 Y4|G1 E7 F200|G1 X-20 Z-0.3 E5 F200|G10 S1|G90|G0 F7000|G1 F7000\n\
-M813 M810|M812\n\
-M814 M811|M812\n\
-M815 M814|G10 S1|M813\n\
-M816 G28 O|T0|G12|M813\n\
-M817 G28 O|T1|G12|T0|G12|M815\n\
-M818 M150 B255 R255 U255 P255|M355 S1 P255\n\
-M819 M150 P0|M355 S0\n"
+
+#define MY_STRINGIZE_2(A) #A
+#define MY_STRINGIZE(A) MY_STRINGIZE_2(A)
+
+// G28 auto home, absolute positioning, G0 Z 15mm, select tool 0, G0 positioning and set Y off bed
+#define POSITION_T0 G28 O|G90|G0 F7000|G0 Z7.55|T0|G0 X320 Y-1
+#define POSITION_T1 G28 O|G90|G0 F7000|G0 Z7.55|T1|G0 X230 Y-1
+
+// extrude, blob, prime right to left on bed:
+// G0 Z 1mm, G11 recover, G1 prime off bed, G0 move towards bed edge, G1 blob on bed, G1 move left and lower to 1-0.3mm,set feed rate
+#define PRIME_T0 G0 Z1|G11|G91|G1 E15 F500|G0 Y4|G1 E7 F200|G1 X-20 Z-0.3 E5 F200|G90|G0 F7000|G1 F7000
+// extrude, blob, prime left to right on bed:
+#define PRIME_T1 G0 Z1|G11|G91|G1 E15 F500|G0 Y4|G1 E7 F200|G1 X+20 Z-0.3 E5 F200|G90|G0 F7000|G1 F7000
+
+/**
+ * M810: T0 prime
+ * M811: T1 prime
+ * M812: T0 clean + prime
+ * M813: T1 clean + prime
+ * M814: T0, T1 clean + T1, T0 prime (T1 swap retracts, T0 remains active)
+ * M814: <unused>
+ * M816: T0 center at Z 0mm (for nozzle height calibration)
+ * M817: T1 center at Z 0mm (for nozzle height calibration)
+ * M818 lights on:  RGB(W) colour + case light
+ * M819 lights off: RGB(W) colour + case light
+ */
+
+#define STARTUP_COMMANDS \
+"M810 " MY_STRINGIZE(POSITION_T0) "|" MY_STRINGIZE(PRIME_T0) "|G10 S0\n"\
+"M811 " MY_STRINGIZE(POSITION_T1) "|" MY_STRINGIZE(PRIME_T1) "|G10 S1\n"\
+"M812 G28 O|T0|G12|M810\n"\
+"M813 G28 O|T1|G12|M811\n"\
+"M814 G28 O|T0|G12|T1|G12|" MY_STRINGIZE(POSITION_T1) "|" MY_STRINGIZE(PRIME_T1) "|G10 S1|M810\n"\
+"M815 M300 S440 P20\n"\
+"M816 G28 O|G0 Z7.55|T0|G0 X189 Y185|G0 Z 0\n"\
+"M817 G28 O|G0 Z7.55|T1|G0 X189 Y185|G0 Z 0\n"\
+"M818 M150 B255 R255 U255 P255|M355 S1 P255\n"\
+"M819 M150 P0|M355 S0\n"
 
 /**
  * G-code Macros
@@ -3895,7 +3922,7 @@ M819 M150 P0|M355 S0\n"
 #define GCODE_MACROS
 #if ENABLED(GCODE_MACROS)
   #define GCODE_MACROS_SLOTS      10  // Up to 10 may be used
-  #define GCODE_MACROS_SLOT_SIZE 110  // Maximum length of a single macro
+  #define GCODE_MACROS_SLOT_SIZE 200  // Maximum length of a single macro
 #endif
 
 /**

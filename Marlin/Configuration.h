@@ -373,8 +373,10 @@
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
 // The offset has to be X=0, Y=0 for the extruder 0 hotend (default extruder).
 // For the other hotends it is their distance from the extruder 0 hotend.
-#define HOTEND_OFFSET_X { 0.0, -41.0 } // (mm) relative X-offset for each nozzle
-#define HOTEND_OFFSET_Y { 0.0, 0.00 }  // (mm) relative Y-offset for each nozzle
+// #define HOTEND_OFFSET_X { 0.0, -41.0 } // (mm) relative X-offset for each nozzle
+#define HOTEND_OFFSET_X { 0.0, -41.4 } // (mm) relative X-offset for each nozzle
+// #define HOTEND_OFFSET_Y { 0.0, -0.00 }  // (mm) relative Y-offset for each nozzle
+#define HOTEND_OFFSET_Y { 0.0, 0.0 }  // (mm) relative Y-offset for each nozzle
 #define HOTEND_OFFSET_Z { 0.0, 0.00 }  // (mm) relative Z-offset for each nozzle
 
 // @section multi-material
@@ -714,16 +716,78 @@
   #define MPC_AUTOTUNE_MENU                           // Add MPC auto-tuning to the "Advanced Settings" menu. (~350 bytes of flash)
 
   #define MPC_MAX 255                                 // (0..255) Current to nozzle while MPC is active.
-  #define MPC_HEATER_POWER { 40.0f, 40.0f }           // (W) Heat cartridge powers.
+  #define MPC_HEATER_POWER { 70.0f, 70.0f }           // (W) Heat cartridge powers.
 
   #define MPC_INCLUDE_FAN                             // Model the fan speed?
 
+  /*
+  // -----
+  - aluminium block 20x20x10
+  - 40W
+  - sillicone sock
+  T0
+  MPC_BLOCK_HEAT_CAPACITY      16.4320
+  MPC_SENSOR_RESPONSIVENESS     0.1404
+  MPC_AMBIENT_XFER_COEFF        0.0752
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.1210
+  T1
+  MPC_BLOCK_HEAT_CAPACITY      16.5080
+  MPC_SENSOR_RESPONSIVENESS     0.2082
+  MPC_AMBIENT_XFER_COEFF        0.0805
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.0823
+
+  // -----
+  - copper block 16x20x12
+  - 40W
+  - silicone sock
+  T0
+  MPC_BLOCK_HEAT_CAPACITY      15.50
+  MPC_SENSOR_RESPONSIVENESS     0.1903
+  MPC_AMBIENT_XFER_COEFF        0.0750
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.1262
+  T1
+  MPC_BLOCK_HEAT_CAPACITY      15.09
+  MPC_SENSOR_RESPONSIVENESS     0.1758
+  MPC_AMBIENT_XFER_COEFF        0.0907
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.0886
+
+  // -----
+  - aluminium block 16x20x12
+  - 40W
+  - no silicone sock
+  T0
+  MPC_BLOCK_HEAT_CAPACITY      11.13
+  MPC_SENSOR_RESPONSIVENESS     0.1827
+  MPC_AMBIENT_XFER_COEFF        0.0829
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.1362
+  T1
+  MPC_BLOCK_HEAT_CAPACITY      12.76
+  MPC_SENSOR_RESPONSIVENESS     0.1681
+  MPC_AMBIENT_XFER_COEFF        0.1175
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.1465
+
+  // -----
+  - copper block 16x23x11.5
+  - 70W
+  - silicone sock
+  T0
+  MPC_BLOCK_HEAT_CAPACITY      17.54   17.56
+  MPC_SENSOR_RESPONSIVENESS     0.2219  0.2179
+  MPC_AMBIENT_XFER_COEF         0.0828  0.0817
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.1185  0.1144
+  T1
+  MPC_BLOCK_HEAT_CAPACITY      17.96   18.05
+  MPC_SENSOR_RESPONSIVENESS     0.2027  0.2163
+  MPC_AMBIENT_XFER_COEFF        0.1109  0.1106
+  MPC_AMBIENT_XFER_COEFF_FAN255 0.1279  0.1239
+  */
+
   // Measured physical constants from M306
-  #define MPC_BLOCK_HEAT_CAPACITY         { 16.4320f, 16.5080f } // (J/K) Heat block heat capacities.
-  #define MPC_SENSOR_RESPONSIVENESS       {  0.1404f,  0.2082f } // (K/s per ∆K) Rate of change of sensor temperature from heat block.
-  #define MPC_AMBIENT_XFER_COEFF          {  0.0752f,  0.0805f } // (W/K) Heat transfer coefficients from heat block to room air with fan off.
+  #define MPC_BLOCK_HEAT_CAPACITY         { 17.54f,   17.96f } // (J/K) Heat block heat capacities.
+  #define MPC_SENSOR_RESPONSIVENESS       {  0.2219f,  0.2027f } // (K/s per ∆K) Rate of change of sensor temperature from heat block.
+  #define MPC_AMBIENT_XFER_COEFF          {  0.0828f,  0.1109f } // (W/K) Heat transfer coefficients from heat block to room air with fan off.
   #if ENABLED(MPC_INCLUDE_FAN)
-    #define MPC_AMBIENT_XFER_COEFF_FAN255 {  0.1210f,  0.0823f } // (W/K) Heat transfer coefficients from heat block to room air with fan on full.
+    #define MPC_AMBIENT_XFER_COEFF_FAN255 {  0.1185f,  0.1279f } // (W/K) Heat transfer coefficients from heat block to room air with fan on full.
   #endif
 
   // For one fan and multiple hotends MPC needs to know how to apply the fan cooling effect.
@@ -1342,7 +1406,7 @@
  *   https://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.013 // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.2   // (mm) Distance from real junction edge
   #define JD_HANDLE_SMALL_SEGMENTS    // Use curvature estimation instead of just the junction angle
                                       // for small segments (< 1mm) with large junction angles (> 135°).
 #endif
@@ -1584,7 +1648,12 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.50 }
+// heat-block: 10mm; nozzle: length=13.0mm, shaft=5.0mm (hardened steel)
+// #define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.50 }
+// heat-block: 12mm; nozzle: length=12.5mm, shaft=7.5mm (brass)
+//#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -3.35 }
+// heat-block: 11.5mm; nozzle: length=12.5mm, shaft=7.5mm (ruby)
+#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.8 }
 
 // Enable and set to use a specific tool for probing. Disable to allow any tool.
 #define PROBING_TOOL 0
@@ -2053,8 +2122,8 @@
  * these options to restore the prior leveling state or to always enable
  * leveling immediately after G28.
  */
-#define RESTORE_LEVELING_AFTER_G28
-//#define ENABLE_LEVELING_AFTER_G28
+//#define RESTORE_LEVELING_AFTER_G28
+#define ENABLE_LEVELING_AFTER_G28
 
 /**
  * Auto-leveling needs preheating
@@ -2528,7 +2597,7 @@
 
   #define MY_NOZZLE_CLEAN_ORIGIN_X (MY_NOZZLE_POS_X - MY_CLEANING_PAD_WIDTH / 2.0f)
   #define MY_NOZZLE_CLEAN_ORIGIN_Y (MY_NOZZLE_POS_Y - MY_CLEANING_PAD_LENGTH)
-  #define MY_NOZZLE_CLEAN_Z (Z_MIN_POS + 1.0f)
+  #define MY_NOZZLE_CLEAN_Z (Z_MIN_POS + 0.0f)
 
   #define MY_NOZZLE_CLEAN_START_X   MY_NOZZLE_CLEAN_ORIGIN_X
   #define MY_NOZZLE_CLEAN_START_Y   MY_NOZZLE_CLEAN_ORIGIN_Y
@@ -2570,7 +2639,7 @@
   #endif
 
   // Move the nozzle to the initial position after cleaning
-  //#define NOZZLE_CLEAN_GOBACK
+  // #define NOZZLE_CLEAN_GOBACK
 
   // For a purge/clean station that's always at the gantry height (thus no Z move)
   #define NOZZLE_CLEAN_NO_Z
@@ -3672,7 +3741,7 @@
 // (ms) Delay before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
 // If the servo can't reach the requested position, increase it.
-#define SERVO_DELAY { 150, 150, 150 } // 0 - BLTouch, 1 - first nozzle , 2 - seond nozzle
+#define SERVO_DELAY { 150, 150, 150 } // 0 - BLTouch, 1 - first nozzle , 2 - second nozzle
 
 // Only power servos during movement, otherwise leave off to prevent jitter
 //#define DEACTIVATE_SERVOS_AFTER_MOVE
