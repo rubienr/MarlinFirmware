@@ -257,7 +257,7 @@
   #define SWITCHING_NOZZLE_SERVO_NR 1
   #define SWITCHING_NOZZLE_E1_SERVO_NR 2            // If two servos are used, the index of the second
   #define SWITCHING_NOZZLE_SERVO_ANGLES { { 140, 55 }, { 55, 140 } } // Angles for E0, E1 (single servo) or lowered/raised (dual servo)
-  #define SWITCHING_NOZZLE_SERVO_DWELL 500          // Dwell time to wait for servo to make physical move
+  #define SWITCHING_NOZZLE_SERVO_DWELL 125          // Dwell time to wait for servo to make physical move
 #endif
 
 // Switch nozzles by bumping the toolhead. Requires EVENT_GCODE_TOOLCHANGE_#.
