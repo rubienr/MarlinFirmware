@@ -682,7 +682,7 @@
 #define PID_K1 0.95       // Smoothing factor within any PID loop
 
 #if ENABLED(PIDTEMP)
-  #define PID_DEBUG               // Print PID debug data to the serial port. Use 'M303 D' to toggle activation.
+  // #define PID_DEBUG            // Print PID debug data to the serial port. Use 'M303 D' to toggle activation.
   #define PID_PARAMS_PER_HOTEND   // Use separate PID parameters for each extruder (useful for mismatched extruders)
                                   // Set/get with G-code: M301 E[extruder number, 0-2]
 
@@ -1311,9 +1311,9 @@
 // E steps example: steps per revolution s=200, microstepping m=16, effective gear diameter d= 7.22
 //   sm/(πd) = 144.1
 
-#define MY_X_MICROSTEPS 16
-#define MY_Y_MICROSTEPS 16
-#define MY_Z_MICROSTEPS 16
+#define MY_X_MICROSTEPS 32
+#define MY_Y_MICROSTEPS 32
+#define MY_Z_MICROSTEPS 32
 #define MY_E_MICROSTEPS 32
 #define MY_X_STEPPER_STEP_DEGREE 1.8f
 #define MY_Y_STEPPER_STEP_DEGREE 1.8f
@@ -1406,7 +1406,7 @@
  *   https://blog.kyneticcnc.com/2018/10/computing-junction-deviation-for-marlin.html
  */
 #if DISABLED(CLASSIC_JERK)
-  #define JUNCTION_DEVIATION_MM 0.2   // (mm) Distance from real junction edge
+  #define JUNCTION_DEVIATION_MM 0.3   // (mm) Distance from real junction edge
   #define JD_HANDLE_SMALL_SEGMENTS    // Use curvature estimation instead of just the junction angle
                                       // for small segments (< 1mm) with large junction angles (> 135°).
 #endif
@@ -1672,7 +1672,7 @@
 #define Z_PROBE_FEEDRATE_FAST (8*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_FEEDRATE_SLOW (2*60)
+#define Z_PROBE_FEEDRATE_SLOW (1*60)
 
 /**
  * Probe Activation Switch
@@ -2148,7 +2148,7 @@
  * Turn on with the command 'M111 S32'.
  * NOTE: Requires a lot of PROGMEM!
  */
-#define DEBUG_LEVELING_FEATURE
+// #define DEBUG_LEVELING_FEATURE
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL, PROBE_MANUALLY)
   // Set a height for the start of manual adjustment
@@ -2355,8 +2355,8 @@
 #define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT X_CENTER  // X point for Z homing
-  #define Z_SAFE_HOMING_Y_POINT Y_CENTER  // Y point for Z homing
+  #define Z_SAFE_HOMING_X_POINT 189 // X_CENTER  // X point for Z homing
+  #define Z_SAFE_HOMING_Y_POINT 197 // Y_CENTER  // Y point for Z homing
   //#define Z_SAFE_HOMING_POINT_ABSOLUTE  // Ignore home offsets (M206) for Z homing position
 #endif
 
