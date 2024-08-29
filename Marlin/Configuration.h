@@ -1312,11 +1312,11 @@
 // E steps example: steps per revolution s=200, microstepping m=16, effective gear diameter d= 7.22
 //   sm/(πd) = 144.1
 
-#define MY_X_MICROSTEPS 32
-#define MY_Y_MICROSTEPS 32
-#define MY_Z_MICROSTEPS 32
-#define MY_E_MICROSTEPS 32
-#define MY_X_STEPPER_STEP_DEGREE 1.8f
+#define MY_X_MICRO_STEPS 8
+#define MY_Y_MICRO_STEPS 8
+#define MY_Z_MICRO_STEPS 8
+#define MY_E_MICRO_STEPS 16
+#define MY_X_STEPPER_STEP_DEGREE 0.9f
 #define MY_Y_STEPPER_STEP_DEGREE 1.8f
 #define MY_Z_STEPPER_STEP_DEGREE 1.8f
 #define MY_E_STEPPER_STEP_DEGREE 1.8f
@@ -1327,17 +1327,17 @@
 #define MY_E_STEPS_PER_REVOLUTION (360.0f/MY_E_STEPPER_STEP_DEGREE)
 
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { \
-    ((MY_X_STEPS_PER_REVOLUTION*MY_X_MICROSTEPS)/40.0f),     \
-    ((MY_Y_STEPS_PER_REVOLUTION*MY_Y_MICROSTEPS)/40.0f),     \
-    ((MY_Z_STEPS_PER_REVOLUTION*MY_Z_MICROSTEPS)/2.0f),      \
-    ((MY_E_STEPS_PER_REVOLUTION*MY_E_MICROSTEPS)/(3.141592654f * MY_E_EFFECTIVE_COGWHEEL_DIAMETER)) }
+    ((MY_X_STEPS_PER_REVOLUTION*MY_X_MICRO_STEPS)/40.0f),     \
+    ((MY_Y_STEPS_PER_REVOLUTION*MY_Y_MICRO_STEPS)/40.0f),     \
+    ((MY_Z_STEPS_PER_REVOLUTION*MY_Z_MICRO_STEPS)/2.0f),      \
+    ((MY_E_STEPS_PER_REVOLUTION*MY_E_MICRO_STEPS)/(3.141592654f * MY_E_EFFECTIVE_COGWHEEL_DIAMETER)) }
 
 /**
  * Default Max Feed Rate (linear=mm/s, rotational=°/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+#define DEFAULT_MAX_FEEDRATE          { 600, 600, 5, 25 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -1350,7 +1350,7 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K...]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 15, 10000 }
+#define DEFAULT_MAX_ACCELERATION      { 1500, 1500, 10, 10000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -1365,9 +1365,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION   150    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION          1500    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  1500    // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION   1500    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -1663,7 +1663,7 @@
 // heat-block: 12mm; nozzle: length=12.5mm, shaft=7.5mm (brass)
 //#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -3.35 }
 // heat-block: 11.5mm; nozzle: length=12.5mm, shaft=7.5mm (ruby)
-#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.8 }
+#define NOZZLE_TO_PROBE_OFFSET { -20.5, +55.5, -2.82 }
 
 // Enable and set to use a specific tool for probing. Disable to allow any tool.
 #define PROBING_TOOL 0
@@ -1679,10 +1679,10 @@
 #define XY_PROBE_FEEDRATE (200*60)
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
-#define Z_PROBE_FEEDRATE_FAST (8*60)
+#define Z_PROBE_FEEDRATE_FAST (5*60)
 
 // Feedrate (mm/min) for the "accurate" probe of each point
-#define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST / 8)
+#define Z_PROBE_FEEDRATE_SLOW (Z_PROBE_FEEDRATE_FAST / 5)
 
 /**
  * Probe Activation Switch
@@ -1730,7 +1730,7 @@
  * A total of 3 or more adds more slow probes, taking the average.
  */
 #define MULTIPLE_PROBING 3
-#define EXTRA_PROBING    1
+#define EXTRA_PROBING    0
 
 /**
  * Z probes require clearance when deploying, stowing, and moving between
@@ -2362,7 +2362,7 @@
 #endif
 
 // Homing speeds (linear=mm/min, rotational=°/min)
-#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (1*60) }
+#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (4*60) }
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
