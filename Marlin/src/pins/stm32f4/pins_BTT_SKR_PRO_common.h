@@ -79,7 +79,9 @@
   #endif
 #else
   #define X_MIN_PIN                         PB10  // X-
-  #define X_MAX_PIN                         PE15  // E0
+  #ifndef X_MAX_PIN
+    #define X_MAX_PIN                       PE15  // E0
+  #endif
 #endif
 
 #ifdef Y_STALL_SENSITIVITY
@@ -150,11 +152,11 @@
   #define Y_CS_PIN                          PB8
 #endif
 
-#define Z_STEP_PIN                          PE13
-#define Z_DIR_PIN                           PC2
-#define Z_ENABLE_PIN                        PC0
+#define Z_STEP_PIN                          PD13
+#define Z_DIR_PIN                           PG9
+#define Z_ENABLE_PIN                        PF0
 #ifndef Z_CS_PIN
-  #define Z_CS_PIN                          PB9
+  #define Z_CS_PIN                          PG12
 #endif
 
 #define E0_STEP_PIN                         PE14
@@ -171,11 +173,12 @@
   #define E1_CS_PIN                         PG15
 #endif
 
-#define E2_STEP_PIN                         PD13
-#define E2_DIR_PIN                          PG9
-#define E2_ENABLE_PIN                       PF0
+
+#define E2_STEP_PIN                         PE13
+#define E2_DIR_PIN                          PC2
+#define E2_ENABLE_PIN                       PC0
 #ifndef E2_CS_PIN
-  #define E2_CS_PIN                         PG12
+  #define E2_CS_PIN                         PB9
 #endif
 
 //
