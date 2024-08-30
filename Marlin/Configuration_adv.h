@@ -2692,7 +2692,7 @@
 
 // Printrun may have trouble receiving long strings all at once.
 // This option inserts short delays between lines of serial output.
-#define SERIAL_OVERRUN_PROTECTION
+//#define SERIAL_OVERRUN_PROTECTION
 
 // For serial echo, the number of digits after the decimal point
 #define SERIAL_FLOAT_PRECISION 4
@@ -3899,7 +3899,7 @@
  * Auto-report fan speed with M123 S<seconds>
  * Requires fans with tachometer pins
  */
-// #define AUTO_REPORT_FANS
+//#define AUTO_REPORT_FANS
 
 #define REPORT_FAN_CHANGE   // Report the new fan speed when changed by M106 (and others)
 
@@ -3946,7 +3946,7 @@
 /**
  * Support for MeatPack G-code compression (https://github.com/scottmudge/OctoPrint-MeatPack)
  */
-#define MEATPACK_ON_SERIAL_PORT_1
+//#define MEATPACK_ON_SERIAL_PORT_1
 //#define MEATPACK_ON_SERIAL_PORT_2
 
 //#define GCODE_CASE_INSENSITIVE  // Accept G-code sent to the firmware in lowercase
